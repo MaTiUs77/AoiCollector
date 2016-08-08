@@ -111,7 +111,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Core
             }
             else
             {
-                aoi.aoiLog.Area("No se encontraron archivos PCB en: " + aoi.aoiConfig.dataProgPath, "atencion");
+                aoi.aoiLog.warning("No se encontraron archivos PCB en: " + aoi.aoiConfig.dataProgPath);
             }
             #endregion
 
@@ -145,7 +145,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Core
         private void UpdateDate(PcbInfo pcbInfo, string fechaModificacion)
         {
             // El HASH no ha cambiado.
-            aoi.aoiLog.Area("-- Fecha modificada " + pcbInfo.nombre + " | No hay cambios.");
+            aoi.aoiLog.verbose("-- Fecha modificada " + pcbInfo.nombre + " | No hay cambios.");
             pcbInfo.fechaModificacion = fechaModificacion;
             PcbInfo.Update(pcbInfo);
         }
@@ -159,7 +159,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Core
             int totalBloques = buildSegmentos.Count;
             string segmentos = string.Join(",", buildSegmentos.ToArray());
 
-            aoi.aoiLog.Area("-- Actualizando informacion de: " + pcb.Name);
+            aoi.aoiLog.verbose("-- Actualizando informacion de: " + pcb.Name);
 
             pcbInfo.programa = pcb.Name;
             pcbInfo.bloques = totalBloques;

@@ -14,42 +14,45 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns
 {
     public class RNS : RnsInspection
     {
-        public RNS(ListBox log, ProgressBar progress) 
+        public RNS(RichTextBox log, TabControl tabControl, ProgressBar progress)
         {
-            Prepare("RNS", "R", log, progress, WorkerStart);
+            Prepare("RNS", "R", log, tabControl, progress, WorkerStart);
         }
 
         private void WorkerStart(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            aoiLog.Area("WorkerStart()");
+            aoiLog.verbose("WorkerStart()");
             CheckPcbFiles();
             try
             {
                 if (aoiReady)
                 {
                     StartInspection();
+                } else
+                {
+                    aoiLog.warning("WorkerStart() => CheckPcbFiles() => no finalizo correctamente");
                 }
             }
             catch (Exception ex)
             {
-                Log.Stack(this, ex);
+                Log.Stack("WorkerStart()", this, ex);
             }
         }
 
         private void StartInspection() 
         {
-            aoiLog.Area("StartInspection() => Localizando CSV de Inspeccion");
+            aoiLog.verbose("StartInspection() => Localizando CSV de Inspeccion");
 
             // Obtengo archivos CSV en InspectionFolder
             IOrderedEnumerable<FileInfo> csv = FilesHandler.GetFiles("*", aoiConfig.inspectionCsvPath);
             int totalCsv = csv.Count();
 
-            ProgressTotal(totalCsv);
+            aoiWorker.SetProgressTotal(totalCsv);
 
             if (totalCsv > 0)
             {
                 int file_count = 0;
-                aoiLog.Area("+ CSV encontrados: " + totalCsv);
+                aoiLog.info("CSV encontrados: " + totalCsv);
 
                 foreach (FileInfo file in csv)
                 {
@@ -57,13 +60,14 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns
 
                     HandleInspection(file);
 
-                    ProgressInc(file_count);
+                    aoiWorker.SetProgressWorking(file_count);
                 }
-                aoiLog.Area("+ No hay mas CSV");
+
+                aoiLog.log("No hay mas CSV");
             }
             else
             {
-                aoiLog.Area("+ No se encontraron inspecciones.");
+                aoiLog.log("No se encontraron inspecciones.");
             }
         }
     }

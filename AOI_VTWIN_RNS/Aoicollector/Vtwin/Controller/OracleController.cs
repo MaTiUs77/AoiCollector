@@ -22,18 +22,17 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin.Controller
         public bool GetMachines()
         {
             bool success = false;
-            aoi.aoiLog.Area("[ORACLE] Descargando maquinas");
+            aoi.aoiLog.info("Descargando maquinas desde Oracle");
 
             try
             {
                 GetAllMachines();
-                aoi.aoiLog.Area("+ Descarga completa", "info");
+                aoi.aoiLog.log("Descarga completa");
                 success = true;
             }
             catch (Exception ex)
             {
-                aoi.aoiLog.Area(ex.Message, "error");
-                Log.Stack(this, ex);
+                aoi.aoiLog.stack(ex.Message,this, ex);
             }
 
             return success;
@@ -54,7 +53,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin.Controller
                 Machine im = Machine.list.Find(obj => obj.maquina == name);
                 if (im == null)
                 {
-                    aoi.aoiLog.Area("No se encuentra agregada a la base de datos la maquina: " + name, "atencion");
+                    aoi.aoiLog.warning("No se encuentra agregada a la base de datos la maquina: " + name);
                 }
                 else
                 {

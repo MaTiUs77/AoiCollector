@@ -9,7 +9,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500.Controller
 {
     public class OracleQuery
     {
-        public static string ListBlocks(InspectionObject inspectionObj)
+        public static string ListBlocks(InspectionController ictrl)
         {
             string query = @"
             SELECT 
@@ -23,7 +23,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500.Controller
               pos_y <> 0 and
               size_x <> 0 and
               size_y <> 0 and
-              PG_ITEM_ID = " + inspectionObj.vts500_oracle_pg_item_id;
+              PG_ITEM_ID = " + ictrl.vtsOraclePgItemId;
             return query;
         }
 
@@ -89,7 +89,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500.Controller
         }
      
         // Obtiene lista de defectos de inspeccion detallados por referencia
-        public static string ListFaultInfo(InspectionObject inspectionObj)
+        public static string ListFaultInfo(InspectionController ictrl)
         {
             //                    CI.VC_LAST_RESULT_CODE IS NULL OR
 
@@ -115,8 +115,8 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500.Controller
                 REF.CIR_ID = CI.COMP_ID AND
                 CI.INSP_RESULT_CODE != 0 AND
 
-                REF.PG_ITEM_ID = " + inspectionObj.vts500_oracle_pg_item_id + @" AND
-                CI.INSP_ID = " + inspectionObj.vts500_oracle_insp_id;
+                REF.PG_ITEM_ID = " + ictrl.vtsOraclePgItemId + @" AND
+                CI.INSP_ID = " + ictrl.vtsOracleInspId;
 
             //  CASE WHEN CI.VC_LAST_RESULT_CODE = 0 THEN 'FALSO' ELSE 'REAL' END AS resultado
             //  CI.USR_CONFIRM_FLAG  = 1 AND
@@ -132,7 +132,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500.Controller
         }
 
         // Obtiene lista de maquinas
-        public static string ListBlockBarcode(InspectionObject inspectionObj)
+        public static string ListBlockBarcode(InspectionController ictrl)
         {
             string query = @"
                 SELECT
@@ -146,7 +146,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500.Controller
 
                 WHERE
 
-                INSP_ID = " + inspectionObj.vts500_oracle_insp_id;
+                INSP_ID = " + ictrl.vtsOracleInspId;
             return query;
         }
 

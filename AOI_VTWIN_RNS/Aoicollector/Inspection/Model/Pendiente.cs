@@ -14,29 +14,34 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
         public int idPendiente = 0;    // id pendiente en mysql 
         public int idPanel = 0;        // id panel en mysql 
         public int idMaquina;          // id en mysql (maquina)
-        
-        // DATOS EN COMUN
+
         public string programa;
         public string barcode;
         public string endDate;
-
-        // NECESARIO EN VTWIN
         public string programNameId;      // id de programa en oracle 
         public int testMachineId = 0;    // id de maquina en oracle 
 
-        public static void Delete(int idPanel)
+        public static void Delete(InspectionController ictrl)
         {
-            string query = "CALL sp_removePendient(" + idPanel + ")";
+            ictrl.machine.LogBroadcast("debug",
+                string.Format("+ Pendiente.Delete({0}) ", ictrl.barcode)
+            );
+
+            string query = "CALL sp_removePendient(" + ictrl.panelId + ")";
             MySqlConnector sql = new MySqlConnector();
             bool rs = sql.Ejecutar(query);
         }
 
-        public static void Save(InspectionObject inspc, bool insert = true)
+        public static void Save(InspectionController ictrl, bool insert = true)
         {
-            DateTime customDate = DateTime.Parse(inspc.fecha + " " + inspc.hora);
+            DateTime customDate = DateTime.Parse(ictrl.fecha + " " + ictrl.hora);
             if (insert)
             {
-                string query = "CALL sp_addInspectionPendient('" + inspc.idPanel + "', '" + inspc.panelBarcode + "',  '" + customDate.ToString("yyyy-MM-dd HH:mm:ss") + "');";
+                ictrl.machine.LogBroadcast("debug",
+                   string.Format("+ Pendiente.Save({0}) ", ictrl.barcode)
+                );
+
+                string query = "CALL sp_addInspectionPendient('" + ictrl.panelId + "', '" + ictrl.barcode + "',  '" + customDate.ToString("yyyy-MM-dd HH:mm:ss") + "');";
                 MySqlConnector sql = new MySqlConnector();
                 bool rs = sql.Ejecutar(query);
             }

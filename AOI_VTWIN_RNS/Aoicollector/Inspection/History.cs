@@ -36,7 +36,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
             catch (Exception ex)
             {
                 isStackError = true;
-                Log.Stack(this, ex);
+                Log.Stack("SavePanel()", this, ex);
             }
         }
 
@@ -63,7 +63,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
             catch (Exception ex)
             {
                 isStackError = true;
-                Log.Stack(this, ex);
+                Log.Stack("SaveBloque()", this, ex);
             }
         }
 
@@ -85,7 +85,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
             catch (Exception ex)
             {
                 isStackError = true;
-                Log.Stack(this, ex);
+                Log.Stack("SaveBloque()", this, ex);
             }
         }
     }

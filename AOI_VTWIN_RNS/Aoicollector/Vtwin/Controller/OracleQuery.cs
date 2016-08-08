@@ -10,17 +10,17 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin.Controller
     public class OracleQuery
     {
         // Obtiene lista de inspecciones realizadas
-        public static string ListLastInspections(int create_machine_id, string end_date, Pendiente pend = null)
+        public static string ListLastInspections(int createMachineId, string endDate, Pendiente pend = null)
         {
             string filtro = "";
             if (pend == null)
             {
-                DateTime format = DateTime.Parse(end_date);
-                end_date = format.ToString("yyyy-MM-dd HH:mm:ss");
+                DateTime format = DateTime.Parse(endDate);
+                endDate = format.ToString("yyyy-MM-dd HH:mm:ss");
 
                 filtro = @"	
-	                PCI.TEST_MACHINE_ID = " + create_machine_id + @" AND 
-	                PCI.END_DATE > TO_DATE('" + end_date + @"', 'YYYY-MM-DD HH24:MI:SS')  
+	                PCI.TEST_MACHINE_ID = " + createMachineId + @" AND 
+	                PCI.END_DATE > TO_DATE('" + endDate + @"', 'YYYY-MM-DD HH24:MI:SS')  
                 ";
 
             }
@@ -89,7 +89,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin.Controller
         }
 
         // Obtiene lista de defectos de inspeccion detallados por referencia
-        public static string ListFaultInfo(InspectionObject inspectionObj)
+        public static string ListFaultInfo(VtwinPanel panel)
         {
             string query = @"
                 SELECT 
@@ -119,13 +119,13 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin.Controller
 	                CI.SERIAL_NO = FCI.SERIAL_NO  AND
 	                CI.COMPONENT_NO = FCI.COMPONENT_NO AND
 
-	                FCI.TEST_MACHINE_ID = " + inspectionObj.machine.oracle_id + @" AND
-                    FCI.PROGRAM_NAME_ID =  " + inspectionObj.vtwin_program_name_id + @" AND
-                    FCI.SAVED_MACHINE_ID =  " + inspectionObj.vtwin_save_machine_id + @" AND
-                    FCI.REVISION_NO =  " + inspectionObj.vtwin_revision_no + @" AND
-                    FCI.SERIAL_NO =  " + inspectionObj.vtwin_serial_no + @" AND
-                    FCI.LOAD_COUNT =  " + inspectionObj.vtwin_load_count + @" AND 
-                    FCI.PCB_NO =  " + inspectionObj.panelNro + @"
+	                FCI.TEST_MACHINE_ID = " + panel.machine.oracle_id + @" AND
+                    FCI.PROGRAM_NAME_ID =  " + panel.vtwinProgramNameId + @" AND
+                    FCI.SAVED_MACHINE_ID =  " + panel.vtwinSaveMachineId + @" AND
+                    FCI.REVISION_NO =  " + panel.vtwinRevisionNo + @" AND
+                    FCI.SERIAL_NO =  " + panel.vtwinSerialNo + @" AND
+                    FCI.LOAD_COUNT =  " + panel.vtwinLoadCount + @" AND 
+                    FCI.PCB_NO =  " + panel.panelNro + @"
 
                 GROUP BY
 
@@ -163,14 +163,14 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin.Controller
         }
 
         // Obtiene conteo de defectos por inspeccion
-        public static string CountTotalFaultInfo(string mode, int pcb_no, int saved_machine_id, int program_name_id, int revision_no, int serial_no)
+        public static string CountTotalFaultInfo(string mode, int pcbNo, int savedMachineId, int programNameId, int revisionNo, int serialNo)
         {
             string query = "SELECT  COUNT (*) as total  FROM fault_component_info fci " +
-                    " WHERE  FCI.PCB_NO = " + pcb_no +
-                    " AND fci.saved_machine_id = " + saved_machine_id + " " +
-                    " AND FCI.PROGRAM_NAME_ID = " + program_name_id + " " +
-                    " AND FCI.REVISION_NO = " + revision_no + " " +
-                    " AND FCI.SERIAL_NO = " + serial_no;
+                    " WHERE  FCI.PCB_NO = " + pcbNo +
+                    " AND fci.saved_machine_id = " + savedMachineId + " " +
+                    " AND FCI.PROGRAM_NAME_ID = " + programNameId + " " +
+                    " AND FCI.REVISION_NO = " + revisionNo + " " +
+                    " AND FCI.SERIAL_NO = " + serialNo;
 
             switch (mode)
             {

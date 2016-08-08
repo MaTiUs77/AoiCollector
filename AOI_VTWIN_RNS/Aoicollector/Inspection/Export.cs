@@ -14,47 +14,47 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
 {
     public class Export
     {
-        public static bool toDB(string barcode, string op, string line_id, string puesto_id, string linea)
-        {
-            bool sp = false;
+        //public static bool toDB(string barcode, string op, string line_id, string puesto_id, string linea)
+        //{
+        //    bool sp = false;
 
-            if (barcode.Contains("_invalid_"))
-            { 
-                sp = false;
-            }
-            else
-            {
-                string query = @"
-                INSERT INTO
-                [sfcsplus].[dbo].[TRAZA_AOI]
-                (
-                    [Codigo],    
-                    [OP_NRO],    
-                    [Configlinea_id],    
-                    [Puesto_id],    
-                    [Linea],    
-                    [Fecha_insercion]
-                ) VALUES (
-                    '" + barcode + @"',
-                    '" + op + @"',
-                    '" + line_id + @"',
-                    '" + puesto_id + @"',
-                    '" + linea + @"',
-                    CURRENT_TIMESTAMP
-                );
-            ";
-                SqlServerConnector sql = new SqlServerConnector();
-                sp = sql.Ejecutar(query);
-            }
-            return sp;
-        }
+        //    if (barcode.Contains("_invalid_"))
+        //    { 
+        //        sp = false;
+        //    }
+        //    else
+        //    {
+        //        string query = @"
+        //        INSERT INTO
+        //        [sfcsplus].[dbo].[TRAZA_AOI]
+        //        (
+        //            [Codigo],    
+        //            [OP_NRO],    
+        //            [Configlinea_id],    
+        //            [Puesto_id],    
+        //            [Linea],    
+        //            [Fecha_insercion]
+        //        ) VALUES (
+        //            '" + barcode + @"',
+        //            '" + op + @"',
+        //            '" + line_id + @"',
+        //            '" + puesto_id + @"',
+        //            '" + linea + @"',
+        //            CURRENT_TIMESTAMP
+        //        );
+        //    ";
+        //        SqlServerConnector sql = new SqlServerConnector();
+        //        sp = sql.Ejecutar(query);
+        //    }
+        //    return sp;
+        //}
 
         /// <summary>
         /// Guarda el documento XML con la informacion de la inspeccion
         /// </summary>
-        public static void toXML(InspectionObject inspectionObj, BlockBarcode blockBarcode, string path)
+        public static void toXML(InspectionController ictrl, Bloque bloque, string path)
         {
-            string exportPath = Path.Combine(path, inspectionObj.machine.line_barcode + "_smd-" + inspectionObj.machine.linea);
+            string exportPath = Path.Combine(path, ictrl.machine.line_barcode + "_smd-" + ictrl.machine.linea);
 
             DirectoryInfo di = new DirectoryInfo(exportPath);
             if (!di.Exists)
@@ -62,12 +62,12 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
                 Directory.CreateDirectory(di.FullName);
             }
 
-            string new_file = blockBarcode.barcode + "_" + inspectionObj.programa + ".xml";
+            string new_file = bloque.barcode + "_" + ictrl.programa + ".xml";
 
             // Agrego el panel_barcode delante del nombre del archivo, para poder visualizar facilmente los bloques de cada panel 
-            if (inspectionObj.pcbInfo.bloques > 1)
+            if (ictrl.pcbInfo.bloques > 1)
             {
-                new_file = inspectionObj.panelBarcode + "_" + new_file;
+                new_file = ictrl.barcode + "_" + new_file;
             }
 
             #region RUTAS DE CARPETA COMPARTIDA
@@ -83,26 +83,26 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
   
             #region GENERA Y GUARDA XML
             XDocument root;
-            if (blockBarcode.total_errores_reales > 0)
+            if (bloque.totalErroresReales > 0)
             {
                 // Save NG
-                root = XMLElementRoot(inspectionObj, "NG", blockBarcode);
+                root = XMLElementRoot(ictrl, "NG", bloque);
 
                 // Agrega detalles NG
-                XElement ng = XMLElementNG(blockBarcode);
+                XElement ng = XMLElementNG(bloque);
                 root.Root.Element("aoi").Add(ng);
             }
             else
             {
-                if (inspectionObj.pendiente)
+                if (ictrl.pendiente)
                 {
                     // Save PENDIENTE
-                    root = XMLElementRoot(inspectionObj, "PENDIENTE", blockBarcode);
+                    root = XMLElementRoot(ictrl, "PENDIENTE", bloque);
                 }
                 else
                 {
                     // Save OK
-                    root = XMLElementRoot(inspectionObj, "OK", blockBarcode);
+                    root = XMLElementRoot(ictrl, "OK", bloque);
                 }
             }
             root.Save(fullFile);
@@ -112,10 +112,10 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
         /// <summary>
         /// Genera el objeto XML OnTheFly
         /// </summary>      
-        private static XDocument XMLElementRoot(InspectionObject inspectionObj,  string resultado,  BlockBarcode blockBarcode)
+        private static XDocument XMLElementRoot(InspectionController ictrl,  string resultado,  Bloque bloque)
         {
             var EtiquetatoHuman = "";
-            switch (blockBarcode.tipoBarcode)
+            switch (bloque.tipoBarcode)
             {
                 case "E":
                     EtiquetatoHuman = "ETIQUETA";
@@ -136,21 +136,21 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
                     new XAttribute(XNamespace.Xmlns + "xsd", xsd),
                         new XElement("aoi",
                             new XElement("info",
-                                new XElement("linea", "SMD-" + inspectionObj.machine.linea),
-                                new XElement("maquina", inspectionObj.machine.maquina),
-                                new XElement("programa", inspectionObj.programa),
-                                new XElement("total_bloques", inspectionObj.pcbInfo.bloques.ToString()),
-                                new XElement("bloque", blockBarcode.bloqueId),
+                                new XElement("linea", "SMD-" + ictrl.machine.linea),
+                                new XElement("maquina", ictrl.machine.maquina),
+                                new XElement("programa", ictrl.programa),
+                                new XElement("total_bloques", ictrl.pcbInfo.bloques.ToString()),
+                                new XElement("bloque", bloque.bloqueId),
                                 new XElement("resultado", resultado),
-                                new XElement("errores", blockBarcode.total_errores_reales),
-                                new XElement("panel_barcode", inspectionObj.panelBarcode),
-                                new XElement("barcode", blockBarcode.barcode),
+                                new XElement("errores", bloque.totalErroresReales),
+                                new XElement("panel_barcode", ictrl.barcode),
+                                new XElement("barcode", bloque.barcode),
                                 new XElement("tipo_barcode", EtiquetatoHuman),
-                                new XElement("fecha_inspeccion", inspectionObj.fecha),
-                                new XElement("hora_inspeccion", inspectionObj.hora),
-                                new XElement("op", inspectionObj.op),
-                                new XElement("config_linea_id", inspectionObj.lineId),
-                                new XElement("puesto_id", inspectionObj.puestoId)
+                                new XElement("fecha_inspeccion", ictrl.fecha),
+                                new XElement("hora_inspeccion", ictrl.hora),
+                                new XElement("op", ictrl.op),
+                                new XElement("config_linea_id", ictrl.lineId),
+                                new XElement("puesto_id", ictrl.puestoId)
                             )
                         )
                 )
@@ -163,9 +163,9 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
         /// <summary>
         /// Elemento NG de archivo XML
         /// </summary>
-        private static XElement XMLElementNG(BlockBarcode blockBarcode)
+        private static XElement XMLElementNG(Bloque bloque)
         {
-            IEnumerable<Detail> dt = blockBarcode.detailList.Where(o => o.estado == "REAL");
+            IEnumerable<Detail> dt = bloque.detailList.Where(o => o.estado == "REAL");
             XElement NG = new XElement("ng");
 
             #region COMPLETA TAGs

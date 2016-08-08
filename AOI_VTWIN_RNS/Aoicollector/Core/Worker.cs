@@ -16,7 +16,8 @@ namespace AOI_VTWIN_RNS.Aoicollector.Core
         public int timerInterval = 10;
         public ProgressBar progressBar;
         public BackgroundWorker bgWorker = new BackgroundWorker();
-        public int timesExcecuted = 0;
+        public int timesCompleted = 0;
+        public int timesToResetLog = 3;
 
         public DoWorkEventHandler WorkerStart;
 
@@ -39,8 +40,8 @@ namespace AOI_VTWIN_RNS.Aoicollector.Core
             timer.Enabled = true;
             timer.Start();
 
-            aoi.aoiLog.Area("Timer iniciado en: " + aoi.aoiConfig.intervalo + " seg");
-            Core.Log.Sys("Timer de " + aoi.aoiConfig.machineType + " fue iniciado. Intervalo: " + aoi.aoiConfig.intervalo + " seg ");
+            aoi.aoiLog.info("Timer iniciado en: " + aoi.aoiConfig.intervalo + " seg");
+            Log.system.info("Timer de " + aoi.aoiConfig.machineType + " fue iniciado. Intervalo: " + aoi.aoiConfig.intervalo + " seg ");
         }
 
         public void StopTimer()
@@ -51,12 +52,12 @@ namespace AOI_VTWIN_RNS.Aoicollector.Core
                 timer.Stop();
                 timer.Dispose();
                 timer = null;
-                Core.Log.Sys("Se detuvo la ejecucion del timer de la maquina: " + aoi.aoiConfig.machineType, "atencion");
-                aoi.aoiLog.Area("Timer de ejecucion detenido con exito. ", "atencion");
+                Log.system.warning("Se detuvo la ejecucion del timer de la maquina: " + aoi.aoiConfig.machineType);
+                aoi.aoiLog.info("Timer de ejecucion detenido con exito. ");
             }
             else
             {
-                aoi.aoiLog.Area("El timer no se encuentra en ejecucion. ", "atencion");
+                aoi.aoiLog.verbose("El timer no se encuentra en ejecucion. ");
             }
         }
 
@@ -83,7 +84,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Core
                 }
                 else
                 {
-                    aoi.aoiLog.Area("*** Espere, el proceso se encuentra aun en ejecucion");
+                    aoi.aoiLog.debug("*** Espere, el proceso se encuentra aun en ejecucion");
                 }
             }
         }
@@ -104,13 +105,15 @@ namespace AOI_VTWIN_RNS.Aoicollector.Core
         private void WorkerRunCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             progressBar.Value = 0;
-            aoi.aoiLog.Area("----------------------- Operacion completa ---------------------------");
+            aoi.aoiLog.verbose(string.Format("*** Operacion completa | Runs ({0}) ***", timesCompleted));
 
-            if (timesExcecuted >= 100)
+            if (timesCompleted >= timesToResetLog)
             {
-                aoi.aoiLog.AreaReset();
-                timesExcecuted = 0;
+                aoi.aoiLog.reset();
+                timesCompleted = 0;
             }
+
+            timesCompleted++;
         }
 
         private void WorkerProgressChanged(object sender, ProgressChangedEventArgs e)

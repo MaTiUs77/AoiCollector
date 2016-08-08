@@ -17,14 +17,14 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500
 {
     public class VTS500 : Vts500Inspection
     {
-        public VTS500(ListBox log, ProgressBar progress)
+        public VTS500(RichTextBox log, TabControl tabControl, ProgressBar progress)
         {
-            Prepare("VTS500", "V", log, progress, WorkerStart);
+            Prepare("VTS500", "V", log, tabControl, progress, WorkerStart);
         }
 
         private void WorkerStart(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            aoiLog.Area("WorkerStart()");
+            aoiLog.log("WorkerStart()");
  
             try
             {
@@ -35,13 +35,13 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500
             }
             catch (Exception ex)
             {
-                Log.Stack(this, ex);
+                Log.Stack("WorkerStart()",this, ex);
             }
         }
 
         private void StartInspection()
         {
-            aoiLog.Area("StartInspection()");
+            aoiLog.log("StartInspection()");
 
             bool OracleSuccess = false;
             
@@ -50,16 +50,15 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500
             
             if (OracleSuccess)
             {
-                aoiLog.Area("Comenzando analisis de inspecciones");
+                aoiLog.info("Comenzando analisis de inspecciones");
 
                 try
                 {
-                    HandlePendientInspection();
+                    //HandlePendientInspection();
                 }
                 catch (Exception ex)
                 {
-                    aoiLog.Area(ex.Message, "error");
-                    Log.Stack(this, ex);
+                    aoiLog.stack(ex.Message, this, ex);
                 }
 
                 IEnumerable<Machine> oracleMachines = Machine.list.Where(obj => obj.tipo == aoiConfig.machineNameKey);
@@ -69,18 +68,17 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500
                     if (Config.isByPassMode(inspMachine.linea))
                     {
                         // SKIP MACHINE
-                        aoiLog.Area("+ Maquina en ByPass: " + inspMachine.linea);
+                        aoiLog.warning("Maquina en ByPass: " + inspMachine.linea);
                     }
                     else
                     {
                         try
                         {
-                            HandleInspection(inspMachine);
+                            //HandleInspection(inspMachine);
                         }
                         catch (Exception ex)
                         {
-                            aoiLog.Area(ex.Message, "error");
-                            Log.Stack(this, ex);
+                            aoiLog.stack(ex.Message, this, ex);
                         }
                     }
                 }

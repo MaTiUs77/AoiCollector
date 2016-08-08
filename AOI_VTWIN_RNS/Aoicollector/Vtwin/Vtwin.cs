@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.ComponentModel;
 using System.Windows.Forms;
-using System.Threading;
-using System.IO;
 
-using AOI_VTWIN_RNS.Src.Util.Files;
 using AOI_VTWIN_RNS.Aoicollector.Core;
 using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
 using AOI_VTWIN_RNS.Aoicollector.Vtwin.Controller;
@@ -17,14 +12,14 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
 {
     public class VTWIN : VtwinInspection
     {
-        public VTWIN(ListBox log, ProgressBar progress)
+        public VTWIN(RichTextBox log, TabControl tabControl, ProgressBar progress)
         {
-            Prepare("VTWIN", "W", log, progress, WorkerStart);
+            Prepare("VTWIN", "W", log, tabControl, progress, WorkerStart);
         }
 
         private void WorkerStart(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            aoiLog.Area("WorkerStart()");
+            aoiLog.verbose("WorkerStart()");
             CheckPcbFiles();
 
             try
@@ -32,17 +27,20 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
                 if (aoiReady)
                 {
                     StartInspection();
+                } else
+                {
+                    aoiLog.warning("WorkerStart() => CheckPcbFiles() => no finalizo correctamente");
                 }
             }
             catch (Exception ex)
             {
-                Log.Stack(this, ex);
+                aoiLog.stack("WorkerStart()", this, ex);
             }
         }
 
         private void StartInspection()
         {
-            aoiLog.Area("StartInspection()");
+            aoiLog.verbose("StartInspection()");
 
             bool OracleSuccess = false;
 
@@ -51,11 +49,17 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
 
             if (OracleSuccess)
             {
-                aoiLog.Area("Comenzando analisis de inspecciones");
+                aoiLog.info("Comenzando analisis de inspecciones");
 
                 // Lista de maquinas VTWIN
                 IEnumerable<Machine> oracleMachines = Machine.list.Where(obj => obj.tipo == aoiConfig.machineNameKey);
                 List<Machine> endInspect = new List<Machine>();
+
+                // Generacion de tabs segun las maquinas descargadas
+                foreach (Machine inspMachine in oracleMachines.OrderBy(o => int.Parse(o.linea)))
+                {
+                    DynamicTab(inspMachine);
+                }
 
                 try
                 {
@@ -63,8 +67,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
                 }
                 catch (Exception ex)
                 {
-                    aoiLog.Area(ex.Message, "error");
-                    Log.Stack(this, ex);
+                    aoiLog.stack(ex.Message, this, ex);
                 } 
                        
                 #region HandleInspection
@@ -77,49 +80,45 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
                     }
                     else
                     {
-                        // Filtro maquinas en ByPass
-                        if (Config.isByPassMode(inspMachine.linea))
-                        {
-                            // SKIP MACHINE
-                            aoiLog.Area("+ Maquina en ByPass: " + inspMachine.linea);
-                        } else 
-                        {
-                            try
-                            {
-                                HandleInspection(inspMachine);
-                            }
-                            catch (Exception ex)
-                            {
-                                aoiLog.Area(ex.Message, "error");
-                                Log.Stack(this, ex);
-                            }
-                        }
+                        TryInspectionProccess(inspMachine);
                     }
+
+
                 } // end foreach
                 #endregion
 
                 #region MAQUINAS DE PROCESO LENTO AL FINAL
                 foreach (Machine inspMachine in endInspect)
                 {
-                    if (Config.isByPassMode(inspMachine.linea))
-                    {
-                        // SKIP MACHINE
-//                        aoiLog.Area("+ Maquina en ByPass: " + inspMachine.linea);
-                    } else 
-                    {
-                        try
-                        {
-                            HandleInspection(inspMachine);
-                        }
-                        catch (Exception ex)
-                        {
-                            aoiLog.Area(ex.Message, "error");
-                            Log.Stack(this, ex);
-                        }
-                    }
+                    TryInspectionProccess(inspMachine);
                 }
                 #endregion
             }
-        }        
+        }    
+        
+        private void TryInspectionProccess(Machine inspMachine)
+        {
+            if (Config.isByPassMode(inspMachine.linea))
+            {
+                inspMachine.LogBroadcast("warning", 
+                    string.Format("{0} en ByPass {1}", inspMachine.smd, inspMachine.line_barcode)
+                );
+            }
+            else
+            {
+                try
+                {
+                    HandleInspection(inspMachine);
+                }
+                catch (Exception ex)
+                {
+                    inspMachine.log.stack(ex.Message, this, ex);
+                }
+            }
+
+            inspMachine.LogBroadcast("verbose", 
+                string.Format("TryInspectionProccess({0}) Completo", inspMachine.smd)
+            );
+        }
     }
 }

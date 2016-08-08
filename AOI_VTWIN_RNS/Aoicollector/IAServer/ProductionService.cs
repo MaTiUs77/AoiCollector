@@ -31,14 +31,16 @@ namespace AOI_VTWIN_RNS.Aoicollector.IAServer
             return Convert.ToBoolean( active );
         }
 
-        public string SfcsPuestoId()
+        public int SfcsPuestoId()
         {
-            return ReadTag("puesto_id", result.Elements("produccion"));
+            string puestoId = ReadTag("puesto_id", result.Elements("produccion"));
+            return Convert.ToInt32(puestoId);
         }
 
-        public string SfcsLineId()
+        public int SfcsLineId()
         {
-            return ReadTag("line_id", result.Elements("produccion"));
+            string lineId = ReadTag("line_id", result.Elements("produccion"));
+            return Convert.ToInt32(lineId);
         }
     }
 }

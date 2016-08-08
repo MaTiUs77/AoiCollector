@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 
 using AOI_VTWIN_RNS.Src.Database;
+using AOI_VTWIN_RNS.Aoicollector.Core;
 
 namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
 {
@@ -12,12 +13,15 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
     public class Machine
     {
         public static List<Machine> list = new List<Machine>();
+        public RichLog log;
+        public RichLog glog;
 
         public int mysql_id;
         public int oracle_id;
 
         public string maquina;
         public string linea;
+        public string smd;
         public string tipo;
         public string ultima_inspeccion;
         public string line_barcode;
@@ -26,6 +30,13 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
         public string op;
         public bool opActive;
         public bool opDeclara = false;
+
+        public void Ping()
+        {
+            MySqlConnector sql = new MySqlConnector();
+            string query = @"UPDATE  `aoidata`.`maquina` SET  `ping` =  NOW() WHERE  `id` = " + mysql_id + " LIMIT 1;";
+            DataTable sp = sql.Select(query);
+        }
 
         public static void Download()
         {
@@ -55,6 +66,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
                     mac.mysql_id = int.Parse(r["id"].ToString());
                     mac.maquina = r["maquina"].ToString();
                     mac.linea = r["linea"].ToString();
+                    mac.smd = "SMD-"+mac.linea;
                     mac.tipo = r["tipo"].ToString();
                     mac.ultima_inspeccion = r["ultima_inspeccion"].ToString();
                     mac.line_barcode = r["barcode"].ToString();
@@ -62,13 +74,6 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
                     Machine.list.Add(mac);
                 }
             }
-        }
-
-        public static void Ping(int id)
-        {
-            MySqlConnector sql = new MySqlConnector();
-            string query = @"UPDATE  `aoidata`.`maquina` SET  `ping` =  NOW() WHERE  `id` = " + id + " LIMIT 1;";
-            DataTable sp = sql.Select(query);
         }
 
         public static void UpdateInspectionDate(int id, DateTime custom_date)
@@ -102,6 +107,11 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
         public static int Total()
         {
             return list.Count();
+        }
+
+        public void LogBroadcast(string mode, string msg)
+        {
+            log.putLog(glog.putLog(msg, mode), mode);
         }
     }
 }

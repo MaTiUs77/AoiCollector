@@ -12,11 +12,14 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500
 {
     public class Vts500Inspection : AoiController
     {
+        /*
         public void HandleInspection(Machine inspMachine)
         {
             // Dummy date
             DateTime last_oracle_inspection = new DateTime(1, 1, 1);
-            aoiLog.Area("Inspeccionando SMD-" + inspMachine.linea + " | maquina: " + inspMachine.maquina + " | Ultima inspeccion: " + inspMachine.ultima_inspeccion);
+            aoiLog.info("Inspeccionando SMD-" + inspMachine.linea);
+            aoiLog.log("+ Maquina: " + inspMachine.maquina);
+            aoiLog.log("+ Ultima inspeccion: " + inspMachine.ultima_inspeccion);
 
             string query = OracleQuery.ListLastInspections(inspMachine);
             DataTable dt = oracle.Query(query);
@@ -25,22 +28,19 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500
 
             if (totalRows > 0)
             {
-                aoiLog.Area("Se encontraron (" + totalRows + ") inspecciones.");
+                aoiLog.info("Se encontraron (" + totalRows + ") inspecciones.");
                 int count = 0;
 
                 #region CREATE_INSPECTION_OBJECT
                 foreach (DataRow r in dt.Rows)
                 {
-                    // Reinicio inspectionObject
-                    ResetInspection();
-
                     count++;
                     CreateInspectionObject(r, inspMachine);
-                    aoiLog.Area("+ Programa: [" + inspectionObj.programa + "] - Barcode: " + inspectionObj.panelBarcode);
+                    aoiLog.info("Programa: [" + inspectionObj.programa + "] - Barcode: " + inspectionObj.panelBarcode);
 
                     TrazaSave(aoiConfig.xmlExportPath);
-
                     ProgressInc(count);
+
                     // Ultima inspeccion realizada en la maquina ORACLE.
                     last_oracle_inspection = DateTime.Parse(inspectionObj.fecha + " " + inspectionObj.hora);
                 }
@@ -49,22 +49,20 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500
                 {
                     last_oracle_inspection = oracle.GetSysDate();
                 }
+                #endregion
 
-                aoiLog.Area("Actualizando horario de ultima inspeccion: " + last_oracle_inspection.ToString("HH:mm:ss"));
+                aoiLog.log("Actualizando horario de ultima inspeccion: " + last_oracle_inspection.ToString("HH:mm:ss"));
                 if (!Config.debugMode)
                 {
                     Machine.UpdateInspectionDate(inspMachine.mysql_id, last_oracle_inspection);
                 }
-                #endregion
             }
             else
             {
-                aoiLog.Area("No se encontraron inspecciones.");
+                aoiLog.log("No se encontraron inspecciones.");
             }
 
-
             Machine.Ping(inspMachine.mysql_id);
-            aoiLog.Area("");
         }
 
         public void HandlePendientInspection()
@@ -72,7 +70,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500
             List<Pendiente> pendList = Pendiente.Download(aoiConfig.machineNameKey);
             Machine inspMachine = Machine.list.Single(obj => obj.tipo == aoiConfig.machineNameKey);
 
-            aoiLog.Area("Verificando inspecciones pendientes. Total: " + pendList.Count);
+            aoiLog.info("Verificando inspecciones pendientes. Total: " + pendList.Count);
 
             if (pendList.Count > 0)
             {
@@ -96,7 +94,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500
                         if (Config.isByPassMode(inspMachine.linea))
                         {
                             // SKIP MACHINE
-                            aoiLog.Area("+ Maquina en ByPass: " + inspMachine.linea + " PendientMode: STOP");
+                            aoiLog.warning("Maquina en ByPass: " + inspMachine.linea + ", no se analiza modo pendiente");
                         }
                         else
                         {
@@ -105,11 +103,12 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500
                             if (inspectionObj.pendiente)
                             {
                                 // Aun sigue pendiente... no hago nada...
+                                aoiLog.log("Inspeccion pendiente: " + inspectionObj.panelBarcode);
                             }
                             else
                             {
                                 // No esta mas pendiente!!, se realizo la inspeccion!! Guardo datos.
-                                aoiLog.Area("Inspeccion detectada! Barcode: " + inspectionObj.panelBarcode);
+                                aoiLog.log("Inspeccion realizada! Barcode: " + inspectionObj.panelBarcode);
                                 inspectionObj.pendienteDelete = true;
 
                                 TrazaSave(aoiConfig.xmlExportPath);
@@ -120,7 +119,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500
                     }
                     else
                     {
-                        aoiLog.Area("+ Pendiente sin cambios [" + pend.programa + "] Barcode: " + pend.barcode);
+                        aoiLog.log("Pendiente sin cambios [" + pend.programa + "] Barcode: " + pend.barcode);
                     }
                 }
             }
@@ -292,5 +291,6 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500
             }
             return ldet;
         }
+        */
     }
 }

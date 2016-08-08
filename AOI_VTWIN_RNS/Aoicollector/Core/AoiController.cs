@@ -12,23 +12,25 @@ using AOI_VTWIN_RNS.Src.Database;
 using AOI_VTWIN_RNS.Aoicollector.Core;
 using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
 using AOI_VTWIN_RNS.Aoicollector.Inspection;
+using System.Drawing;
 
 namespace AOI_VTWIN_RNS.Aoicollector
 {
-    public class AoiController : InspectionController
+    public class AoiController
     {
+        public bool aoiReady = false;
+        public OracleConnector oracle = new OracleConnector();
         public Config aoiConfig      { get; set; }
         public Worker aoiWorker { get; set; }
-        public Log aoiLog { get; set; }
-
-        public OracleConnector oracle = new OracleConnector();
-
-        public bool aoiReady = false;
+        public RichLog aoiLog { get; set; }
+        public TabControl aoiTabControl { get; set; }
+        public List<RichLog> aoiTabLogList { get; set; }
+//        public InspectionController aoiInsp { get; set; }
 
         public AoiController()
         {
             aoiConfig = new Config();
-            aoiLog = new Log();
+            aoiTabLogList = new List<RichLog>();
             aoiWorker = new Worker(this);
         }
 
@@ -41,76 +43,81 @@ namespace AOI_VTWIN_RNS.Aoicollector
             aoiConfig.dataProgPath = AppConfig.Read(machineType, "dataProg");
             aoiConfig.intervalo = int.Parse(AppConfig.Read(machineType, "intervalo"));
         }
+
         private void LoadWorker(ProgressBar progress, DoWorkEventHandler WorkerStart)
         {
             aoiWorker.timerInterval = aoiConfig.intervalo;
             aoiWorker.progressBar = progress;
             aoiWorker.WorkerStart = new DoWorkEventHandler(WorkerStart);
         }
+
         private void LoadOracle()
         {
             oracle.LoadConfig(aoiConfig.machineType);
             if(oracle.server != null)
             {
-                aoiLog.Area("------------------- Oracle config -----------------------");
-                aoiLog.Area("+ Server: " + oracle.server);
-                aoiLog.Area("+ Service: " + oracle.service);
-                aoiLog.Area("+ Port: " + oracle.port);
-                aoiLog.Area("+ User: " + oracle.user);
-                aoiLog.Area("+ Pass: " + oracle.pass);
-                aoiLog.Area("---------------------------------------------------------");
+                aoiLog.log("------------------- Oracle config -----------------------");
+                aoiLog.log("+ Server: " + oracle.server);
+                aoiLog.log("+ Service: " + oracle.service);
+                aoiLog.log("+ Port: " + oracle.port);
+                aoiLog.log("+ User: " + oracle.user);
+                aoiLog.log("+ Pass: " + oracle.pass);
+                aoiLog.log("---------------------------------------------------------");
             }
         }
 
-        public void Prepare(string machineType, string machineNameKey, ListBox logArea, ProgressBar progress, DoWorkEventHandler WorkerStart)
+        public void Prepare(string machineType, string machineNameKey, RichTextBox logRichTextBox, TabControl tabControl, ProgressBar progress, DoWorkEventHandler WorkerStart)
         {
-            aoiLog.logArea = logArea;
+            aoiLog = new RichLog(logRichTextBox);
+            aoiTabControl = tabControl;
 
             LoadConfig(machineType, machineNameKey);
             LoadWorker(progress, WorkerStart);
             LoadOracle();
             UseCredential();
 
-            aoiLog.Area("Prepare() de " + machineType + " completo");
+            aoiLog.log("Prepare() de " + machineType + " completo");
         }
+
         public void Start(bool forceStart = false)
         {
             if (Config.dbDownloadComplete)
             {
-                aoiLog.Area("Iniciando operaciones");
+                aoiLog.log("Iniciando operaciones");
                 aoiWorker.StartOperation(forceStart);
             }
             else
             {
-                aoiLog.Area("No se pudo descargar informacion del servidor.");
+                aoiLog.warning("No se pudo descargar informacion del servidor.");
+                aoiLog.warning("Re intentando conexion, estado: " + Config.dbDownloadComplete.ToString());
                 Config.dbDownload();
-                aoiLog.Area("Re intentando conexion, estado: "+Config.dbDownloadComplete.ToString());
             }
 
         }
+
         public void Stop()
         {
-            aoiLog.Area("Deteniendo operaciones");
+            aoiLog.log("Deteniendo operaciones");
             aoiWorker.StopTimer();
         }
+
         public bool UseCredential()
         {
             bool complete = false;
             if (Convert.ToBoolean(AppConfig.Read(aoiConfig.machineType, "usar_credencial")))
             {
-                aoiLog.Area("Conectando a: " + AppConfig.Read(aoiConfig.machineType, "server"));
+                aoiLog.info("Ejecutando credencial: " + AppConfig.Read(aoiConfig.machineType, "server"));
                 try
                 {
                     Network.ConnectCredential(aoiConfig.machineType);
-                    aoiLog.Area("+ Credencial ejecutada.");
+                    aoiLog.log("Credencial ejecutada.");
                     complete = true;
 
                 }
                 catch (Exception ex)
                 {
                     complete = false;
-                    aoiLog.Area("+ No fue posible ejecutar la credencial. " + ex.Message, "error");
-                    Log.Stack(this, ex);
+                    aoiLog.stack("No fue posible ejecutar la credencial. " + ex.Message, this, ex);
                 }
             }
             else
@@ -118,7 +125,6 @@ namespace AOI_VTWIN_RNS.Aoicollector
                 complete = true;
             }
 
-            aoiReady = complete;
             return complete;
         }
 
@@ -129,45 +135,106 @@ namespace AOI_VTWIN_RNS.Aoicollector
         {
             bool complete = false;
 
+            aoiLog.verbose("CheckPcbFiles() " + aoiConfig.dataProgPath);
+
             if (UseCredential())
             {
-                aoiLog.Area("Verificando cambios de PCB Files en: " + aoiConfig.dataProgPath);
+                aoiLog.info("Verificando cambios en PCB Files");
                 try
                 {
                     PcbData pcbData = new PcbData(this);
                     bool reload = pcbData.VerifyPcbFiles();
                     if (reload)
                     {
-                        aoiLog.Area("- Recargando lista de PCB Files en memoria");
+                        aoiLog.log("Actualizando lista de PCB Files en memoria");
                         PcbInfo.Download(aoiConfig.machineNameKey);
                     }
-                    aoiLog.Area("+ Verificacion de PCB Files completa");
+                    aoiLog.log("Verificacion de PCB Files completa");
                     complete = true;
                 }
                 catch (Exception ex)
                 {
-                    aoiLog.Area(ex.Message, "error");
-                    Log.Stack(this, ex);
+                    aoiLog.stack(ex.Message, this, ex);
                     complete = false;
                 }
             }
 
+            aoiReady = complete;
             return complete;
         }
 
-        // WORKER ALIAS
-        public void ProgressTotal(int total)
+        public RichLog TabLog(Machine inspMachine)
         {
-            aoiWorker.SetProgressTotal(total);
-        }
-        public void ProgressInc(int current_num)
-        {
-            aoiWorker.SetProgressWorking(current_num);
+            string id = "log" + inspMachine.linea;
+            RichLog rlog = aoiTabLogList.Find(o => o.id.Equals(id));
+            return rlog;
         }
 
-        public void ResetInspection()
+        public void TabLogAll(string msg,IEnumerable<Machine> maquinas)
         {
-            inspectionObj = new InspectionObject();
-        }        
+            foreach (Machine inspMachine in maquinas.OrderBy(o => int.Parse(o.linea)))
+            {
+                string id = "log" + inspMachine.linea;
+                RichLog rlog = aoiTabLogList.Find(o => o.id.Equals(id));
+                rlog.info(msg);
+            }
+           
+        }
+
+        public void DynamicTab(Machine inspMachine)
+        {
+            MethodInvoker makeDyndamicTab = new MethodInvoker(() =>
+            {
+                string id = "log" + inspMachine.linea;
+                string smd = "SMD-" + inspMachine.linea;
+
+                RichLog rlog = aoiTabLogList.Find(o => o.id.Equals(id));
+                if (rlog == null)
+                {
+                    TabPage dynTab = new TabPage();
+                    aoiTabControl.Controls.Add(dynTab);
+                    dynTab.Name = "tab" + id;
+                    dynTab.Text = smd;
+                    dynTab.UseVisualStyleBackColor = true;
+
+                    RichTextBox richTextBoxDyn = new RichTextBox();
+
+                    dynTab.Controls.Add(richTextBoxDyn);
+
+                    richTextBoxDyn.BackColor = Color.Black;
+                    richTextBoxDyn.Cursor = Cursors.IBeam;
+                    richTextBoxDyn.Dock = DockStyle.Fill;
+                    richTextBoxDyn.Font = new Font("Verdana", 9.75F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
+                    richTextBoxDyn.ForeColor = Color.White;
+                    richTextBoxDyn.Name = dynTab.Name + "richTextBox";
+                    richTextBoxDyn.ReadOnly = true;
+                    richTextBoxDyn.Text = "";
+                    richTextBoxDyn.Name = "rich"+id;
+               
+                    RichLog addrlog = new RichLog(richTextBoxDyn);
+                    addrlog.id = id;
+                    addrlog.smd = smd;
+                    aoiTabLogList.Add(addrlog);
+
+                    inspMachine.log = addrlog;
+                    inspMachine.glog = aoiLog;
+                }
+
+            });
+
+            if (aoiTabControl.InvokeRequired)
+            {
+                aoiTabControl.Invoke(makeDyndamicTab);
+            }
+            else
+            {
+                makeDyndamicTab();
+            }
+        }
+
+        public void LogBroadcast(Machine inspMachine, string mode, string msg)
+        {
+            inspMachine.log.putLog(aoiLog.putLog(msg, mode),mode);
+        }
     }
 }

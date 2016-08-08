@@ -99,6 +99,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Aoicollector\Inspection\BarcodeValidator.cs" />
+    <Compile Include="Aoicollector\Inspection\Bloque.cs" />
+    <Compile Include="Aoicollector\Inspection\Model\Revision.cs" />
+    <Compile Include="Aoicollector\Inspection\Panel.cs" />
+    <Compile Include="Aoicollector\Rns\RnsPanel.cs" />
+    <Compile Include="Aoicollector\Vtwin\VtwinPanel.cs" />
+    <Compile Include="Src\Util\Logs\RichLog.cs" />
     <Compile Include="Aoicollector\IAServer\DeclareService.cs" />
     <Compile Include="Aoicollector\IAServer\InspectionService.cs" />
     <Compile Include="Aoicollector\IAServer\ProductionService.cs" />
@@ -107,7 +114,6 @@
     <Compile Include="Aoicollector\Core\Log.cs" />
     <Compile Include="Aoicollector\Core\AoiController.cs" />
     <Compile Include="Aoicollector\Inspection\InspectionController.cs" />
-    <Compile Include="Aoicollector\Inspection\InspectionObject.cs" />
     <Compile Include="Aoicollector\Rns\Controller\InspectionResultFile.cs" />
     <Compile Include="Aoicollector\Rns\Controller\InspectionResultObject.cs" />
     <Compile Include="Aoicollector\Rns\Rns.cs" />
@@ -169,8 +175,7 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Aoicollector\Inspection\BlockBarcode.cs" />
-    <Compile Include="Aoicollector\Inspection\Detail.cs" />
+    <Compile Include="Aoicollector\Inspection\Model\Detail.cs" />
     <Compile Include="Aoicollector\Inspection\Model\Faultcode.cs" />
     <Compile Include="Aoicollector\Inspection\Model\Machine.cs" />
     <Compile Include="Aoicollector\Inspection\Model\PcbInfo.cs" />

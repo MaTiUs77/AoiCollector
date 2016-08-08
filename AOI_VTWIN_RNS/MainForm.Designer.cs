@@ -29,22 +29,22 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.tabMain = new System.Windows.Forms.TabControl();
+            this.allTabs = new System.Windows.Forms.TabControl();
             this.tabRNS = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.prgRns = new System.Windows.Forms.ProgressBar();
-            this.listRns = new System.Windows.Forms.ListBox();
             this.tabVTWIN = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.vtwinTab = new System.Windows.Forms.TabControl();
+            this.vtwinGeneral = new System.Windows.Forms.TabPage();
+            this.vtwinLogGeneral = new System.Windows.Forms.RichTextBox();
             this.prgVtwin = new System.Windows.Forms.ProgressBar();
-            this.listVtwin = new System.Windows.Forms.ListBox();
             this.tabVTS = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.listVts500 = new System.Windows.Forms.ListBox();
             this.prgVts500 = new System.Windows.Forms.ProgressBar();
             this.tabSystem = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.listSystem = new System.Windows.Forms.ListBox();
+            this.systemRichTextBox = new System.Windows.Forms.RichTextBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.rnsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configurarToolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
@@ -73,35 +73,47 @@
             this.byPassToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autoscrollToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ModeAutoScroll_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tabMain.SuspendLayout();
+            this.rnsTab = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.rnsLogGeneral = new System.Windows.Forms.RichTextBox();
+            this.vtsTab = new System.Windows.Forms.TabControl();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.vtsLogGeneral = new System.Windows.Forms.RichTextBox();
+            this.allTabs.SuspendLayout();
             this.tabRNS.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tabVTWIN.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.vtwinTab.SuspendLayout();
+            this.vtwinGeneral.SuspendLayout();
             this.tabVTS.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.tabSystem.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            this.rnsTab.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            this.vtsTab.SuspendLayout();
+            this.tabPage2.SuspendLayout();
             this.SuspendLayout();
             // 
-            // tabMain
+            // allTabs
             // 
-            this.tabMain.Alignment = System.Windows.Forms.TabAlignment.Bottom;
-            this.tabMain.Controls.Add(this.tabRNS);
-            this.tabMain.Controls.Add(this.tabVTWIN);
-            this.tabMain.Controls.Add(this.tabVTS);
-            this.tabMain.Controls.Add(this.tabSystem);
-            this.tabMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabMain.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tabMain.Location = new System.Drawing.Point(0, 24);
-            this.tabMain.Multiline = true;
-            this.tabMain.Name = "tabMain";
-            this.tabMain.Padding = new System.Drawing.Point(10, 2);
-            this.tabMain.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.tabMain.SelectedIndex = 0;
-            this.tabMain.Size = new System.Drawing.Size(852, 356);
-            this.tabMain.TabIndex = 0;
+            this.allTabs.Alignment = System.Windows.Forms.TabAlignment.Bottom;
+            this.allTabs.Controls.Add(this.tabRNS);
+            this.allTabs.Controls.Add(this.tabVTWIN);
+            this.allTabs.Controls.Add(this.tabVTS);
+            this.allTabs.Controls.Add(this.tabSystem);
+            this.allTabs.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.allTabs.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.allTabs.Location = new System.Drawing.Point(0, 24);
+            this.allTabs.Multiline = true;
+            this.allTabs.Name = "allTabs";
+            this.allTabs.Padding = new System.Drawing.Point(10, 2);
+            this.allTabs.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.allTabs.SelectedIndex = 0;
+            this.allTabs.Size = new System.Drawing.Size(852, 356);
+            this.allTabs.TabIndex = 0;
             // 
             // tabRNS
             // 
@@ -119,8 +131,8 @@
             this.tableLayoutPanel2.ColumnCount = 1;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 435F));
+            this.tableLayoutPanel2.Controls.Add(this.rnsTab, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.prgRns, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.listRns, 0, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -139,19 +151,6 @@
             this.prgRns.Size = new System.Drawing.Size(832, 19);
             this.prgRns.TabIndex = 2;
             // 
-            // listRns
-            // 
-            this.listRns.BackColor = System.Drawing.Color.Black;
-            this.listRns.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listRns.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.listRns.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
-            this.listRns.FormattingEnabled = true;
-            this.listRns.ItemHeight = 16;
-            this.listRns.Location = new System.Drawing.Point(3, 3);
-            this.listRns.Name = "listRns";
-            this.listRns.Size = new System.Drawing.Size(832, 295);
-            this.listRns.TabIndex = 1;
-            // 
             // tabVTWIN
             // 
             this.tabVTWIN.Controls.Add(this.tableLayoutPanel1);
@@ -168,16 +167,52 @@
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 371F));
+            this.tableLayoutPanel1.Controls.Add(this.vtwinTab, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.prgVtwin, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.listVtwin, 0, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(838, 326);
             this.tableLayoutPanel1.TabIndex = 1;
+            // 
+            // vtwinTab
+            // 
+            this.vtwinTab.Controls.Add(this.vtwinGeneral);
+            this.vtwinTab.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.vtwinTab.Location = new System.Drawing.Point(3, 3);
+            this.vtwinTab.Name = "vtwinTab";
+            this.vtwinTab.SelectedIndex = 0;
+            this.vtwinTab.Size = new System.Drawing.Size(832, 295);
+            this.vtwinTab.TabIndex = 2;
+            // 
+            // vtwinGeneral
+            // 
+            this.vtwinGeneral.Controls.Add(this.vtwinLogGeneral);
+            this.vtwinGeneral.Location = new System.Drawing.Point(4, 22);
+            this.vtwinGeneral.Name = "vtwinGeneral";
+            this.vtwinGeneral.Padding = new System.Windows.Forms.Padding(3);
+            this.vtwinGeneral.Size = new System.Drawing.Size(824, 269);
+            this.vtwinGeneral.TabIndex = 0;
+            this.vtwinGeneral.Text = "General";
+            this.vtwinGeneral.UseVisualStyleBackColor = true;
+            // 
+            // vtwinLogGeneral
+            // 
+            this.vtwinLogGeneral.BackColor = System.Drawing.Color.Black;
+            this.vtwinLogGeneral.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.vtwinLogGeneral.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.vtwinLogGeneral.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.vtwinLogGeneral.ForeColor = System.Drawing.Color.White;
+            this.vtwinLogGeneral.Location = new System.Drawing.Point(3, 3);
+            this.vtwinLogGeneral.Name = "vtwinLogGeneral";
+            this.vtwinLogGeneral.ReadOnly = true;
+            this.vtwinLogGeneral.Size = new System.Drawing.Size(818, 263);
+            this.vtwinLogGeneral.TabIndex = 7;
+            this.vtwinLogGeneral.Text = "";
             // 
             // prgVtwin
             // 
@@ -186,19 +221,6 @@
             this.prgVtwin.Name = "prgVtwin";
             this.prgVtwin.Size = new System.Drawing.Size(832, 19);
             this.prgVtwin.TabIndex = 1;
-            // 
-            // listVtwin
-            // 
-            this.listVtwin.BackColor = System.Drawing.Color.Black;
-            this.listVtwin.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listVtwin.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.listVtwin.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
-            this.listVtwin.FormattingEnabled = true;
-            this.listVtwin.ItemHeight = 16;
-            this.listVtwin.Location = new System.Drawing.Point(3, 3);
-            this.listVtwin.Name = "listVtwin";
-            this.listVtwin.Size = new System.Drawing.Size(832, 295);
-            this.listVtwin.TabIndex = 0;
             // 
             // tabVTS
             // 
@@ -215,7 +237,7 @@
             // 
             this.tableLayoutPanel3.ColumnCount = 1;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.Controls.Add(this.listVts500, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.vtsTab, 0, 0);
             this.tableLayoutPanel3.Controls.Add(this.prgVts500, 0, 1);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 3);
@@ -225,19 +247,6 @@
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanel3.Size = new System.Drawing.Size(838, 326);
             this.tableLayoutPanel3.TabIndex = 1;
-            // 
-            // listVts500
-            // 
-            this.listVts500.BackColor = System.Drawing.Color.Black;
-            this.listVts500.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listVts500.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.listVts500.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
-            this.listVts500.FormattingEnabled = true;
-            this.listVts500.ItemHeight = 16;
-            this.listVts500.Location = new System.Drawing.Point(3, 3);
-            this.listVts500.Name = "listVts500";
-            this.listVts500.Size = new System.Drawing.Size(832, 295);
-            this.listVts500.TabIndex = 0;
             // 
             // prgVts500
             // 
@@ -262,7 +271,7 @@
             // 
             this.tableLayoutPanel4.ColumnCount = 1;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel4.Controls.Add(this.listSystem, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.systemRichTextBox, 0, 0);
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
@@ -271,18 +280,19 @@
             this.tableLayoutPanel4.Size = new System.Drawing.Size(838, 326);
             this.tableLayoutPanel4.TabIndex = 3;
             // 
-            // listSystem
+            // systemRichTextBox
             // 
-            this.listSystem.BackColor = System.Drawing.Color.Black;
-            this.listSystem.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listSystem.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.listSystem.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.listSystem.FormattingEnabled = true;
-            this.listSystem.ItemHeight = 16;
-            this.listSystem.Location = new System.Drawing.Point(3, 3);
-            this.listSystem.Name = "listSystem";
-            this.listSystem.Size = new System.Drawing.Size(832, 320);
-            this.listSystem.TabIndex = 1;
+            this.systemRichTextBox.BackColor = System.Drawing.Color.Black;
+            this.systemRichTextBox.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.systemRichTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.systemRichTextBox.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.systemRichTextBox.ForeColor = System.Drawing.Color.White;
+            this.systemRichTextBox.Location = new System.Drawing.Point(3, 3);
+            this.systemRichTextBox.Name = "systemRichTextBox";
+            this.systemRichTextBox.ReadOnly = true;
+            this.systemRichTextBox.Size = new System.Drawing.Size(832, 320);
+            this.systemRichTextBox.TabIndex = 4;
+            this.systemRichTextBox.Text = "";
             // 
             // menuStrip1
             // 
@@ -501,12 +511,82 @@
             this.ModeAutoScroll_ToolStripMenuItem.Text = "Activado";
             this.ModeAutoScroll_ToolStripMenuItem.Click += new System.EventHandler(this.ModeAutoScroll_ToolStripMenuItem_Click);
             // 
+            // rnsTab
+            // 
+            this.rnsTab.Controls.Add(this.tabPage1);
+            this.rnsTab.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rnsTab.Location = new System.Drawing.Point(3, 3);
+            this.rnsTab.Name = "rnsTab";
+            this.rnsTab.SelectedIndex = 0;
+            this.rnsTab.Size = new System.Drawing.Size(832, 295);
+            this.rnsTab.TabIndex = 3;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.rnsLogGeneral);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(824, 269);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "General";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // rnsLogGeneral
+            // 
+            this.rnsLogGeneral.BackColor = System.Drawing.Color.Black;
+            this.rnsLogGeneral.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.rnsLogGeneral.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rnsLogGeneral.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rnsLogGeneral.ForeColor = System.Drawing.Color.White;
+            this.rnsLogGeneral.Location = new System.Drawing.Point(3, 3);
+            this.rnsLogGeneral.Name = "rnsLogGeneral";
+            this.rnsLogGeneral.ReadOnly = true;
+            this.rnsLogGeneral.Size = new System.Drawing.Size(818, 263);
+            this.rnsLogGeneral.TabIndex = 6;
+            this.rnsLogGeneral.Text = "";
+            // 
+            // vtsTab
+            // 
+            this.vtsTab.Controls.Add(this.tabPage2);
+            this.vtsTab.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.vtsTab.Location = new System.Drawing.Point(3, 3);
+            this.vtsTab.Name = "vtsTab";
+            this.vtsTab.SelectedIndex = 0;
+            this.vtsTab.Size = new System.Drawing.Size(832, 295);
+            this.vtsTab.TabIndex = 3;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.vtsLogGeneral);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(824, 269);
+            this.tabPage2.TabIndex = 0;
+            this.tabPage2.Text = "General";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // vtsLogGeneral
+            // 
+            this.vtsLogGeneral.BackColor = System.Drawing.Color.Black;
+            this.vtsLogGeneral.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.vtsLogGeneral.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.vtsLogGeneral.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.vtsLogGeneral.ForeColor = System.Drawing.Color.White;
+            this.vtsLogGeneral.Location = new System.Drawing.Point(3, 3);
+            this.vtsLogGeneral.Name = "vtsLogGeneral";
+            this.vtsLogGeneral.ReadOnly = true;
+            this.vtsLogGeneral.Size = new System.Drawing.Size(818, 263);
+            this.vtsLogGeneral.TabIndex = 8;
+            this.vtsLogGeneral.Text = "";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(852, 380);
-            this.Controls.Add(this.tabMain);
+            this.Controls.Add(this.allTabs);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
@@ -514,17 +594,23 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "AOI COLLECTOR - Creado por Matias Flores  / 2014 - 2016";
             this.Load += new System.EventHandler(this.Form1_Load);
-            this.tabMain.ResumeLayout(false);
+            this.allTabs.ResumeLayout(false);
             this.tabRNS.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tabVTWIN.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
+            this.vtwinTab.ResumeLayout(false);
+            this.vtwinGeneral.ResumeLayout(false);
             this.tabVTS.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tabSystem.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.rnsTab.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.vtsTab.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -532,7 +618,7 @@
 
         #endregion
 
-        private System.Windows.Forms.TabControl tabMain;
+        private System.Windows.Forms.TabControl allTabs;
         private System.Windows.Forms.TabPage tabRNS;
         private System.Windows.Forms.TabPage tabVTWIN;
         private System.Windows.Forms.MenuStrip menuStrip1;
@@ -543,12 +629,8 @@
         private System.Windows.Forms.TabPage tabVTS;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         public System.Windows.Forms.ProgressBar prgVts500;
-        private System.Windows.Forms.ListBox listVtwin;
-        private System.Windows.Forms.ListBox listRns;
-        private System.Windows.Forms.ListBox listVts500;
         private System.Windows.Forms.TabPage tabSystem;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
-        private System.Windows.Forms.ListBox listSystem;
         private System.Windows.Forms.ToolStripMenuItem rnsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem configurarToolStripMenuItem3;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem5;
@@ -576,6 +658,16 @@
         private System.Windows.Forms.ToolStripMenuItem byPassToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem autoscrollToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ModeAutoScroll_ToolStripMenuItem;
+        private System.Windows.Forms.RichTextBox systemRichTextBox;
+        private System.Windows.Forms.TabControl vtwinTab;
+        private System.Windows.Forms.TabPage vtwinGeneral;
+        private System.Windows.Forms.RichTextBox vtwinLogGeneral;
+        private System.Windows.Forms.TabControl rnsTab;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.RichTextBox rnsLogGeneral;
+        private System.Windows.Forms.TabControl vtsTab;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.RichTextBox vtsLogGeneral;
     }
 }
 

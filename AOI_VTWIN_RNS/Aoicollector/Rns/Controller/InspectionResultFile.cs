@@ -15,13 +15,14 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns.Controller
     class InspectionResultFile
     {
         public RnsInspection rnsi;
+        public RnsPanel panel;
 
         // Salto de linea en archivo InspectionResult.txt
         private char FILAS = '\n';
 
-        public InspectionResultFile(RnsInspection _rnsi)
+        public InspectionResultFile(RnsPanel panel)
         {
-            rnsi = _rnsi;
+            this.panel = panel;
         }
 
         #region PRIVATE
@@ -72,72 +73,70 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns.Controller
         /// </summary>
         /// <param name="insp">Inspection object</param>
         /// <returns></returns>
-        public List<BlockBarcode> GetBlockBarcodes()
+        public List<Bloque> GetBlockBarcodes()
         {
-            List<BlockBarcode> blockData = new List<BlockBarcode>();
+            List<Bloque> bloques = new List<Bloque>();
 
             // Formateo la carpeta al tipo: "RVS-1234" y agrego al programa un comodin " * " 
-            string RVS_filter = rnsi.inspectionObj.maquina.Replace("VT-RNS", "RVS");
+            string RVS_filter = panel.maquina.Replace("VT-RNS", "RVS");
             string InspectionPath = Directory.GetParent(rnsi.aoiConfig.inspectionCsvPath).Parent.FullName;
             string InspeccionResultFolder = Path.Combine(InspectionPath, RVS_filter);
             InspeccionResultFolder = Path.Combine(InspeccionResultFolder, "InspectionResult");
 
-            int first = rnsi.inspectionObj.csvFile.IndexOf(rnsi.inspectionObj.programa); //Busca el nombre del progarma en el nombre del archivo
-            int last = rnsi.inspectionObj.csvFile.LastIndexOf("_0_"); // Hasta _0_
+            int first = panel.csvFile.IndexOf(panel.programa); //Busca el nombre del progarma en el nombre del archivo
+            int last = panel.csvFile.LastIndexOf("_0_"); // Hasta _0_
             //El nombre de la carpeta de InspectionResult deberia ser
             if (last >= 0)
             {
-                rnsi.inspectionObj.csvFileInspectionResultPath = String.Concat(rnsi.inspectionObj.csvFile.Substring(first, last - first), "_0_");
+                panel.csvFileInspectionResultPath = String.Concat(panel.csvFile.Substring(first, last - first), "_0_");
             }
             else {
-                Log.Sys("GetBlockBarcodes() " + rnsi.inspectionObj.pcbInfo.programa + " no fue posible encontrar la ruta de InspectionResult", "error");
+                Log.system.error("GetBlockBarcodes() " + panel.pcbInfo.programa + " no fue posible encontrar la ruta de InspectionResult");
             }
             // Busco en la carpeta InspectionResult el programa correspondiente a la maquina.
-            DirectoryInfo programFolder = FilesHandler.GetFolders(rnsi.inspectionObj.csvFileInspectionResultPath + "*" + "InspectionResult", InspeccionResultFolder).FirstOrDefault();
+            DirectoryInfo programFolder = FilesHandler.GetFolders(panel.csvFileInspectionResultPath + "*" + "InspectionResult", InspeccionResultFolder).FirstOrDefault();
 
             if (programFolder != null)
             {
                 // Busco la inspeccion realizada para este CSV.
-                string InspectionResultFilter = rnsi.inspectionObj.maquina + "*" + rnsi.inspectionObj.csvDateCreate.ToString("yyyyMMdd") + rnsi.inspectionObj.csvDateCreate.ToString("HHmmss");
+                string InspectionResultFilter = panel.maquina + "*" + panel.csvDateCreate.ToString("yyyyMMdd") + panel.csvDateCreate.ToString("HHmmss");
                 DirectoryInfo InspectionFolderForCsv = FilesHandler.GetFolders(InspectionResultFilter, programFolder.FullName).FirstOrDefault();
                 if (InspectionFolderForCsv != null)
                 {
-                    blockData = GetBarcodes(InspectionFolderForCsv);
+                    bloques = GetBloquesFromInspectionResultFile(InspectionFolderForCsv);
 
-                    if (blockData.Count == 0)
+                    if (bloques.Count == 0)
                     {
-                        string barcode = rnsi.inspectionObj.panelBarcode;
-                        List<int> posibleBlockId = rnsi.inspectionObj.detailList.Select(o => o.bloqueId).Distinct().ToList();
+                        string barcode = panel.barcode;
+                        List<int> posibleBlockId = panel.detailList.Select(o => o.bloqueId).Distinct().ToList();
                         string blockId = "1";
                         if(posibleBlockId.Count>0)
                         {
                             blockId = posibleBlockId.First().ToString();
                         }
 
-                        BlockBarcode bk = new BlockBarcode();
+                        Bloque bk = new Bloque(barcode);
                         bk.bloqueId = int.Parse(blockId);
-                        bk.barcode = barcode;
-                        bk.validateBarcode();
-                        blockData.Add(bk);
+                        bloques.Add(bk);
                     }
 
-                    return blockData;
+                    return bloques;
                 }
                 else
                 {
-                    rnsi.aoiLog.Area("Barcode: (" + rnsi.inspectionObj.panelBarcode + ") - No se encontro: " + InspectionResultFilter, "atencion");
+                    rnsi.aoiLog.warning("Barcode: (" + panel.barcode + ") - No se encontro: " + InspectionResultFilter);
                 }
             }
             else
             {
-                rnsi.aoiLog.Area("Barcode: (" + rnsi.inspectionObj.panelBarcode + ") - No se localizo la carpeta de inspeccion: " + RVS_filter + " de " + rnsi.inspectionObj.csvFileInspectionResultPath, "atencion");
+                rnsi.aoiLog.warning("Barcode: (" + panel.barcode + ") - No se localizo la carpeta de inspeccion: " + RVS_filter + " de " + panel.csvFileInspectionResultPath);
             }
-            return blockData;
+            return bloques;
         }
 
-        public List<BlockBarcode> GetBarcodes(DirectoryInfo InspectionFile)
+        protected List<Bloque> GetBloquesFromInspectionResultFile(DirectoryInfo InspectionFile)
         {
-            List<BlockBarcode> blockData = new List<BlockBarcode>();
+            List<Bloque> bloques = new List<Bloque>();
 
             string fileUrl = InspectionFile.FullName + @"\InspectionResult.txt";
             if (File.Exists(fileUrl))
@@ -147,7 +146,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns.Controller
 
                 if (pcbinfo == null)
                 {
-                    rnsi.aoiLog.Area("No fue posible conseguir PCINFO de " + fileUrl, "atencion");
+                    rnsi.aoiLog.warning("No fue posible conseguir PCINFO de " + fileUrl);
                 }
                 else
                 {
@@ -160,19 +159,17 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns.Controller
                             string barcode = DictionaryKeyValue("szBlockBarcode", bar);
                             string block = DictionaryKeyValue("nComponentBlockNo", bar);
 
-                            BlockBarcode bk = new BlockBarcode();
+                            Bloque bk = new Bloque(barcode);
                             bk.bloqueId = int.Parse(block);
-                            bk.barcode = barcode;
-                            bk.validateBarcode();        
-                            blockData.Add(bk);
+                            bloques.Add(bk);
                         }
                     }
                 }
             }
-            return blockData;
+            return bloques;
         }
         
-        public string DictionaryKeyValue(string key, InspectionResultObject obj)
+        protected string DictionaryKeyValue(string key, InspectionResultObject obj)
         {
             string rt = obj.value.Where(o => o.Key == key).FirstOrDefault().Value;
             return rt;

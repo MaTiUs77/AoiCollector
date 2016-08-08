@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Windows.Forms;
 
-using AOI_VTWIN_RNS.Src.Config;
 using AOI_VTWIN_RNS.Src.Database;
 using AOI_VTWIN_RNS.Aoicollector.Core;
 using AOI_VTWIN_RNS.Aoicollector.Rns;
 using AOI_VTWIN_RNS.Aoicollector.Vtwin;
 using AOI_VTWIN_RNS.Aoicollector.Vts500;
-using AOI_VTWIN_RNS.Aoicollector.IAServer;
-using System.Collections;
-using System.Xml.Linq;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace AOI_VTWIN_RNS
 {
@@ -29,15 +23,16 @@ namespace AOI_VTWIN_RNS
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Log.logSystem = listSystem;
-
             // Carga configuracion de AppConfig
             MySqlConnector.LoadConfig();
             SqlServerConnector.LoadConfig();
 
-            rns = new RNS(listRns, prgRns);
-            vtwin = new VTWIN(listVtwin, prgVtwin); 
-            vts500 = new VTS500(listVts500, prgVts500);
+            Log.system= new RichLog(systemRichTextBox);
+
+            rns = new RNS(rnsLogGeneral, rnsTab,  prgRns);
+            vtwin = new VTWIN(vtwinLogGeneral, vtwinTab,prgVtwin); 
+            vts500 = new VTS500(vtsLogGeneral, vtsTab, prgVts500);
+
 
             if (Config.dbDownload())
             {
@@ -60,9 +55,9 @@ namespace AOI_VTWIN_RNS
                     //Evento.alerta("El modo 'autostart' no esta activo, el sistema no iniciara automaticamente los procesos!");
                 }
             }
-
         }
         #endregion
+        
 
         #region RNS MENU
         private void RnsMenu_Iniciar(object sender, EventArgs e)
@@ -80,7 +75,7 @@ namespace AOI_VTWIN_RNS
         }
         private void RnsMenu_clear(object sender, EventArgs e)
         {
-            listRns.Items.Clear();
+            rns.aoiLog.reset();
         }
         #endregion
 
@@ -106,7 +101,7 @@ namespace AOI_VTWIN_RNS
         }
         private void VtwinMenu_clear(object sender, EventArgs e)
         {
-            listVtwin.Items.Clear();
+            vtwin.aoiLog.reset();
         }
         #endregion
 
@@ -132,7 +127,7 @@ namespace AOI_VTWIN_RNS
         }
         private void Vts500Menu_clear(object sender, EventArgs e)
         {
-            listVts500.Items.Clear();
+            vts500.aoiLog.reset();
         }
         #endregion
 
