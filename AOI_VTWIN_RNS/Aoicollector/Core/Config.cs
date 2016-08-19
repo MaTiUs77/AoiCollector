@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
 using AOI_VTWIN_RNS.Src.Config;
+using System.Threading;
 
 namespace AOI_VTWIN_RNS.Aoicollector.Core
 {
     public class Config
     {
-        public static bool debugMode = false;
+        public static bool downloading = false;
+        public static bool debugMode = true;
 
         public string machineType       { get; set; }
         public string machineNameKey    { get; set; }
@@ -57,6 +59,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Core
         {
             #region DESCARGA INFORMACION DE MYSQL
             Log.system.info("Iniciando descarga de datos MySql");
+
             try
             {            
                 Faultcode.Download();
@@ -67,15 +70,16 @@ namespace AOI_VTWIN_RNS.Aoicollector.Core
                 Log.system.info("Maquinas: " + Machine.Total());
                 Log.system.info("PcbInfo: " + PcbInfo.Total());
 
-                Config.dbDownloadComplete = true;
+                dbDownloadComplete = true;
             }
             catch (Exception ex)
             {
+                dbDownloadComplete = false;
                 Log.system.error(ex.Message);
             }
             #endregion
 
-            return Config.dbDownloadComplete;
+            return dbDownloadComplete;
         }
     }
 }

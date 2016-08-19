@@ -20,3 +20,7 @@ C:\Users\Core\Desktop\VISUALSTUDIO\AOI\AOI_VTWIN_RNS\obj\x64\Release\AOI_VTWIN_R
 C:\Users\Core\Desktop\VISUALSTUDIO\AOI\AOI_VTWIN_RNS\obj\x64\Release\AOI_VTWIN_RNS.application
 C:\Users\Core\Desktop\VISUALSTUDIO\AOI\AOI_VTWIN_RNS\obj\x64\Release\AOI_VTWIN_RNS.exe
 C:\Users\Core\Desktop\VISUALSTUDIO\AOI\AOI_VTWIN_RNS\obj\x64\Release\AOI_VTWIN_RNS.pdb
+C:\Users\Core\Desktop\VISUALSTUDIO\AOI\AOI_VTWIN_RNS\bin\x64\Release\Newtonsoft.Json.dll
+C:\Users\Core\Desktop\VISUALSTUDIO\AOI\AOI_VTWIN_RNS\bin\x64\Release\Newtonsoft.Json.xml
+C:\Users\Core\Desktop\VISUALSTUDIO\AOI\AOI_VTWIN_RNS\bin\x64\Release\IAServer.dll
+C:\Users\Core\Desktop\VISUALSTUDIO\AOI\AOI_VTWIN_RNS\bin\x64\Release\IAServer.pdb

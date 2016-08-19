@@ -4,111 +4,123 @@ using System.Data;
 using AOI_VTWIN_RNS.Aoicollector.Core;
 using AOI_VTWIN_RNS.Src.Database;
 using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
+using System.Threading.Tasks;
 using AOI_VTWIN_RNS.Aoicollector.IAServer;
 
 namespace AOI_VTWIN_RNS.Aoicollector.Inspection
 {
     public class InspectionController : Panel
     {
+        /// <summary>
+        /// La placa que llego a TrazaSave, no se encuentra pendiente de inspeccion.
+        /// Antes de guardar los datos de inspeccion en IAServer es preciso verificar si la OP se encuentra ACTIVA, y si 
+        /// no se completo la OP
+        /// </summary>
+        /// <param name="path"></param>
         public void TrazaSave(string path)
         {
             history = new History();
-            InspectionService inspectionService = new InspectionService();
+            PanelService panelService = new PanelService();
 
-            #region GUARDA PANEL CON ETIQUETA FISICA
+            // Solo proceso si la etiqueta es FISICA, las etiquetas virtuales no se aceptan mas
             if (tipoBarcode.Equals("E"))
             {
-                inspectionService = SavePanel();
-            }
-            else
-            {
-                machine.LogBroadcast("warning", 
-                    string.Format("+ Etiqueta virtual {0} en {1} | Maquina: {2}", barcode, programa, machine.maquina)
+                machine.LogBroadcast("notify",
+                   string.Format("+ Aoi: {0} | Inspector: {1} | Falsos: {3} | Reales: {4} | Pendiente: {2}",
+                       revisionAoi,
+                       revisionIns,
+                       pendiente,
+                       totalErroresFalsos,
+                       totalErroresReales
+                   )
                 );
-            }
-            #endregion
 
-            // Proceso si el service se ejecuto, y tengo idPanel desde service, o desde un nuevo insert
-            if (panelId > 0)
-            {
-                // Si ejecuto correctamente el service continuo
-                if (inspectionService.hasResponse)
+                if(!pendiente)
                 {
-                    op = inspectionService.AssignedOp();
-
-                    machine.LogBroadcast("info", 
-                        string.Format("+ OP Asignada {0}", op)
-                    );
-
-                    // Obtengo datos de produccion de aoi
-                    ProductionService productionService = GetProductionInfoFromIAServer();
-
-                    if (productionService.hasResponse)
+                    // Obtiene datos de produccion de la linea
+                    machine.GetProductionInfoFromIAServer();
+                    if(machine.service.exception == null)
                     {
-                        if (machine.op.Equals(string.Empty))
+                        // Solo si la OP se encuentra activa, procedo
+                        if (machine.service.result.produccion.wip.active)
+                        {
+                            // Verifico que la OP tenga placas restantes
+                            panelService = PanelHandlerService();
+
+                            if (panelId > 0 && panelService.exception == null && machine.service.exception == null)
+                            {
+                               
+                                #region SAVE BLOCKS
+                                // Verifico que la OP del panel inspeccionado, corresponda a la OP configurada en produccion
+                                if (op == machine.service.result.produccion.op)
+                                {
+                                    SaveBlocks(path);
+                                }
+                                else
+                                {
+                                    machine.LogBroadcast("warning",
+                                        string.Format("+ El panel {0} esta registrado con {1}, es diferente de {2} en produccion",
+                                        barcode,
+                                        op,
+                                        machine.service.result.produccion.op)
+                                    );
+                                }
+                                #endregion
+                            }
+                        } else
                         {
                             machine.LogBroadcast("warning",
-                                string.Format("+ El panel {0} esta registrado con {1}, pero la produccion no definio OP ", barcode, op)
+                                string.Format("+ La {0} definida en produccion, no se encuentra activa!, se cancela la operacion", op)
                             );
                         }
-                        else
-                        {
-                            // Verifico que la OP del panel inspeccionado, corresponda a la OP configurada en produccion
-                            // Ya que si difiere, los datos de PuestoId y LineId van a ser incorrectos en scfs 
-                            if (op == machine.op)
-                            {
-                                SaveBlocks(path);
-                            }
-                            else
-                            {
-                                machine.LogBroadcast("warning",
-                                    string.Format("+ El panel {0} esta registrado con {1}, es diferente de {1} en produccion", barcode, op, machine.op)
-                                );
-                            }
-                        }
-                    }
-                    else
-                    {
-                        machine.LogBroadcast("warning", 
-                            string.Format("+ No se pudo obtener datos de produccion de {0} ", barcode)
-                        );
-                    }
-                }
-                else
+                    }                    
+                } else
                 {
-                    Log.system.warning(barcode + " en " + programa + " | " + machine.maquina + " | No se ejecuto el service de inspeccion correctamente");
+                    machine.LogBroadcast("warning",
+                        string.Format("+ El panel {0} se encuentra en estado PENDIENTE de inspeccion, se cancela la operacion", barcode)
+                    );
                 }
-            }
-            else
+            } else
             {
-                Log.system.warning(barcode + " en " + programa + " | " + machine.maquina + " | El panel no tiene ID");
+                machine.LogBroadcast("warning", 
+                    string.Format("+ Etiqueta virtual {0} en {1} | Maquina: {2}, se cancela la operacion", barcode, programa, machine.maquina)
+                );
             }
         }
 
-
-        /// <summary>
-        /// Inserta o actualiza el panel en la base de datos
-        /// </summary>
-        /// <param name="insp"></param>
-        private InspectionService SavePanel()
+        private PanelService PanelHandlerService()
         {
-            // Por defecto se realiza un update y no se encuentra pendiente
-            string spMode = "update";
+            PanelService panelService = GetBarcodeInfoFromIAServer();
 
-            // Verifica si existe el barcode en paneles o en bloques. en tal caso retorna ID PANEL
-            InspectionService inspectionService = GetBarcodeInfoFromIAServer();
+            return panelService;
+        }
 
-            #region ESTABLECE MODO INSERT, SI EL PANEL NO EXISTE, Y DEFINE SI SE ENCUENTRA EN MODO PENDIENTE
-            if (panelId == 0)
-            {
-                spMode = "insert";
-            } 
-            #endregion
+        private PanelService SavePanel()
+        {
+            // Verifica si existe el barcode IAServer y retorna ID PANEL
+            PanelService panelService = GetBarcodeInfoFromIAServer();
 
             // Solo proceso si el servicio respondio sin problemas
             #region INSERTAR O ACTUALIZA DATOS DE PANEL
-            if (inspectionService.hasResponse)
+            if (panelService.exception == null)
             {
+                if(machine.service.result.produccion.cogiscan.Equals("T"))
+                {
+                    machine.LogBroadcast("info",
+                        string.Format("+ Validando ruta de cogiscan")
+                    );
+
+                    if (panelService.result.cogiscan.product.attributes.operation.Equals("AOI"))
+                    {
+
+                    } else
+                    {
+                        machine.LogBroadcast("warning",
+                            string.Format("+ El panel {0} no se encuentra en la ruta AOI", barcode)
+                        );
+                    }
+                }
+
                 machine.LogBroadcast("debug", 
                     string.Format("+ Modo: {0}", spMode)
                 );
@@ -162,7 +174,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
                 if(spMode == "insert")
                 {
                     machine.LogBroadcast("debug", "+ Actualizando datos desde service");
-                    inspectionService = GetBarcodeInfoFromIAServer();
+                    panelService = GetBarcodeInfoFromIAServer();
                 }
             } else
             {
@@ -173,13 +185,9 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
             #endregion
 
             // Retorno ID, 0 si no pudo insertar, o actualizar
-            return inspectionService;
+            return panelService;
         }
 
-        /// <summary>
-        /// Procesa cada bloque del panel
-        /// </summary>
-        /// <param name="path"></param>
         private void SaveBlocks(string path)
         {
             machine.LogBroadcast("info",
@@ -227,26 +235,23 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
                         }
                         #endregion
 
-                        if (machine.opDeclara)
+                        if (machine.service.result.produccion.declara.Equals("1"))
                         {
                             machine.LogBroadcast("notify",
-                                string.Format("+ {0} declarar con {1}", bloque.barcode,machine.op)
-                            );
+                                string.Format("+ {0} declarar con {1}", 
+                                bloque.barcode,
+                                machine.service.result.produccion.op
+                            ));
                             //Trazabilidad traza = new Trazabilidad();
                             //traza.declareIfNeeded(blockBarcode.barcode);
                         }
-
-                        //Export.toXML(inspectionObj, blockBarcode, path);
                     }
-                } 
-                
-                
+                }
+
+                Export.toXML(this, bloque, path);
             }
         }
 
-        /// <summary>
-        /// Guarda los detalles de la inspeccion por cada bloque
-        /// </summary>
         private void SaveDetail(int id_inspeccion_bloque, Bloque bloque)
         {
             machine.LogBroadcast("verbose",
@@ -264,67 +269,5 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
             history.SaveDetalle(id_inspeccion_bloque);
         }
 
-        /// <summary>
-        /// Obtiene datos de panel desde el webservice
-        /// </summary>
-        /// <returns>InspectionService</returns>
-        private InspectionService GetBarcodeInfoFromIAServer()
-        {
-            InspectionService inspectionService = new InspectionService();
-
-            try
-            {
-                inspectionService.GetInspectionInfo(barcode);
-                panelId = inspectionService.IdPanel();
-
-                inspectionService.hasResponse = true;
-
-                machine.LogBroadcast("debug",
-                    string.Format("+ GetBarcodeInfoFromIAServer({0}) => OK ", barcode)
-                );
-            }
-            catch (Exception ex)
-            {
-                machine.log.stack(
-                    string.Format("+ GetBarcodeInfoFromIAServer({0}) ", barcode
-                ), this, ex);
-            }
-
-            return inspectionService;
-        }
-
-        /// <summary>
-        /// Obtiene datos de produccion de aoi desde el webservice
-        /// </summary>
-        /// <returns></returns>
-        private ProductionService GetProductionInfoFromIAServer()
-        {
-            ProductionService productionService = new ProductionService();
-            try
-            {
-                productionService.GetAoiProduction(machine.line_barcode);
-
-                machine.op = productionService.Op();
-                machine.opActive = productionService.Active();
-                machine.opDeclara = productionService.Declara();
-
-                puestoId = productionService.SfcsPuestoId();
-                lineId = productionService.SfcsLineId();
-
-                productionService.hasResponse = true;
-
-                machine.LogBroadcast("debug",
-                    string.Format("+ GetProductionInfoFromIAServer({0}) => OK", barcode)
-                );
-            }
-            catch (Exception ex)
-            {
-                machine.log.stack(
-                    string.Format("+ GetProductionInfoFromIAServer({0})", barcode
-                ), this, ex);
-            }
-
-            return productionService;
-        }
     }
 }

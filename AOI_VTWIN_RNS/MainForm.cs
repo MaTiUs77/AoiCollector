@@ -6,6 +6,9 @@ using AOI_VTWIN_RNS.Aoicollector.Core;
 using AOI_VTWIN_RNS.Aoicollector.Rns;
 using AOI_VTWIN_RNS.Aoicollector.Vtwin;
 using AOI_VTWIN_RNS.Aoicollector.Vts500;
+using System.Threading.Tasks;
+using AOI_VTWIN_RNS.Src.Config;
+using IAServerServiceDll;
 
 namespace AOI_VTWIN_RNS
 {
@@ -19,22 +22,57 @@ namespace AOI_VTWIN_RNS
         public MainForm()
         {
             InitializeComponent();
-        }
+        }        
+
+//        private async void Method()
+//        {
+//            Console.WriteLine("*********** Method LongTask ");
+//            await Task.Run(() => RunEventBasedExample());
+
+////            int res = await Task.FromResult<int>(LongTask(barcode));
+
+//            Console.WriteLine("*********** Method Complete ");
+
+//            MessageBox.Show("Complete ") ;
+//        }
+
+//        private static void RunEventBasedExample()
+//        {
+//            AutoMonitor monitor = new AutoMonitor();
+
+//            SubaruObserver subaruObserver = new SubaruObserver(monitor);
+
+//            IEnumerable<Auto> autos = new AutoRepository().GetAutos();
+//            foreach (Auto auto in autos)
+//            {
+//                monitor.auto = auto;
+//            }
+//        }
+
 
         private void Form1_Load(object sender, EventArgs e)
+        {
+            InitializeApp();            
+        }
+        #endregion
+
+        private async void InitializeApp()
         {
             // Carga configuracion de AppConfig
             MySqlConnector.LoadConfig();
             SqlServerConnector.LoadConfig();
 
-            Log.system= new RichLog(systemRichTextBox);
+            Log.system = new RichLog(systemRichTextBox);
 
-            rns = new RNS(rnsLogGeneral, rnsTab,  prgRns);
-            vtwin = new VTWIN(vtwinLogGeneral, vtwinTab,prgVtwin); 
+            rns = new RNS(rnsLogGeneral, rnsTab, prgRns);
+            vtwin = new VTWIN(vtwinLogGeneral, vtwinTab, prgVtwin);
             vts500 = new VTS500(vtsLogGeneral, vtsTab, prgVts500);
 
+            IAServerService.url = AppConfig.Read("SERVICE", "url");
+            
+            bool downloaded = await Task.Run(() => Config.dbDownload());
 
-            if (Config.dbDownload())
+            if (downloaded)
             {
                 // Envio la linea 14 a la ultima posicion de la lista de maquinas a inspeccionar
                 // Por algun motivo demora mas que el resto en procesar las inspecciones
@@ -56,9 +94,7 @@ namespace AOI_VTWIN_RNS
                 }
             }
         }
-        #endregion
         
-
         #region RNS MENU
         private void RnsMenu_Iniciar(object sender, EventArgs e)
         {

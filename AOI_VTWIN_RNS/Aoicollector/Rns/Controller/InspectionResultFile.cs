@@ -20,9 +20,10 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns.Controller
         // Salto de linea en archivo InspectionResult.txt
         private char FILAS = '\n';
 
-        public InspectionResultFile(RnsPanel panel)
+        public InspectionResultFile(RnsPanel panel, RnsInspection rnsi)
         {
             this.panel = panel;
+            this.rnsi = rnsi;
         }
 
         #region PRIVATE
@@ -89,9 +90,10 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns.Controller
             if (last >= 0)
             {
                 panel.csvFileInspectionResultPath = String.Concat(panel.csvFile.Substring(first, last - first), "_0_");
+                panel.machine.LogBroadcast("debug", string.Format("+ Buscando carpeta de InspectionResult: {0}", panel.csvFileInspectionResultPath));
             }
             else {
-                Log.system.error("GetBlockBarcodes() " + panel.pcbInfo.programa + " no fue posible encontrar la ruta de InspectionResult");
+                panel.machine.LogBroadcast("warning", string.Format("+ No fue posible encontrar la ruta de InspectionResult"));
             }
             // Busco en la carpeta InspectionResult el programa correspondiente a la maquina.
             DirectoryInfo programFolder = FilesHandler.GetFolders(panel.csvFileInspectionResultPath + "*" + "InspectionResult", InspeccionResultFolder).FirstOrDefault();
@@ -103,6 +105,8 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns.Controller
                 DirectoryInfo InspectionFolderForCsv = FilesHandler.GetFolders(InspectionResultFilter, programFolder.FullName).FirstOrDefault();
                 if (InspectionFolderForCsv != null)
                 {
+                    panel.machine.LogBroadcast("debug", string.Format("+ Ruta de inspeccion localizada ({0}) | InspectionResult: {1}", panel.barcode, panel.csvFileInspectionResultPath));
+
                     bloques = GetBloquesFromInspectionResultFile(InspectionFolderForCsv);
 
                     if (bloques.Count == 0)
@@ -124,12 +128,12 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns.Controller
                 }
                 else
                 {
-                    rnsi.aoiLog.warning("Barcode: (" + panel.barcode + ") - No se encontro: " + InspectionResultFilter);
+                    panel.machine.LogBroadcast("warning", string.Format("Barcode: ({0}) - No se localizo el CSV de inspeccion | Filtro: {1}", panel.barcode, InspectionResultFilter));
                 }
             }
             else
             {
-                rnsi.aoiLog.warning("Barcode: (" + panel.barcode + ") - No se localizo la carpeta de inspeccion: " + RVS_filter + " de " + panel.csvFileInspectionResultPath);
+                panel.machine.LogBroadcast("warning", string.Format("Barcode: ({0}) - No se localizo la carpeta de inspeccion: {1} de {2}", panel.barcode , RVS_filter, panel.csvFileInspectionResultPath));
             }
             return bloques;
         }

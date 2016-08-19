@@ -46,6 +46,43 @@ namespace AOI_VTWIN_RNS.Aoicollector.Core
             return segmentList;
         }
 
+        private string LibraryName(string content)
+        {
+            MatchCollection idLibrary = Regex.Matches(content, @"(\[PARTS-(.*)\]\r\n(.*)\r\n(?<library>\w+))");
+            string libraryName = "";
+            foreach (Match mc in idLibrary)
+            {
+                GroupCollection gr = mc.Groups;
+                libraryName = gr["library"].Value;
+            }
+
+            return libraryName;
+        }
+
+        private int EtiquetasEnPrograma(string content)
+        {
+            MatchCollection match = Regex.Matches(content, @"(2DBL_\d+)");
+            int etiquetas = 0;
+            foreach (Match mc in match)
+            {
+                etiquetas++;
+            }
+
+            return etiquetas;
+        }
+
+        private int EtiquetaPcbIdEnPrograma(string content)
+        {
+            MatchCollection match = Regex.Matches(content, @"(2DBD_\d+)");
+            int etiquetas = 0;
+            foreach (Match mc in match)
+            {
+                etiquetas++;
+            }
+
+            return etiquetas;
+        }
+
         /// <summary>
         /// Verifica y actualiza si es necesario la informacion de todas las PCB de VTWIN y RNS
         /// </summary>
@@ -63,6 +100,11 @@ namespace AOI_VTWIN_RNS.Aoicollector.Core
                 int countPcb = 0;
                 foreach (FileInfo pcb in pcbList)
                 {
+
+                    //if (pcb.Name.Equals("NT1010E-M-BOT-SBAST-LR.pcb"))
+                    //{
+                    //    countPcb = 12344;
+                    //}
                     countPcb++;
 
                     string fechaModificacion = pcb.LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss");
@@ -159,6 +201,22 @@ namespace AOI_VTWIN_RNS.Aoicollector.Core
             int totalBloques = buildSegmentos.Count;
             string segmentos = string.Join(",", buildSegmentos.ToArray());
 
+            string libraryName = LibraryName(pcbContent);
+            int totalEtiquetas = EtiquetasEnPrograma(pcbContent);
+            int totalPcbId = EtiquetaPcbIdEnPrograma(pcbContent);
+
+            // No hay etiquetas en bloques, pero si tengo etiqueta de pcb id 
+            if (totalEtiquetas == 0 && totalPcbId > 0)
+            {
+                totalEtiquetas = 1;
+
+                // Probablemente se trate de una placa secundaria si tiene varios bloques
+                if(totalBloques > 1)
+                {
+                    pcbInfo.secundaria = 1;
+                }
+            }
+
             aoi.aoiLog.verbose("-- Actualizando informacion de: " + pcb.Name);
 
             pcbInfo.programa = pcb.Name;
@@ -166,6 +224,8 @@ namespace AOI_VTWIN_RNS.Aoicollector.Core
             pcbInfo.segmentos = segmentos;
             pcbInfo.hash = newHash;
             pcbInfo.fechaModificacion = fechaModificacion;
+            pcbInfo.libreria = libraryName;
+            pcbInfo.etiquetas = totalEtiquetas;
 
             PcbInfo.Update(pcbInfo);
         }

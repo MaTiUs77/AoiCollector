@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
 using System.IO;
+using AOI_VTWIN_RNS.Aoicollector.IAServer;
+using System.Threading.Tasks;
 
 namespace AOI_VTWIN_RNS.Aoicollector.Inspection
 {
@@ -12,10 +14,8 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
         public int panelNro = 0;
 
         public int panelId = 0;
-
         public string op;
-        public int puestoId;
-        public int lineId;
+
         public string maquina;
         public string programa;
         public int totalBloques;
@@ -34,6 +34,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
 
         public bool pendiente = false;
         public bool pendienteDelete = false;
+        public string spMode = "update";
 
         // RNS
         public string csvFile;
@@ -71,6 +72,58 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
 
             // Analiza el panel general
             MakeRevision();
+        }
+
+        /// <summary>
+        /// Obtiene datos de panel desde el webservice
+        /// </summary>
+        /// <returns>InspectionService</returns>
+        public PanelService GetBarcodeInfoFromIAServer()
+        {
+            machine.LogBroadcast("verbose",
+                string.Format("+ Verificando datos de barcode desde IAServer ({0})", barcode)
+            );
+
+            PanelService panelService = new PanelService();
+            panelService.GetInspectionInfo(barcode);
+            if (panelService.exception == null)
+            {
+                if (panelService.result.panel != null)
+                {
+                    panelId = panelService.result.panel.id;
+                    op = panelService.result.panel.inspected_op;                   
+
+                    machine.LogBroadcast("notify",
+                        string.Format("+ OP Asignada: {1} | Panel ID: ({0})", panelId, op)
+                    );
+                }
+                else
+                {
+                    machine.LogBroadcast("warning",
+                        string.Format("+ El panel no fue registrado en IAServer ({0})", barcode)
+                    );
+                }
+            }
+            else
+            {
+                machine.log.stack(
+                    string.Format("+ Stack Error en la verificacion de panel en IAServer ({0}) ", barcode
+                ), this, panelService.exception);
+            }
+
+            if (panelId == 0)
+            {
+                spMode = "insert";
+            }
+
+            return panelService;
+        }
+
+        // LLAMADA EN FASE BETA, necesita testing, pero en modo async podria aumentar mucho la velocidad de inspeccion
+        private async Task<PanelService> AsyncGetBarcodeInfoFromIAServer()
+        {
+            PanelService panelService = await Task.Run(() => GetBarcodeInfoFromIAServer());
+            return panelService;
         }
     }
 }

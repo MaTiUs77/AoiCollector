@@ -17,7 +17,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Core
         public ProgressBar progressBar;
         public BackgroundWorker bgWorker = new BackgroundWorker();
         public int timesCompleted = 0;
-        public int timesToResetLog = 3;
+        public int timesToResetLog = 50;
 
         public DoWorkEventHandler WorkerStart;
 

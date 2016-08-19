@@ -23,10 +23,11 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns
         public RnsPanel(FileInfo fileInfo, RnsInspection _rnsInspection)
         {
             rnsi = _rnsInspection;
-            CreateInspectionObject(fileInfo);
+            csvFilePath = fileInfo;
+            CreateInspectionObject();
         }
 
-        private void CreateInspectionObject(FileInfo fileInfo)
+        private void CreateInspectionObject()
         {
             DataTable contenidoCsv = null;
 
@@ -63,8 +64,9 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns
                     maquina = info[5].ToString().Replace("\"", "").Trim();
                     programa = info[7].ToString().Replace("\"", "").Trim();
 
-
                     barcode = info[36].ToString().Replace("\"", "").Trim();
+
+                    //BarcodeValidate();
 
                     string panelNroReemp = info[38].ToString().Replace("\"", "").Trim();
                     if (!panelNroReemp.Equals(""))
@@ -75,13 +77,13 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns
 
                     if (!barcode.Equals(""))
                     {
-                        //BlockBarcode.validateBarcode(aoiInsp.inspectionObj);
-
                         // Adjunto informacion de maquina
                         machine = Machine.list.Where(obj => obj.maquina == maquina).FirstOrDefault();
                         if (machine == null)
                         {
-                            rnsi.aoiLog.warning("No existe la maquina: " + maquina + " en la base de datos MySQL");
+                            machine.LogBroadcast("warning",
+                                string.Format("No existe la maquina: {0} en la base de datos MySQL", machine.maquina)
+                            );
                         }
                         else
                         {
@@ -89,10 +91,6 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns
 
                             machine.LogBroadcast("info",
                                 string.Format("{0} | Maquina {1} | Ultima inspeccion {2}", machine.smd, machine.line_barcode, machine.ultima_inspeccion)
-                            );
-
-                            machine.LogBroadcast("info",
-                               string.Format("Programa: [{0}] - Barcode: {1}", programa, barcode)
                             );
 
                             // Adjunto informacion del PCB usado para inspeccionar, contiene numero de bloques y block_id entre otros datos.
@@ -107,9 +105,13 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns
 
                             if (!maquina.Contains("PT"))
                             {
-                                InspectionResultFile inspResult = new InspectionResultFile(this);
+                                InspectionResultFile inspResult = new InspectionResultFile(this,rnsi);
                                 bloqueList = inspResult.GetBlockBarcodes();
                             }
+
+                            machine.LogBroadcast("info",
+                               string.Format("Programa: [{0}] | Barcode: {1} | Etiquetas: {2} | Secundaria: {3}", programa, barcode, pcbInfo.etiquetas, pcbInfo.secundaria)
+                            );
 
                             MakeRevisionToAll();
 

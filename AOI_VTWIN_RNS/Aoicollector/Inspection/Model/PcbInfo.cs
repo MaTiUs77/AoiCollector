@@ -22,6 +22,10 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
         public string tipoMaquina = "";
         public string hash = "";
         public string fechaModificacion = "";
+        public string libreria = "";
+        public int etiquetas = 0;
+        public int etiquetasPcbId = 0;
+        public int secundaria = 0;
 
         public static string Hash(string _filePath)
         {
@@ -57,7 +61,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
             }
 
             MySqlConnector sql = new MySqlConnector();
-            DataTable query = sql.Select("select id,nombre,programa,bloques,segmentos,tipo_maquina,hash,DATE_FORMAT(fecha_modificacion,'%Y-%m-%d %H:%i:%s') as fecha_modificacion from aoidata.pcb_data " + filtroMaquina);
+            DataTable query = sql.Select("select id,nombre,programa,bloques,segmentos,tipo_maquina,hash,DATE_FORMAT(fecha_modificacion,'%Y-%m-%d %H:%i:%s') as fecha_modificacion,libreria,etiquetas,secundaria from aoidata.pcb_data " + filtroMaquina);
             if (sql.rows)
             {
                 foreach (DataRow r in query.Rows)
@@ -71,6 +75,18 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
                     n.tipoMaquina = r["tipo_maquina"].ToString();
                     n.hash = r["hash"].ToString();
                     n.fechaModificacion = r["fecha_modificacion"].ToString();
+                    n.etiquetas = int.Parse(r["etiquetas"].ToString());
+                    string sec = r["secundaria"].ToString();
+                    if(sec.ToLower().Equals("false"))
+                    {
+                        n.secundaria = 0;
+                    }
+
+                    if (sec.ToLower().Equals("true"))
+                    {
+                        n.secundaria = 1;
+                    }
+                    n.libreria = r["secundaria"].ToString();
                     PcbInfo.list.Add(n);
                 }
             }
@@ -79,7 +95,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
         public static bool Update(PcbInfo pcb)
         {
             MySqlConnector sql = new MySqlConnector();
-            string query = "UPDATE aoidata.pcb_data SET bloques = '" + pcb.bloques + "',segmentos = '" + pcb.segmentos + "',hash = '" + pcb.hash + "',fecha_modificacion = '" + pcb.fechaModificacion + "' WHERE id = '" + pcb.id + "' limit 1";
+            string query = "UPDATE aoidata.pcb_data SET bloques = '" + pcb.bloques + "',segmentos = '" + pcb.segmentos + "',hash = '" + pcb.hash + "',fecha_modificacion = '" + pcb.fechaModificacion + "' ,libreria = '" + pcb.libreria + "',etiquetas = '" + pcb.etiquetas + "', secundaria = '" + pcb.secundaria+ "' WHERE id = '" + pcb.id + "' limit 1";
             bool rs = sql.Ejecutar(query);
             if (rs)
             {

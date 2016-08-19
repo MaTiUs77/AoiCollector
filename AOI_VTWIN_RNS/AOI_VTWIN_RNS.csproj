@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AOI_VTWIN_RNS</RootNamespace>
     <AssemblyName>AOI_VTWIN_RNS</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <TargetFrameworkProfile>
@@ -28,11 +28,11 @@
     <UpdateUrl>\\ush-nt-3\v1\Users\INSAUT\PLANTA_3\TECNICOS_3\Programacion\Software\Matias\AoiCollector\</UpdateUrl>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>2</ApplicationRevision>
+    <ApplicationRevision>3</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
-    <BootstrapperEnabled>false</BootstrapperEnabled>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -43,6 +43,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -54,6 +55,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>
     </DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>icono.ico</ApplicationIcon>
@@ -61,6 +63,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <PlatformTarget>x64</PlatformTarget>
     <OutputPath>bin\x64\Debug\</OutputPath>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <PlatformTarget>x64</PlatformTarget>
@@ -68,6 +71,7 @@
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>46F1D11ADC1BB42DD8AF5E8F949AB0CA6631BA0D</ManifestCertificateThumbprint>
@@ -79,10 +83,17 @@
     <GenerateManifests>true</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="IAServer">
+      <HintPath>..\..\IAServer\IAServer\IAServer\bin\Release\IAServer.dll</HintPath>
+    </Reference>
     <Reference Include="MySql.Data, Version=6.6.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL" />
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Oracle.DataAccess, Version=4.112.3.0, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\app\Core\product\11.2.0\odp.net\bin\4\Oracle.DataAccess.dll</HintPath>
@@ -99,17 +110,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Src\Service\ServiceJson.cs" />
+    <Compile Include="Src\Service\ServiceXml.cs" />
     <Compile Include="Aoicollector\Inspection\BarcodeValidator.cs" />
     <Compile Include="Aoicollector\Inspection\Bloque.cs" />
     <Compile Include="Aoicollector\Inspection\Model\Revision.cs" />
     <Compile Include="Aoicollector\Inspection\Panel.cs" />
     <Compile Include="Aoicollector\Rns\RnsPanel.cs" />
     <Compile Include="Aoicollector\Vtwin\VtwinPanel.cs" />
+    <Compile Include="ComoditySample.cs" />
     <Compile Include="Src\Util\Logs\RichLog.cs" />
-    <Compile Include="Aoicollector\IAServer\DeclareService.cs" />
     <Compile Include="Aoicollector\IAServer\InspectionService.cs" />
     <Compile Include="Aoicollector\IAServer\ProductionService.cs" />
-    <Compile Include="Aoicollector\IAServer\IAServer.cs" />
     <Compile Include="Aoicollector\Core\Worker.cs" />
     <Compile Include="Aoicollector\Core\Log.cs" />
     <Compile Include="Aoicollector\Core\AoiController.cs" />
@@ -188,7 +200,6 @@
     <Compile Include="Forms\LineFilter.Designer.cs">
       <DependentUpon>LineFilter.cs</DependentUpon>
     </Compile>
-    <Compile Include="Src\Service\Service.cs" />
     <Compile Include="Settings.cs" />
     <EmbeddedResource Include="Forms\Mysql_FormConfiguration.resx">
       <DependentUpon>Mysql_FormConfiguration.cs</DependentUpon>
@@ -232,6 +243,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -243,6 +255,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>

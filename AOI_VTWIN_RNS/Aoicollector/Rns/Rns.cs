@@ -67,7 +67,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns
             }
             else
             {
-                aoiLog.log("No se encontraron inspecciones.");
+                aoiLog.notify("No se encontraron inspecciones.");
             }
         }
     }

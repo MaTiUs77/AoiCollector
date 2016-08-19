@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using System.IO;
+using System.Xml.Serialization;
 
 namespace AOI_VTWIN_RNS.Src.Service
 {
-    class Service 
+    public class ServiceXml
     {
         /// <summary>
         /// Realiza el pedido del service, retorna string XML 
@@ -16,7 +17,8 @@ namespace AOI_VTWIN_RNS.Src.Service
         /// <returns>XML</returns>
         public static IEnumerable<XElement> Consume(string route)
         {
-            XDocument xml = Http.Http.LoadXMLFromUrl(route + "?xml");
+            string xmlData = Http.Http.LoadXMLFromUrl(route + "?xml");
+            XDocument xml = XDocument.Parse(xmlData);
             return xml.Descendants("service");
         }
 

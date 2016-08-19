@@ -1,46 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Xml.Linq;
+﻿
+using AOI_VTWIN_RNS.Src.Config;
+using IAServerServiceDll;
+using IAServerServiceDll.Mapper;
+using System;
 
-namespace AOI_VTWIN_RNS.Aoicollector.IAServer
+namespace AOI_VTWIN_RNS.Aoicollector
 {
-    class ProductionService : IAServer
+    public class ProductionService
     {
-        public IEnumerable<XElement> GetAoiProduction(string aoibarcode)
+        public ProduccionMapper result;
+        public Exception exception;
+
+        public ProduccionMapper GetProductionInfo(string aoibarcode)
         {
-            string path = url + "production/" + aoibarcode;
-            result = Consume(path);
+            try
+            {
+                IAServerService ias = new IAServerService();
+                result = ias.GetProductionInfo(aoibarcode);
+                if (ias.error != null)
+                {
+                    throw ias.error;
+                }
+                else
+                {
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
+            }
 
             return result;
-        }
 
-        public string Op()
-        {
-            return ReadTag("op", result.Elements("produccion"));
-        }
-
-        public bool Declara()
-        {
-            int declara = Convert.ToInt32(ReadTag("declara", result.Elements("sfcs")));
-            return Convert.ToBoolean(declara);
-        }
-
-        public bool Active()
-        {
-            int active = Convert.ToInt32(ReadTag("active", result.Elements("wipot")));
-            return Convert.ToBoolean( active );
-        }
-
-        public int SfcsPuestoId()
-        {
-            string puestoId = ReadTag("puesto_id", result.Elements("produccion"));
-            return Convert.ToInt32(puestoId);
-        }
-
-        public int SfcsLineId()
-        {
-            string lineId = ReadTag("line_id", result.Elements("produccion"));
-            return Convert.ToInt32(lineId);
         }
     }
 }

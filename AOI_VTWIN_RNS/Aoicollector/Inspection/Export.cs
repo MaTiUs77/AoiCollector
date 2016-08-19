@@ -106,6 +106,9 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
                 }
             }
             root.Save(fullFile);
+
+            ictrl.machine.LogBroadcast("debug", string.Format("+ Exportando XML: {0} en {1}", new_file, exportPath));
+
             #endregion
         }
 
@@ -149,8 +152,8 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
                                 new XElement("fecha_inspeccion", ictrl.fecha),
                                 new XElement("hora_inspeccion", ictrl.hora),
                                 new XElement("op", ictrl.op),
-                                new XElement("config_linea_id", ictrl.lineId),
-                                new XElement("puesto_id", ictrl.puestoId)
+                                new XElement("config_linea_id", ictrl.machine.service.result.produccion.sfcs.line_id),
+                                new XElement("puesto_id", ictrl.machine.service.result.produccion.sfcs.puesto_id)
                             )
                         )
                 )

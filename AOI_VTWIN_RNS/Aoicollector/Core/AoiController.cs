@@ -13,6 +13,7 @@ using AOI_VTWIN_RNS.Aoicollector.Core;
 using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
 using AOI_VTWIN_RNS.Aoicollector.Inspection;
 using System.Drawing;
+using System.Threading.Tasks;
 
 namespace AOI_VTWIN_RNS.Aoicollector
 {
@@ -79,7 +80,7 @@ namespace AOI_VTWIN_RNS.Aoicollector
             aoiLog.log("Prepare() de " + machineType + " completo");
         }
 
-        public void Start(bool forceStart = false)
+        public async void Start(bool forceStart = false)
         {
             if (Config.dbDownloadComplete)
             {
@@ -89,10 +90,16 @@ namespace AOI_VTWIN_RNS.Aoicollector
             else
             {
                 aoiLog.warning("No se pudo descargar informacion del servidor.");
-                aoiLog.warning("Re intentando conexion, estado: " + Config.dbDownloadComplete.ToString());
-                Config.dbDownload();
-            }
+                aoiLog.verbose("Re intentando conexion...");
 
+                bool downloaded = await Task.Run(() => Config.dbDownload());
+
+                if (downloaded)
+                {
+                    aoiLog.log("Iniciando operaciones");
+                    aoiWorker.StartOperation(forceStart); 
+                }
+            }
         }
 
         public void Stop()
@@ -163,24 +170,6 @@ namespace AOI_VTWIN_RNS.Aoicollector
             return complete;
         }
 
-        public RichLog TabLog(Machine inspMachine)
-        {
-            string id = "log" + inspMachine.linea;
-            RichLog rlog = aoiTabLogList.Find(o => o.id.Equals(id));
-            return rlog;
-        }
-
-        public void TabLogAll(string msg,IEnumerable<Machine> maquinas)
-        {
-            foreach (Machine inspMachine in maquinas.OrderBy(o => int.Parse(o.linea)))
-            {
-                string id = "log" + inspMachine.linea;
-                RichLog rlog = aoiTabLogList.Find(o => o.id.Equals(id));
-                rlog.info(msg);
-            }
-           
-        }
-
         public void DynamicTab(Machine inspMachine)
         {
             MethodInvoker makeDyndamicTab = new MethodInvoker(() =>
@@ -234,7 +223,14 @@ namespace AOI_VTWIN_RNS.Aoicollector
 
         public void LogBroadcast(Machine inspMachine, string mode, string msg)
         {
-            inspMachine.log.putLog(aoiLog.putLog(msg, mode),mode);
+            inspMachine.log.putLog(aoiLog.putLog(msg, mode, true),mode,false);
         }
+
+        //public void LogBroadcast(Machine inspMachine, string mode, string msg)
+        //{
+        //    RichLog rlog = aoiTabLogList.Find(o => o.id.Equals(id));
+
+        //    inspMachine.log.putLog(aoiLog.putLog(msg, mode, true), mode, false);
+        //}
     }
 }

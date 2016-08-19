@@ -1,34 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Xml.Linq;
+﻿using AOI_VTWIN_RNS.Src.Config;
+using IAServerServiceDll;
+using IAServerServiceDll.Mapper;
+using System;
 
 namespace AOI_VTWIN_RNS.Aoicollector.IAServer
 {
-    class InspectionService : IAServer
+    public class PanelService 
     {
-        /// <summary>
-        /// Datos de inspeccion de panel
-        /// </summary>
-        /// <param name="barcode"></param>
-        /// <returns>IEnumerable<XElement></returns>
-        public IEnumerable<XElement> GetInspectionInfo(string barcode)
+        public PanelMapper result;
+        public Exception exception;
+
+        public PanelMapper GetInspectionInfo(string barcode)
         {
-            string path = url + barcode;
-            result = Consume(path);
+            try
+            {
+                IAServerService ias = new IAServerService();
+                result = ias.GetInspectionInfo(barcode);
+                if (ias.error != null)
+                {
+                    throw ias.error;
+                }
+                else
+                {
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
+            }
+
             return result;
         }
-
-        public int IdPanel()
-        {
-            IEnumerable<XElement> aoi = result.Elements("aoi");
-            string id_panel = ReadTag("id", aoi.Elements("panel"));
-            return Convert.ToInt32(id_panel);
-        }
-
-        public string AssignedOp()
-        {
-            IEnumerable<XElement> aoi = result.Elements("aoi");
-            return ReadTag("inspected_op", aoi.Elements("panel"));
-        }        
     }
 }

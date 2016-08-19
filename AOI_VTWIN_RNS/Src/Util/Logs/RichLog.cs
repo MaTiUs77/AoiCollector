@@ -26,7 +26,6 @@ namespace AOI_VTWIN_RNS.Aoicollector.Core
         protected Color colorSuccess = Color.Green;
         protected Color colorNotify= Color.DeepPink;
 
-
         public RichTextBox richTextBox { get; set; }
 
         public RichLog()
@@ -64,13 +63,21 @@ namespace AOI_VTWIN_RNS.Aoicollector.Core
             }
         }
 
-        public string putLog(string mensaje, string mode)
+        public string putLog(string mensaje, string mode, bool withDateTime = true)
         {
             DateTime time = DateTime.Now;
             string format = "dd/MM HH:mm";
 
             StringBuilder msg = new StringBuilder();
-            string finalMsg = string.Format("[{0}] {1}", time.ToString(format), mensaje);
+            string finalMsg = "";
+
+            if (withDateTime)
+            {
+                finalMsg = string.Format("[{0}] {1}", time.ToString(format), mensaje);
+            } else
+            {
+                finalMsg = string.Format("{0}", mensaje);
+            }
 
             msg.AppendLine(finalMsg);
 

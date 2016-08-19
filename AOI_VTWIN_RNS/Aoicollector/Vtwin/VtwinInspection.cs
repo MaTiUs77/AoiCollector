@@ -14,7 +14,11 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
         {
             DateTime last_oracle_inspection = new DateTime(1, 1, 1);
             inspMachine.LogBroadcast("info", 
-                string.Format("{0} | Maquina {1} | Ultima inspeccion {2}", inspMachine.smd, inspMachine.line_barcode, inspMachine.ultima_inspeccion)
+                string.Format("{0} | Maquina {1} | Ultima inspeccion {2}", 
+                    inspMachine.smd, 
+                    inspMachine.line_barcode, 
+                    inspMachine.ultima_inspeccion
+                )
             );
 
             string query = OracleQuery.ListLastInspections(inspMachine.oracle_id, inspMachine.ultima_inspeccion);
@@ -38,7 +42,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
                     VtwinPanel panel = new VtwinPanel(oracle,r, inspMachine);
 
                     inspMachine.LogBroadcast("info", 
-                        string.Format("+ Programa: [{0}] - Barcode: {1} - Bloques: {2}", panel.programa, panel.barcode, panel.totalBloques, inspMachine.smd)
+                        string.Format("+ Programa: [{0}] | Barcode: {1} | Bloques: {2} | Pendiente: {3}", panel.programa, panel.barcode, panel.totalBloques, panel.pendiente)
                     );
 
                     panel.TrazaSave(aoiConfig.xmlExportPath);
@@ -55,7 +59,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
                 #endregion
 
                 inspMachine.LogBroadcast("debug", 
-                    string.Format("Actualizando horario de ultima inspeccion: {0}", last_oracle_inspection.ToString("HH:mm:ss"))
+                    string.Format("Actualizando horario de ultima inspeccion de maquina {0}", last_oracle_inspection.ToString("HH:mm:ss"))
                 );
 
                 if (!Config.debugMode)
