@@ -58,7 +58,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Core
         public static bool dbDownload()
         {
             #region DESCARGA INFORMACION DE MYSQL
-            Log.system.info("Iniciando descarga de datos MySql");
+            Log.system.verbose("Iniciando descarga de datos MySql");
 
             try
             {            
@@ -66,9 +66,9 @@ namespace AOI_VTWIN_RNS.Aoicollector.Core
                 Machine.Download();
                 PcbInfo.Download();
 
-                Log.system.info("Faultcodes: " + Faultcode.Total());
-                Log.system.info("Maquinas: " + Machine.Total());
-                Log.system.info("PcbInfo: " + PcbInfo.Total());
+                Log.system.notify("Faultcodes: " + Faultcode.Total());
+                Log.system.notify("Maquinas: " + Machine.Total());
+                Log.system.notify("PcbInfo: " + PcbInfo.Total());
 
                 dbDownloadComplete = true;
             }

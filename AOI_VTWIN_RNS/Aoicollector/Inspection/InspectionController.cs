@@ -6,6 +6,7 @@ using AOI_VTWIN_RNS.Src.Database;
 using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
 using System.Threading.Tasks;
 using AOI_VTWIN_RNS.Aoicollector.IAServer;
+using System.Diagnostics;
 
 namespace AOI_VTWIN_RNS.Aoicollector.Inspection
 {
@@ -38,6 +39,8 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
                 if(!pendiente)
                 {
                     // Obtiene datos de produccion de la linea
+                    Stopwatch sw = Stopwatch.StartNew();
+
                     machine.GetProductionInfoFromIAServer();
                     if(machine.service.exception == null)
                     {
@@ -46,6 +49,13 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
                         {
                             // Verifico que la OP tenga placas restantes
                             panelService = PanelHandlerService();
+
+                            sw.Stop();
+
+                            machine.LogBroadcast("info",
+                                string.Format("+ Tiempo de respuesta de services: (ms) {0} ",
+                                (long)sw.ElapsedMilliseconds)
+                            );
 
                             if (panelId > 0 && panelService.exception == null && machine.service.exception == null)
                             {
@@ -92,19 +102,16 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
         {
             PanelService panelService = GetBarcodeInfoFromIAServer();
 
-            return panelService;
-        }
-
-        private PanelService SavePanel()
-        {
-            // Verifica si existe el barcode IAServer y retorna ID PANEL
-            PanelService panelService = GetBarcodeInfoFromIAServer();
-
             // Solo proceso si el servicio respondio sin problemas
-            #region INSERTAR O ACTUALIZA DATOS DE PANEL
+            
             if (panelService.exception == null)
             {
-                if(machine.service.result.produccion.cogiscan.Equals("T"))
+                machine.LogBroadcast("debug",
+                    string.Format("+ Modo: {0}", spMode)
+                );
+
+                // Si la linea tiene configurada la Trazabilidad por Cogiscan, valida ruta
+                if (machine.service.result.produccion.cogiscan.Equals("T"))
                 {
                     machine.LogBroadcast("info",
                         string.Format("+ Validando ruta de cogiscan")
@@ -112,139 +119,133 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
 
                     if (panelService.result.cogiscan.product.attributes.operation.Equals("AOI"))
                     {
-
-                    } else
+                        SavePanel(panelService);
+                    }
+                    else
                     {
                         machine.LogBroadcast("warning",
                             string.Format("+ El panel {0} no se encuentra en la ruta AOI", barcode)
                         );
                     }
-                }
-
-                machine.LogBroadcast("debug", 
-                    string.Format("+ Modo: {0}", spMode)
-                );
-
-                if (Config.debugMode)
+                } else
                 {
-                    machine.LogBroadcast("warning", "+ Debug mode ON, no ejecuta StoreProcedure para guardar panel");
-                } else { 
-                    #region SAVE PANELS ON DB
-                    string query = @"CALL sp_setInspectionPanel_optimizando('" + panelId + "','" + machine.mysql_id + "',  '" + barcode + "',  '" + programa + "',  '" + fecha + "',  '" + hora + "',  '',  '" + revisionAoi + "',  '" + revisionIns + "',  '" + totalErrores + "',  '" + totalErroresFalsos + "',  '" + totalErroresReales + "',  '" + pcbInfo.bloques + "',  '" + tipoBarcode + "',  '" + Convert.ToInt32(pendiente) + "' ,  '" + machine.oracle_id + "' ,  '" + vtwinProgramNameId + "' ,  '" + spMode + "'  );";
-
-                    machine.LogBroadcast("debug", 
-                        string.Format("+ Ejecutando StoreProcedure: sp_setInspectionPanel_optimizando() =>", barcode)
-                    );
-
-                    MySqlConnector sql = new MySqlConnector();
-                    DataTable sp = sql.Select(query);
-                    if (sql.rows)
-                    {
-                        // En caso de insert, informo el id_panel creado, si fue un update, seria el mismo id_panel...
-                        panelId= int.Parse(sp.Rows[0]["id_panel"].ToString());
-                        if (pendiente)
-                        {                           
-                            Pendiente.Save(this);
-                        }
-
-                        if (pendienteDelete)
-                        {
-                            Pendiente.Delete(this);
-                        }
-
-                        // Solo cuando se inserta por primera vez, y no es un panel pendiente de inspeccion
-                        if (panelId > 0 && !pendiente)
-                        {
-                            try
-                            {
-                                history.SavePanel(panelId, spMode);
-                            }
-                            catch (Exception ex)
-                            {
-                                machine.log.stack(
-                                   string.Format("+ Error al ejecutar history.SavePanel({0}, {1}) ", panelId, spMode
-                                ), this, ex);
-                            }
-                        }
-                    }
-                    #endregion
-                }
-
-                // Es necesario volver a ejecutar el service, para obtener la OP asignada al panel
-                if(spMode == "insert")
-                {
-                    machine.LogBroadcast("debug", "+ Actualizando datos desde service");
-                    panelService = GetBarcodeInfoFromIAServer();
+                    SavePanel(panelService);
                 }
             } else
             {
-                machine.LogBroadcast("error", 
-                    string.Format("+ Service Response: ERROR | Modo: {0}", spMode)
-                );
+                machine.log.stack(
+                    string.Format("+ PanelService exception"
+                ), this, panelService.exception);
             }
-            #endregion
 
+            return panelService;
+        }
+
+        private PanelService SavePanel(PanelService panelService)
+        {
+            if (Config.debugMode)
+            {
+                machine.LogBroadcast("warning", "+ Debug mode ON, no ejecuta StoreProcedure para guardar panel");
+            } else { 
+                #region SAVE PANELS ON DB
+                string query = @"CALL sp_setInspectionPanel_optimizando('" + panelId + "','" + machine.mysql_id + "',  '" + barcode + "',  '" + programa + "',  '" + fecha + "',  '" + hora + "',  '',  '" + revisionAoi + "',  '" + revisionIns + "',  '" + totalErrores + "',  '" + totalErroresFalsos + "',  '" + totalErroresReales + "',  '" + pcbInfo.bloques + "',  '" + tipoBarcode + "',  '" + Convert.ToInt32(pendiente) + "' ,  '" + machine.oracle_id + "' ,  '" + vtwinProgramNameId + "' ,  '" + spMode + "'  );";
+
+                machine.LogBroadcast("debug", 
+                    string.Format("+ Ejecutando StoreProcedure: sp_setInspectionPanel_optimizando() =>", barcode)
+                );
+
+                MySqlConnector sql = new MySqlConnector();
+                DataTable sp = sql.Select(query);
+                if (sql.rows)
+                {
+                    // En caso de insert, informo el id_panel creado, si fue un update, seria el mismo id_panel...
+                    panelId= int.Parse(sp.Rows[0]["id_panel"].ToString());
+                    //if (pendiente)
+                    //{                           
+                    //    Pendiente.Save(this);
+                    //}
+
+                    //if (pendienteDelete)
+                    //{
+                    //    Pendiente.Delete(this);
+                    //}
+
+                    // Solo cuando se inserta por primera vez
+                    if (panelId > 0)
+                    {
+                        try
+                        {
+                            history.SavePanel(panelId, spMode);
+                        }
+                        catch (Exception ex)
+                        {
+                            machine.log.stack(
+                                string.Format("+ Error al ejecutar history.SavePanel({0}, {1}) ", panelId, spMode
+                            ), this, ex);
+                        }
+                    }
+                }
+                #endregion
+            }
+
+            // Es necesario volver a ejecutar el service, para obtener la OP asignada al panel
+            if(spMode == "insert")
+            {
+                machine.LogBroadcast("debug", "+ Actualizando datos de panel insertado");
+                panelService = GetBarcodeInfoFromIAServer();
+            }
+            
             // Retorno ID, 0 si no pudo insertar, o actualizar
             return panelService;
         }
 
         private void SaveBlocks(string path)
         {
-            machine.LogBroadcast("info",
-               string.Format("+ Se detectaron: {0} bloques en el panel {1}", bloqueList.Count, barcode)
-            );
             foreach (Bloque bloque in bloqueList)
             {
-                if (pendiente)
+                if (Config.debugMode)
                 {
-                    machine.LogBroadcast("notify",
-                        string.Format("+ La inspeccion se encuentra pendiente ({0}), no se guarda el bloque ", bloque.barcode)
+                    machine.LogBroadcast("warning",
+                        string.Format("+ Debug mode: ON, no se guarda el bloque")
                     );
-                } else {
-                    if (Config.debugMode)
+                } else { 
+
+                    machine.LogBroadcast("debug",
+                        string.Format("+ Ejecutando sp_addInspectionBlock({0}) ", bloque.barcode)
+                    );
+
+                    string query = @"CALL sp_addInspectionBlock('" + panelId + "',  '" + bloque.barcode + "',  '" + bloque.tipoBarcode + "',  '" + bloque.revisionAoi + "',  '" + bloque.revisionIns + "',  '" + bloque.totalErrores + "',  '" + bloque.totalErroresFalsos + "',  '" + bloque.totalErroresReales + "',  '" + bloque.bloqueId + "' );";
+
+                    #region GUARDA EN DB
+                    MySqlConnector sql = new MySqlConnector();
+                    DataTable sp = sql.Select(query);
+                    if (sql.rows)
                     {
-                        machine.LogBroadcast("warning",
-                           string.Format("+ Debug mode: ON, no se guarda el bloque")
-                       );
-                    } else { 
+                        int id_inspeccion_bloque = 0;
+                        id_inspeccion_bloque = int.Parse(sp.Rows[0]["id"].ToString());
 
-                        machine.LogBroadcast("debug",
-                            string.Format("+ sp_addInspectionBlock({0}) ", bloque.barcode)
-                        );
-
-                        string query = @"CALL sp_addInspectionBlock('" + panelId + "',  '" + bloque.barcode + "',  '" + bloque.tipoBarcode + "',  '" + bloque.revisionAoi + "',  '" + bloque.revisionIns + "',  '" + bloque.totalErrores + "',  '" + bloque.totalErroresFalsos + "',  '" + bloque.totalErroresReales + "',  '" + bloque.bloqueId + "' );";
-
-                        #region GUARDA EN DB
-                        MySqlConnector sql = new MySqlConnector();
-                        DataTable sp = sql.Select(query);
-                        if (sql.rows)
+                        if (id_inspeccion_bloque > 0)
                         {
-                            int id_inspeccion_bloque = 0;
-                            id_inspeccion_bloque = int.Parse(sp.Rows[0]["id"].ToString());
-
-                            if (id_inspeccion_bloque > 0)
-                            {
-                                history.SaveBloque(id_inspeccion_bloque);
-                            }
-
-                            if (bloque.totalErrores > 0)
-                            {
-                                // EXISTEN ERRORES REALES O FALSOS
-                                SaveDetail(id_inspeccion_bloque, bloque);
-                            }
+                            history.SaveBloque(id_inspeccion_bloque);
                         }
-                        #endregion
 
-                        if (machine.service.result.produccion.declara.Equals("1"))
+                        if (bloque.totalErrores > 0)
                         {
-                            machine.LogBroadcast("notify",
-                                string.Format("+ {0} declarar con {1}", 
-                                bloque.barcode,
-                                machine.service.result.produccion.op
-                            ));
-                            //Trazabilidad traza = new Trazabilidad();
-                            //traza.declareIfNeeded(blockBarcode.barcode);
+                            // EXISTEN ERRORES REALES O FALSOS
+                            SaveDetail(id_inspeccion_bloque, bloque);
                         }
+                    }
+                    #endregion
+
+                    if (machine.service.result.produccion.sfcs.declara.Equals("1"))
+                    {
+                        machine.LogBroadcast("notify",
+                            string.Format("+ {0} declarar con {1}", 
+                            bloque.barcode,
+                            machine.service.result.produccion.op
+                        ));
+                        //Trazabilidad traza = new Trazabilidad();
+                        //traza.declareIfNeeded(blockBarcode.barcode);
                     }
                 }
 

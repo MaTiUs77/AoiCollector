@@ -75,9 +75,17 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
                     n.tipoMaquina = r["tipo_maquina"].ToString();
                     n.hash = r["hash"].ToString();
                     n.fechaModificacion = r["fecha_modificacion"].ToString();
-                    n.etiquetas = int.Parse(r["etiquetas"].ToString());
+                    string _etiquetas = r["etiquetas"].ToString();
+                    try
+                    {
+                        n.etiquetas = int.Parse(_etiquetas);
+                    } catch(Exception ex)
+                    {
+                        n.etiquetas = 0;
+                    }
+
                     string sec = r["secundaria"].ToString();
-                    if(sec.ToLower().Equals("false"))
+                    if (sec.ToLower().Equals("false"))
                     {
                         n.secundaria = 0;
                     }

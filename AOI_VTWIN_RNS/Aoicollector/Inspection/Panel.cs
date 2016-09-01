@@ -70,6 +70,11 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
 
             totalBloques = bloqueList.Count;
 
+            if(totalBloques == 0)
+            {
+                totalBloques = pcbInfo.bloques;
+            }
+
             // Analiza el panel general
             MakeRevision();
         }

@@ -113,13 +113,12 @@ namespace AOI_VTWIN_RNS.Aoicollector
             bool complete = false;
             if (Convert.ToBoolean(AppConfig.Read(aoiConfig.machineType, "usar_credencial")))
             {
-                aoiLog.info("Ejecutando credencial: " + AppConfig.Read(aoiConfig.machineType, "server"));
+                aoiLog.verbose("Ejecutando credencial: " + AppConfig.Read(aoiConfig.machineType, "server"));
                 try
                 {
                     Network.ConnectCredential(aoiConfig.machineType);
                     aoiLog.log("Credencial ejecutada.");
                     complete = true;
-
                 }
                 catch (Exception ex)
                 {
@@ -142,18 +141,18 @@ namespace AOI_VTWIN_RNS.Aoicollector
         {
             bool complete = false;
 
-            aoiLog.verbose("CheckPcbFiles() " + aoiConfig.dataProgPath);
+            aoiLog.log("CheckPcbFiles() " + aoiConfig.dataProgPath);
 
             if (UseCredential())
             {
-                aoiLog.info("Verificando cambios en PCB Files");
+                aoiLog.verbose("Verificando cambios en PCB Files");
                 try
                 {
                     PcbData pcbData = new PcbData(this);
                     bool reload = pcbData.VerifyPcbFiles();
                     if (reload)
                     {
-                        aoiLog.log("Actualizando lista de PCB Files en memoria");
+                        aoiLog.notify("Actualizando lista de PCB Files en memoria");
                         PcbInfo.Download(aoiConfig.machineNameKey);
                     }
                     aoiLog.log("Verificacion de PCB Files completa");
@@ -221,16 +220,9 @@ namespace AOI_VTWIN_RNS.Aoicollector
             }
         }
 
-        public void LogBroadcast(Machine inspMachine, string mode, string msg)
-        {
-            inspMachine.log.putLog(aoiLog.putLog(msg, mode, true),mode,false);
-        }
-
         //public void LogBroadcast(Machine inspMachine, string mode, string msg)
         //{
-        //    RichLog rlog = aoiTabLogList.Find(o => o.id.Equals(id));
-
-        //    inspMachine.log.putLog(aoiLog.putLog(msg, mode, true), mode, false);
+        //    inspMachine.log.putLog(aoiLog.putLog(msg, mode, false),mode,true);
         //}
     }
 }

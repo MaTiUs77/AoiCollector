@@ -24,3 +24,4 @@ C:\Users\Core\Desktop\VISUALSTUDIO\AOI\AOI_VTWIN_RNS\bin\x64\Release\Newtonsoft.
 C:\Users\Core\Desktop\VISUALSTUDIO\AOI\AOI_VTWIN_RNS\bin\x64\Release\Newtonsoft.Json.xml
 C:\Users\Core\Desktop\VISUALSTUDIO\AOI\AOI_VTWIN_RNS\bin\x64\Release\IAServer.dll
 C:\Users\Core\Desktop\VISUALSTUDIO\AOI\AOI_VTWIN_RNS\bin\x64\Release\IAServer.pdb
+C:\Users\Core\Desktop\VISUALSTUDIO\AOI\AOI_VTWIN_RNS\obj\x64\Release\AOI_VTWIN_RNS.Oracle_PanelData.resources

@@ -66,7 +66,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns
 
                     barcode = info[36].ToString().Replace("\"", "").Trim();
 
-                    //BarcodeValidate();
+                    BarcodeValidate();
 
                     string panelNroReemp = info[38].ToString().Replace("\"", "").Trim();
                     if (!panelNroReemp.Equals(""))
@@ -109,13 +109,17 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns
                                 bloqueList = inspResult.GetBlockBarcodes();
                             }
 
-                            machine.LogBroadcast("info",
-                               string.Format("Programa: [{0}] | Barcode: {1} | Etiquetas: {2} | Secundaria: {3}", programa, barcode, pcbInfo.etiquetas, pcbInfo.secundaria)
-                            );
-
                             MakeRevisionToAll();
 
-                            rnsi.aoiLog.debug("CreateaoiInsp.inspectionObject(): complete");
+                            machine.LogBroadcast("info",
+                               string.Format("Programa: [{0}] | Barcode: {1} | Bloques: {4} | Etiquetas: {2} | Secundaria: {3}", 
+                               programa, 
+                               barcode, 
+                               pcbInfo.etiquetas, 
+                               pcbInfo.secundaria,
+                               totalBloques
+                               )
+                            );
                         }
                     } // IF panelBarcode != ""
                 } // IF csv has rows

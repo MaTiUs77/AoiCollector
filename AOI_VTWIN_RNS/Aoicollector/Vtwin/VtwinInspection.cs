@@ -105,7 +105,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
                         if (Config.isByPassMode(inspMachine.linea))
                         {
                             // SKIP MACHINE
-                            LogBroadcast(inspMachine,"warning",string.Format("{1} | Maquina en ByPass, no se analiza modo pendiente de {0}", pend.barcode, inspMachine.smd));
+                            inspMachine.LogBroadcast("warning",string.Format("{1} | Maquina en ByPass, no se analiza modo pendiente de {0}", pend.barcode, inspMachine.smd));
                         }
                         else
                         {
@@ -114,14 +114,14 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
                             if (panel.pendiente)
                             {
                                 // Aun sigue pendiente... no hago nada...
-                                LogBroadcast(inspMachine,"log", string.Format("Sigue pendiente {0} desde la fecha {1}", pend.barcode, pend.endDate));
+                                inspMachine.LogBroadcast("log", string.Format("Sigue pendiente {0} desde la fecha {1}", pend.barcode, pend.endDate));
                             }
                             else
                             {
                                 // No esta mas pendiente!!, se realizo la inspeccion!! Guardo datos.
-                                LogBroadcast(inspMachine,"notify",string.Format("Inspeccion detectada! {0}", pend.barcode));
+                                inspMachine.LogBroadcast("notify",string.Format("Inspeccion detectada! {0}", pend.barcode));
 
-                                panel.pendienteDelete = true;
+                                //panel.pendienteDelete = true;
 
                                 panel.TrazaSave(aoiConfig.xmlExportPath);
                             }
@@ -135,6 +135,14 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
                     }
                 }
             }
+        }
+
+        public DataTable PanelBarcodeInfo(string barcode)
+        {
+            string query = OracleQuery.ListPanelBarcodeInfo(barcode);
+            DataTable dt = oracle.Query(query);
+
+            return dt;
         }
     }
 }

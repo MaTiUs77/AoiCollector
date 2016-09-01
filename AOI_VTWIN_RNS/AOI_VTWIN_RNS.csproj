@@ -110,6 +110,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Aoicollector\Vts500\Vts500Panel.cs" />
+    <Compile Include="Forms\Oracle_PanelData.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Oracle_PanelData.Designer.cs">
+      <DependentUpon>Oracle_PanelData.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Prompt\Prompter.cs" />
     <Compile Include="Src\Service\ServiceJson.cs" />
     <Compile Include="Src\Service\ServiceXml.cs" />
     <Compile Include="Aoicollector\Inspection\BarcodeValidator.cs" />
@@ -207,6 +215,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Aoicollector\Vts500\Forms\Vts500_FormConfiguration.resx">
       <DependentUpon>Vts500_FormConfiguration.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Oracle_PanelData.resx">
+      <DependentUpon>Oracle_PanelData.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">

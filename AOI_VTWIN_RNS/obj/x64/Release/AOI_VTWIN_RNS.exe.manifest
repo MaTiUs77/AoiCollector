@@ -43,14 +43,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="AOI_VTWIN_RNS.exe" size="1268736">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="AOI_VTWIN_RNS.exe" size="1278464">
       <assemblyIdentity name="AOI_VTWIN_RNS" version="1.0.0.0" language="neutral" processorArchitecture="amd64" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>pBp5LqfuvvCkdZMz2Nx/026h828npOKTvAPAwQcAr2w=</dsig:DigestValue>
+        <dsig:DigestValue>zX3tbVfkILW1YTxpzQXJb7IbdMtM1RatBYQrlIcgURk=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -62,7 +62,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>fPEJLkYS5WDcJGCqozwoMz92ng/oantDfztSy5zHemQ=</dsig:DigestValue>
+        <dsig:DigestValue>DyrNfQqhQPJsTVjaW5EQXpB7RUHfvSjYrO28djq/7L0=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

@@ -35,7 +35,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns
             }
             catch (Exception ex)
             {
-                Log.Stack("WorkerStart()", this, ex);
+                aoiLog.stack("WorkerStart()", this, ex);
             }
         }
 
@@ -57,17 +57,16 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns
                 foreach (FileInfo file in csv)
                 {
                     file_count++;
-
                     HandleInspection(file);
 
                     aoiWorker.SetProgressWorking(file_count);
                 }
 
-                aoiLog.log("No hay mas CSV");
+                aoiLog.info("No hay mas CSV");
             }
             else
             {
-                aoiLog.notify("No se encontraron inspecciones.");
+                aoiLog.info("No se encontraron inspecciones.");
             }
         }
     }

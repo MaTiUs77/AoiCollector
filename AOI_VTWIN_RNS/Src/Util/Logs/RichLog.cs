@@ -20,7 +20,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Core
         protected Color colorInfo = Color.Cyan;
         protected Color colorWarning = Color.Yellow;
         protected Color colorDebug = Color.Gray;
-        protected Color colorLog = Color.LightGray;
+        protected Color colorLog = Color.Gray;
         protected Color colorVerbose = Color.Green;
         protected Color colorStack = Color.Orange;
         protected Color colorSuccess = Color.Green;
@@ -93,7 +93,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Core
                 richTextBox.AppendText(msg.ToString()); 
 //                richTextBox.SelectionColor = richTextBox.ForeColor; // Vuelvo al color normal
 
-                if (autoscroll)
+                if (Log.autoscroll)
                 {
                     richTextBox.SelectionStart = richTextBox.Text.Length;
                     richTextBox.ScrollToCaret();

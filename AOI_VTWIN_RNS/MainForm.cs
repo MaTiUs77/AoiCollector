@@ -9,6 +9,7 @@ using AOI_VTWIN_RNS.Aoicollector.Vts500;
 using System.Threading.Tasks;
 using AOI_VTWIN_RNS.Src.Config;
 using IAServerServiceDll;
+using AOI_VTWIN_RNS.Src.Prompt;
 
 namespace AOI_VTWIN_RNS
 {
@@ -135,6 +136,13 @@ namespace AOI_VTWIN_RNS
             form.oracle = vtwin.oracle;
             form.Show();
         }
+
+        private void Vtwin_Consultar(object sender, EventArgs e)
+        {        
+            Oracle_PanelData form = new Oracle_PanelData(vtwin);
+            form.Show();
+        }
+
         private void VtwinMenu_clear(object sender, EventArgs e)
         {
             vtwin.aoiLog.reset();

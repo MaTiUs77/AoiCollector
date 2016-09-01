@@ -1,20 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
-using AOI_VTWIN_RNS.Aoicollector.Vtwin.Controller;
 using System.Data;
 using AOI_VTWIN_RNS.Aoicollector.Inspection;
 using AOI_VTWIN_RNS.Src.Database;
 using System;
+using AOI_VTWIN_RNS.Aoicollector.Vts500.Controller;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
+namespace AOI_VTWIN_RNS.Aoicollector.Vts500
 {
-    public class VtwinPanel : InspectionController
+    public class Vts500Panel : InspectionController
     {
-        public string machineNameKey = "W";
+        public string machineNameKey = "V";
         private OracleConnector _oracle;
 
-        public VtwinPanel(OracleConnector oracle, DataRow r, Machine inspMachine)
+        public Vts500Panel(OracleConnector oracle, DataRow r, Machine inspMachine)
         {
             _oracle = oracle;
             CreateInspectionObject(r, inspMachine);
@@ -28,8 +28,8 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
             inspFecha = r["insp_fecha"].ToString();
             inspHora = r["insp_hora"].ToString();
 
-            // Si no tengo fecha de inspeccion, el panel se encuentra pendiente de inspeccion.
-            if (inspFecha.Equals(""))
+            bool revised = Convert.ToBoolean(r["revised"]);
+            if (!revised)
             {
                 pendiente = true;
             }
@@ -37,11 +37,12 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
             machine = inspMachine;
             maquina = inspMachine.maquina;
             barcode = r["barcode"].ToString();
+
             BarcodeValidate();
 
-            //inspection.validateBarcode();
+            vtsOracleInspId = int.Parse(r["insp_id"].ToString());
+            vtsOraclePgItemId = int.Parse(r["PROGRAMA_ID"].ToString());
 
-            panelNro = int.Parse(r["pcb_no"].ToString());
             revisionIns = "NG";
             revisionAoi = r["test_result"].ToString();
 
@@ -51,21 +52,8 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
                 revisionAoi = "OK";
                 pendiente = false;
             }
-            //            insp.revision_ins = r["revise_result"].ToString();
 
-            // Informacion especifica para maquinas tipo vtwin
-            vtwinProgramNameId = int.Parse(r["program_name_id"].ToString());
-            vtwinSaveMachineId = int.Parse(r["saved_machine_id"].ToString());
-            vtwinRevisionNo = int.Parse(r["revision_no"].ToString());
-            vtwinSerialNo = int.Parse(r["serial_no"].ToString());
-            vtwinLoadCount = int.Parse(r["load_count"].ToString());
-
-            // Adjunto informacion del PCB usado para inspeccionar, contiene numero de bloques y block_id entre otros datos.
-            PcbInfo pcb_info = PcbInfo.list.Find(obj => obj.nombre.Equals(programa) && obj.tipoMaquina.Equals(machineNameKey));
-            if (pcb_info != null)
-            {
-                pcbInfo = pcb_info;
-            }
+            pcbInfo = CreatePCBInfo();
 
             // Obtiene detalle de errores del panel completo 
             detailList = GetInspectionDetail();
@@ -75,6 +63,24 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
             bloqueList = GetBloquesFromOracle();
 
             MakeRevisionToAll();
+        }
+
+        private PcbInfo CreatePCBInfo()
+        {
+            string query = OracleQuery.ListBlocks(this);
+            DataTable dt = _oracle.Query(query);
+            int totalRows = dt.Rows.Count;
+
+            int bloques = (from DataRow r in dt.Rows select int.Parse(r["seg_no"].ToString())).Distinct().Count();
+            //var segmentos = (from DataRow r in dt.Rows select int.Parse(r["seg_id"].ToString())).Distinct();
+
+            PcbInfo pcb = new PcbInfo();
+            pcb.bloques = bloques;
+            pcb.nombre = programa;
+            pcb.programa = programa;
+            pcb.id = vtsOraclePgItemId;
+            pcb.tipoMaquina = machineNameKey;
+            return pcb;
         }
 
         /// <summary>
@@ -93,11 +99,11 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
                 #region FILL_ERROR_DETAIL
                 foreach (DataRow r in dt.Rows)
                 {
-                    int bid = int.Parse(r["bloque"].ToString());
+                    int bid = int.Parse(r["SEG_ID"].ToString());
                     Detail det = new Detail();
-                    det.faultcode = r["fault_code"].ToString();
+                    det.faultcode = r["faultcode"].ToString();
                     det.estado = r["resultado"].ToString();
-                    det.referencia = r["COMPONENT_NAME"].ToString();
+                    det.referencia = r["referencia"].ToString();
                     det.bloqueId = bid;
                     //det.total_faultcode = int.Parse(r["total"].ToString());
                     det.descripcionFaultcode = Faultcode.Description(det.faultcode);
@@ -119,7 +125,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
 
             if (pcbInfo.bloques == 1)
             {
-                string blockId = "1"; 
+                string blockId = "1";
                 List<int> posibleBlockId = detailList.Select(o => o.bloqueId).Distinct().ToList();
 
                 if (posibleBlockId.Count > 0)
@@ -135,7 +141,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
             {
                 if (pcbInfo.bloques > 1)
                 {
-                    string query = OracleQuery.ListBlockBarcode(barcode);
+                    string query = OracleQuery.ListBlockBarcode(this);
                     DataTable dt = _oracle.Query(query);
                     int totalRows = dt.Rows.Count;
 
@@ -144,8 +150,8 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
                         #region CREATE_BLOCKBARCODE_OBJECT
                         foreach (DataRow r in dt.Rows)
                         {
-                            Bloque b = new Bloque(r["block_barcode"].ToString());
-                            b.bloqueId = int.Parse(r["bloque"].ToString());
+                            Bloque b = new Bloque(r["SEG_BARCODE"].ToString());
+                            b.bloqueId = int.Parse(r["SEG_ID"].ToString());
                             list.Add(b);
                         }
                         #endregion

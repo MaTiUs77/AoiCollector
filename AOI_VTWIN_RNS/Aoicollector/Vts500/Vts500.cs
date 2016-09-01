@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.ComponentModel;
 using System.Windows.Forms;
-using System.Threading;
-using System.IO;
 using System.Data;
 
-using AOI_VTWIN_RNS.Src.Util.Files;
 using AOI_VTWIN_RNS.Aoicollector.Core;
 using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
 using AOI_VTWIN_RNS.Aoicollector.Vts500.Controller;
@@ -28,10 +23,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500
  
             try
             {
-                if (aoiReady)
-                {
-                    StartInspection();
-                }
+                StartInspection();
             }
             catch (Exception ex)
             {
@@ -52,16 +44,25 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500
             {
                 aoiLog.info("Comenzando analisis de inspecciones");
 
+                // Lista de maquinas VTWIN
+                IEnumerable<Machine> oracleMachines = Machine.list.Where(obj => obj.tipo == aoiConfig.machineNameKey);
+
+                // Generacion de tabs segun las maquinas descargadas
+                foreach (Machine inspMachine in oracleMachines.OrderBy(o => int.Parse(o.linea)))
+                {
+                    DynamicTab(inspMachine);
+                }
+
                 try
                 {
-                    //HandlePendientInspection();
+                    HandlePendientInspection();
                 }
                 catch (Exception ex)
                 {
                     aoiLog.stack(ex.Message, this, ex);
                 }
 
-                IEnumerable<Machine> oracleMachines = Machine.list.Where(obj => obj.tipo == aoiConfig.machineNameKey);
+                #region HandleInspection
                 foreach (Machine inspMachine in oracleMachines)
                 {
                     // Filtro maquinas en ByPass
@@ -72,17 +73,36 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500
                     }
                     else
                     {
-                        try
-                        {
-                            //HandleInspection(inspMachine);
-                        }
-                        catch (Exception ex)
-                        {
-                            aoiLog.stack(ex.Message, this, ex);
-                        }
+                        TryInspectionProccess(inspMachine);
                     }
                 }
+                #endregion
             }
+        }
+
+        private void TryInspectionProccess(Machine inspMachine)
+        {
+            if (Config.isByPassMode(inspMachine.linea))
+            {
+                inspMachine.LogBroadcast("warning",
+                    string.Format("{0} en ByPass {1}", inspMachine.smd, inspMachine.line_barcode)
+                );
+            }
+            else
+            {
+                try
+                {
+                    HandleInspection(inspMachine);
+                }
+                catch (Exception ex)
+                {
+                    inspMachine.log.stack(ex.Message, this, ex);
+                }
+            }
+
+            inspMachine.LogBroadcast("verbose",
+                string.Format("TryInspectionProccess({0}) Completo", inspMachine.smd)
+            );
         }
     }
 }

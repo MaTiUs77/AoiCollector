@@ -88,6 +88,59 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin.Controller
             return query;
         }
 
+        public static string ListPanelBarcodeInfo(string barcode)
+        {
+            string query = @"
+SELECT 
+ 
+	        PNI.PCB_NAME AS PROGRAMA,
+
+            TO_CHAR(PCI.END_DATE, 'YYYY-MM-DD') AS AOI_FECHA, 
+            TO_CHAR(PCI.END_DATE, 'HH24:MI:SS') AS AOI_HORA,  	
+
+            TO_CHAR(PCI.REVISE_END_DATE, 'YYYY-MM-DD') AS INSP_FECHA, 
+            TO_CHAR(PCI.REVISE_END_DATE, 'HH24:MI:SS') AS INSP_HORA,  	
+
+            PCI.END_DATE,
+            PCI.REVISE_END_DATE,
+
+	        PCI.TEST_RESULT,
+	        PCI.REVISE_RESULT,
+	        PCI.BARCODE,
+	        PCI.MACHINE_DETERMINATION,
+
+	        PCI.PCB_NO,
+            PCI.TEST_MACHINE_ID,
+            PCI.SAVED_MACHINE_ID,
+            PCI.PROGRAM_NAME_ID,
+            PCI.REVISION_NO,
+            PCI.SERIAL_NO,
+            PCI.LOAD_COUNT
+
+        FROM 
+	        PROGRAM_INFO PRI,
+	        PCB_INFO PCI,
+	        PCB_NAME_INFO PNI  
+
+        WHERE 	
+            PRI.PCB_ID = PNI.PCB_ID  AND 
+	
+            (PCI.BARCODE IS NOT NULL) AND 
+
+	        PRI.PROGRAM_NAME_ID = PCI.PROGRAM_NAME_ID  AND 
+	        PRI.SAVED_MACHINE_ID = PCI.SAVED_MACHINE_ID  AND 
+	        PRI.PROGRAM_NAME_ID = PCI.PROGRAM_NAME_ID  AND 
+	        PRI.REVISION_NO = PCI.REVISION_NO  AND 
+	        PRI.SERIAL_NO = PCI.SERIAL_NO   AND 
+                
+            PCI.BARCODE = '"+barcode+ @"'
+
+            ORDER BY 
+	        PCI.END_DATE ASC";
+
+            return query;
+        }
+
         // Obtiene lista de defectos de inspeccion detallados por referencia
         public static string ListFaultInfo(VtwinPanel panel)
         {

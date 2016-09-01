@@ -172,7 +172,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
 
         public void LogBroadcast(string mode, string msg)
         {
-            log.putLog(glog.putLog(msg, mode), mode);
+            log.putLog(glog.putLog(msg, mode, false), mode,true);
         }
 
 
