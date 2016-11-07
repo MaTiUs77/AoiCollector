@@ -152,8 +152,8 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
                                 new XElement("fecha_inspeccion", ictrl.fecha),
                                 new XElement("hora_inspeccion", ictrl.hora),
                                 new XElement("op", ictrl.op),
-                                new XElement("config_linea_id", ictrl.machine.service.result.produccion.sfcs.line_id),
-                                new XElement("puesto_id", ictrl.machine.service.result.produccion.sfcs.puesto_id)
+                                new XElement("config_linea_id", ictrl.machine.prodService.result.produccion.sfcs.line_id),
+                                new XElement("puesto_id", ictrl.machine.prodService.result.produccion.sfcs.puesto_id)
                             )
                         )
                 )

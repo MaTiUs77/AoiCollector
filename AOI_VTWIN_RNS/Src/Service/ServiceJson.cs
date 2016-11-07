@@ -5,6 +5,7 @@ using System.Text;
 using System.Xml.Linq;
 using System.IO;
 using System.Xml.Serialization;
+using System.Net;
 
 namespace AOI_VTWIN_RNS.Src.Service
 {
@@ -12,10 +13,20 @@ namespace AOI_VTWIN_RNS.Src.Service
     {
         public bool hasResponse = false;
 
-        public static string Consume(string route)
+        public string Consume(string route)
         {
-            string jsonData = Http.Http.LoadXMLFromUrl(route + "?json");
+            string jsonData = WebDownload(route + "?filter=1&period=0&stocker=0&json");
             return jsonData;
+        }
+
+        public string WebDownload(string url)
+        {
+            byte[] data;
+            using (WebClient webClient = new WebClient())
+                data = webClient.DownloadData(url);
+
+            string str = Encoding.GetEncoding("Windows-1252").GetString(data);
+            return str;
         }
     }
 }

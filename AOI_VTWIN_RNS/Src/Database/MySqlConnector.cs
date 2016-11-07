@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Data;
-using System.Windows.Forms;
 
 using AOI_VTWIN_RNS.Src.Config;
 using MySql.Data.MySqlClient;
@@ -22,10 +18,10 @@ namespace AOI_VTWIN_RNS.Src.Database
 
         public static void LoadConfig() 
         {
-            MySqlConnector.database = AppConfig.Read("MYSQL", "database");
-            MySqlConnector.server = AppConfig.Read("MYSQL", "server");
-            MySqlConnector.user = AppConfig.Read("MYSQL", "user");
-            MySqlConnector.password = AppConfig.Read("MYSQL", "pass");
+            database = AppConfig.Read("MYSQL", "database");
+            server = AppConfig.Read("MYSQL", "server");
+            user = AppConfig.Read("MYSQL", "user");
+            password = AppConfig.Read("MYSQL", "pass");
         }
 
         public MySqlConnector()
@@ -36,7 +32,7 @@ namespace AOI_VTWIN_RNS.Src.Database
         private void Initialize()
         {
             string connectionString;
-            connectionString = "SERVER=" + MySqlConnector.server + ";" + "DATABASE=" + MySqlConnector.database + ";" + "UID=" + MySqlConnector.user + ";" + "PASSWORD=" + MySqlConnector.password + ";";
+            connectionString = "SERVER=" + server + ";" + "DATABASE=" + database + ";" + "UID=" + user + ";" + "PASSWORD=" + password + ";";
             connection = new MySqlConnection(connectionString);
         }
 

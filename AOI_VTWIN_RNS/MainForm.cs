@@ -3,13 +3,13 @@ using System.Windows.Forms;
 
 using AOI_VTWIN_RNS.Src.Database;
 using AOI_VTWIN_RNS.Aoicollector.Core;
+
 using AOI_VTWIN_RNS.Aoicollector.Rns;
 using AOI_VTWIN_RNS.Aoicollector.Vtwin;
 using AOI_VTWIN_RNS.Aoicollector.Vts500;
+using AOI_VTWIN_RNS.Aoicollector.Zenith;
+
 using System.Threading.Tasks;
-using AOI_VTWIN_RNS.Src.Config;
-using IAServerServiceDll;
-using AOI_VTWIN_RNS.Src.Prompt;
 
 namespace AOI_VTWIN_RNS
 {
@@ -18,6 +18,7 @@ namespace AOI_VTWIN_RNS
         public RNS rns;
         public VTWIN vtwin;
         public VTS500 vts500;
+        public ZENITH zenith;
 
         #region Aplicacion inicial
         public MainForm()
@@ -61,17 +62,17 @@ namespace AOI_VTWIN_RNS
         {
             // Carga configuracion de AppConfig
             MySqlConnector.LoadConfig();
-            SqlServerConnector.LoadConfig();
 
-            Log.system = new RichLog(systemRichTextBox);
+            Log.system = new RichLog(systemRichLog);
 
-            rns = new RNS(rnsLogGeneral, rnsTab, prgRns);
-            vtwin = new VTWIN(vtwinLogGeneral, vtwinTab, prgVtwin);
-            vts500 = new VTS500(vtsLogGeneral, vtsTab, prgVts500);
+            rns = new RNS(rnsRichLog, rnsTab, rnsProgressBar);
+            vtwin = new VTWIN(vtwinRichLog, vtwinTabControl, vtwinProgressBar);
+            vts500 = new VTS500(vtsRichLog, vtsTabControl, vtsProgressBar);
+            zenith = new ZENITH(zenithRichLog, zenithTabControl, zenithProgressBar);
 
-            IAServerService.url = AppConfig.Read("SERVICE", "url");
-            
-            bool downloaded = await Task.Run(() => Config.dbDownload());
+            bool downloaded = await Task.Run(() => 
+                Config.dbDownload()
+            );
 
             if (downloaded)
             {
@@ -79,11 +80,17 @@ namespace AOI_VTWIN_RNS
                 // Por algun motivo demora mas que el resto en procesar las inspecciones
                 Config.toEndInspect.Add(14);
 
+                rns.TotalMachines();
+                vtwin.TotalMachines();
+                vts500.TotalMachines();
+                zenith.TotalMachines();
+
                 if (Config.isAutoStart())
                 {
                     rns.Start(true);
                     vtwin.Start(true);
                     vts500.Start(true);
+                    zenith.Start(true);
                 }
                 else
                 {
@@ -175,6 +182,26 @@ namespace AOI_VTWIN_RNS
         }
         #endregion
 
+        #region ZENITH MENU
+        private void zenithMenuItemConfigurar_Click(object sender, EventArgs e)
+        {
+            Zenith_FormConfiguration form = new Zenith_FormConfiguration(zenith);
+            form.ShowDialog();
+        }
+        private void zenithMenuItemIniciar_Click(object sender, EventArgs e)
+        {
+            zenith.Start(true);
+        }
+
+        private void zenithMenuItemDetener_Click(object sender, EventArgs e)
+        {
+            zenith.Stop();
+        }
+        private void zenithMenuItemLimpiar_Click(object sender, EventArgs e)
+        {
+            zenith.aoiLog.reset();
+        }
+        #endregion
         private void MysqlMenu_Configuration(object sender, EventArgs e)
         {
             Mysql_FormConfiguration form = new Mysql_FormConfiguration();
@@ -201,5 +228,7 @@ namespace AOI_VTWIN_RNS
             ModeAutoScroll_ToolStripMenuItem.Checked = !ModeAutoScroll_ToolStripMenuItem.Checked;
             Log.autoscroll = ModeAutoScroll_ToolStripMenuItem.Checked;
         }
+
+
     }
 }

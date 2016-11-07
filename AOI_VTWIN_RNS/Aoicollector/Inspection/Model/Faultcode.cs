@@ -22,7 +22,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
         /// </summary>
         public static void Download()
         {
-            Faultcode.list = new List<Faultcode>();
+            list = new List<Faultcode>();
 
             string query = @"SELECT id,faultcode,descripcion FROM aoidata.rns_faultcode ";
 
@@ -36,7 +36,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
                     fault.id = int.Parse(r["id"].ToString());
                     fault.faultcode = r["faultcode"].ToString();
                     fault.descripcion = r["descripcion"].ToString();
-                    Faultcode.list.Add(fault);
+                    list.Add(fault);
                 }
             }
         }
@@ -46,7 +46,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
         /// </summary>
         public static string Description(string faultcode)
         {
-            Faultcode faultcodeList = Faultcode.list.Find(obj => obj.faultcode == faultcode);
+            Faultcode faultcodeList = list.Find(obj => obj.faultcode == faultcode);
             string textFaultcode = "Sin definir";
             if (faultcodeList != null)
             {

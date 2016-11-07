@@ -28,15 +28,15 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns
                         RNS no tiene inspecciones pendientes, directamente no se procesan porque el archivo se encuentra sin filas   
                         por lo que se realiza el TrazaSave directamente sin verificar estados pendientes                 
                     */
-                    if(panel.pcbInfo.etiquetas==panel.totalBloques)
-                    {
+                    //if(panel.pcbInfo.etiquetas==panel.totalBloques)
+                    //{
                         panel.TrazaSave(aoiConfig.xmlExportPath);
-                    } else
-                    {
-                        panel.machine.LogBroadcast("warning",
-                            string.Format("No se leyeron todas las etiquetas | Solicitadas: {0} | Leidas: {1}", panel.pcbInfo.etiquetas,panel.totalBloques)
-                        );
-                    }
+                    //} else
+                    //{
+                    //    panel.machine.LogBroadcast("warning",
+                    //        string.Format("No se leyeron todas las etiquetas | Solicitadas: {0} | Leidas: {1}", panel.pcbInfo.etiquetas,panel.totalBloques)
+                    //    );
+                    //}
 
                     aoiLog.log("Actualizando fecha de ultima inspeccion en maquina");
                     Machine.UpdateInspectionDate(panel.machine.mysql_id);

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
 using System.IO;
 using AOI_VTWIN_RNS.Aoicollector.IAServer;
@@ -38,11 +37,14 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
 
         // RNS
         public string csvFile;
-        public string csvFileInspectionResultPath;
+       // public string csvFileInspectionResultPath;
         public FileInfo csvFilePath;
         public DateTime csvDatetime;
         public DateTime csvDateCreate;
         public DateTime csvDateSaved;
+        public string rncInspectionProgramVersionName;
+        public DirectoryInfo rnsInspectionResultDirectory;
+        public DirectoryInfo rnsCurrentInspectionResultDirectory;
 
         // VTS
         public int vtsOracleInspId;
@@ -88,33 +90,34 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
             machine.LogBroadcast("verbose",
                 string.Format("+ Verificando datos de barcode desde IAServer ({0})", barcode)
             );
-
             PanelService panelService = new PanelService();
-            panelService.GetInspectionInfo(barcode);
-            if (panelService.exception == null)
-            {
-                if (panelService.result.panel != null)
-                {
-                    panelId = panelService.result.panel.id;
-                    op = panelService.result.panel.inspected_op;                   
 
-                    machine.LogBroadcast("notify",
-                        string.Format("+ OP Asignada: {1} | Panel ID: ({0})", panelId, op)
-                    );
-                }
-                else
-                {
-                    machine.LogBroadcast("warning",
-                        string.Format("+ El panel no fue registrado en IAServer ({0})", barcode)
-                    );
-                }
-            }
-            else
-            {
-                machine.log.stack(
-                    string.Format("+ Stack Error en la verificacion de panel en IAServer ({0}) ", barcode
-                ), this, panelService.exception);
-            }
+            // Comentado hasta que solucione el service
+            //panelService.GetInspectionInfo(barcode);
+            //if (panelService.error == null)
+            //{
+            //    if (panelService.result.panel != null)
+            //    {
+            //        panelId = panelService.result.panel.id;
+            //        op = panelService.result.panel.inspected_op;                   
+
+            //        machine.LogBroadcast("notify",
+            //            string.Format("+ OP Asignada: {1} | Panel ID: ({0})", panelId, op)
+            //        );
+            //    }
+            //    else
+            //    {
+            //        machine.LogBroadcast("warning",
+            //            string.Format("+ El panel no fue registrado en IAServer ({0})", barcode)
+            //        );
+            //    }
+            //}
+            //else
+            //{
+            //    machine.log.stack(
+            //        string.Format("+ Stack Error en la verificacion de panel en IAServer ({0}) ", barcode
+            //    ), this, panelService.exception);
+            //}
 
             if (panelId == 0)
             {

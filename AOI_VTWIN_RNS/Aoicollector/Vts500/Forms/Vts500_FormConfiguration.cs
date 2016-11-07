@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 using AOI_VTWIN_RNS.Src.Config;
@@ -33,11 +27,11 @@ namespace AOI_VTWIN_RNS
             txtUser.Text = AppConfig.Read(aoi.aoiConfig.machineType, "user");
             txtPass.Text = AppConfig.Read(aoi.aoiConfig.machineType, "pass");
 
-            txtOracleServer.Text = AppConfig.Read(aoi.aoiConfig.machineType, "oracle_server");
-            txtOracleService.Text = AppConfig.Read(aoi.aoiConfig.machineType, "oracle_service");
-            txtOracleUser.Text = AppConfig.Read(aoi.aoiConfig.machineType, "oracle_user");
-            txtOraclePass.Text = AppConfig.Read(aoi.aoiConfig.machineType, "oracle_pass");
-            txtOraclePort.Text = AppConfig.Read(aoi.aoiConfig.machineType, "oracle_port");
+            txtOracleServer.Text = AppConfig.Read(aoi.aoiConfig.machineType, "db_host");
+            txtOracleUser.Text = AppConfig.Read(aoi.aoiConfig.machineType, "db_user");
+            txtOraclePass.Text = AppConfig.Read(aoi.aoiConfig.machineType, "db_pass");
+            txtOraclePort.Text = AppConfig.Read(aoi.aoiConfig.machineType, "db_port");
+            txtOracleService.Text = AppConfig.Read(aoi.aoiConfig.machineType, "db_service");
         }
 
         private void btnXML_Click(object sender, EventArgs e)
@@ -94,11 +88,11 @@ namespace AOI_VTWIN_RNS
             save = Validate("user", txtUser.Text, "Complete el campo Usuario");
             save = Validate("pass", txtPass.Text, "Complete el campo Clave");
 
-            save = Validate("oracle_server", txtOracleServer.Text, "Complete el campo Servidor");
-            save = Validate("oracle_service", txtOracleService.Text, "Complete el campo Servicio");
-            save = Validate("oracle_port", txtOraclePort.Text, "Complete el campo Puerto");
-            save = Validate("oracle_user", txtOracleUser.Text, "Complete el campo Usuario");
-            save = Validate("oracle_pass", txtOraclePass.Text, "Complete el campo Clave");
+            save = Validate("db_host", txtOracleServer.Text, "Complete el campo Servidor");
+            save = Validate("db_port", txtOraclePort.Text, "Complete el campo Puerto");
+            save = Validate("db_user", txtOracleUser.Text, "Complete el campo Usuario");
+            save = Validate("db_pass", txtOraclePass.Text, "Complete el campo Clave");
+            save = Validate("db_service", txtOracleService.Text, "Complete el campo Servicio");
 
             // Cargo la configuracion de los campos nuevamente
             aoi.LoadConfig(aoi.aoiConfig.machineType, aoi.aoiConfig.machineNameKey);

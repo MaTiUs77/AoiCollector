@@ -6,7 +6,7 @@ using System.Data;
 
 using AOI_VTWIN_RNS.Src.Database;
 using AOI_VTWIN_RNS.Aoicollector.Core;
-using AOI_VTWIN_RNS.Aoicollector.IAServer;
+using System.Diagnostics;
 
 namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
 {
@@ -29,11 +29,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
         public string line_barcode;
         public bool active = true;
 
-//        public string op;
-        //        public bool opActive;
-        //        public bool opDeclara = false;
-
-        public ProductionService service;
+        public ProductionService prodService;
 
         public ProductionService GetProductionInfoFromIAServer()
         {
@@ -41,14 +37,18 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
                string.Format("+ Verificando informacion de produccion desde IAServer ({0})", line_barcode)
            );
 
-            service = new ProductionService();
-            service.GetProductionInfo(line_barcode);
+            Stopwatch sw = Stopwatch.StartNew();
+            prodService = new ProductionService();
+            prodService.GetProdInfo(line_barcode);
+            sw.Stop();
 
-            if (service.exception == null)
+            LogBroadcast("verbose",
+               string.Format("+ API GetProdInfo Tiempo de respuesta: (ms) {0} ",
+               (long)sw.ElapsedMilliseconds)
+            );
+
+            if (prodService.error == null)
             {
-
-                //                op = service.result.produccion.op;
-                //machine.opDeclara = Convert.ToBoolean(Convert.ToInt32(productionService.result.produccion.sfcs.declara));
 
                 #region LOG Produccion Info
                 LogBroadcast("notify",
@@ -61,14 +61,14 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
                         "Porcentaje: {4} \n " +
                         "Semielaborado: {5} \n " +
                         "SFCS Declara: {7} \n ",
-                        service.result.produccion.wip.active,
-                        service.result.produccion.wip.wip_ot.start_quantity,
-                        service.result.produccion.wip.wip_ot.quantity_completed,
-                        service.result.produccion.wip.wip_ot.restante,
-                        service.result.produccion.wip.wip_ot.porcentaje,
-                        service.result.produccion.wip.wip_ot.codigo_producto,
-                        service.result.produccion.op,
-                        service.result.produccion.sfcs.declara
+                        prodService.result.produccion.wip.active,
+                        prodService.result.produccion.wip.wip_ot.start_quantity,
+                        prodService.result.produccion.wip.wip_ot.quantity_completed,
+                        prodService.result.produccion.wip.wip_ot.restante,
+                        prodService.result.produccion.wip.wip_ot.porcentaje,
+                        prodService.result.produccion.wip.wip_ot.codigo_producto,
+                        prodService.result.produccion.op,
+                        prodService.result.produccion.sfcs.declara
                     )
                 );
                 #endregion
@@ -77,16 +77,16 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
             {
                 log.stack(
                     string.Format("+ Stack Error en la verificacion de produccion desde IAServer ({0})", line_barcode
-                ), this, service.exception);
+                ), this, prodService.error);
             }
                 
 
-            return service;
+            return prodService;
         }
 
         public bool serviceDeclaraToBool()
         {
-            return Convert.ToBoolean(Convert.ToInt32(service.result.produccion.sfcs.declara));
+            return Convert.ToBoolean(Convert.ToInt32(prodService.result.produccion.sfcs.declara));
         }
 
         public void Ping()

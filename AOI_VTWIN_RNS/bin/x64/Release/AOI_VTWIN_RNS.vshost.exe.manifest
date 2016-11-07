@@ -43,26 +43,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="AOI_VTWIN_RNS.exe" size="1278464">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="AOI_VTWIN_RNS.exe" size="1304576">
       <assemblyIdentity name="AOI_VTWIN_RNS" version="1.0.0.0" language="neutral" processorArchitecture="amd64" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>zX3tbVfkILW1YTxpzQXJb7IbdMtM1RatBYQrlIcgURk=</dsig:DigestValue>
-      </hash>
-    </dependentAssembly>
-  </dependency>
-  <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="IAServer.dll" size="34816">
-      <assemblyIdentity name="IAServer" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
-      <hash>
-        <dsig:Transforms>
-          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
-        </dsig:Transforms>
-        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>DyrNfQqhQPJsTVjaW5EQXpB7RUHfvSjYrO28djq/7L0=</dsig:DigestValue>
+        <dsig:DigestValue>aVYUix0Qn7BWAiKb0j6G+o7wnVnZ3hJe3eXUEBBpouE=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -102,13 +90,13 @@
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="AOI_VTWIN_RNS.exe.config" size="3389">
+  <file name="AOI_VTWIN_RNS.exe.config" size="3927">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>JsvwHTDJQ4oLLA6wn/xDok0DiDw4QQs74/Sc5S7GzHg=</dsig:DigestValue>
+      <dsig:DigestValue>5r17yD0IWsWRiNQ6qx2Pbz7Vd9n4UCIgDKUEAsX8QTI=</dsig:DigestValue>
     </hash>
   </file>
   <file name="icono.ico" size="370070">

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Data;
 
 using AOI_VTWIN_RNS.Src.Config;
@@ -13,7 +10,7 @@ namespace AOI_VTWIN_RNS.Src.Database
     {
         public string user = "";
         public string pass = "";
-        public string server = "";
+        public string host = "";
         public string service = "";
         public string port = "";
 
@@ -21,11 +18,11 @@ namespace AOI_VTWIN_RNS.Src.Database
 
         public void LoadConfig(string AppConfigTag) 
         {
-            user = AppConfig.Read(AppConfigTag, "oracle_user");
-            pass = AppConfig.Read(AppConfigTag, "oracle_pass");
-            server = AppConfig.Read(AppConfigTag, "oracle_server");
-            service = AppConfig.Read(AppConfigTag, "oracle_service");
-            port = AppConfig.Read(AppConfigTag, "oracle_port");
+            host = AppConfig.Read(AppConfigTag, "db_host");
+            port = AppConfig.Read(AppConfigTag, "db_port");
+            user = AppConfig.Read(AppConfigTag, "db_user");
+            pass = AppConfig.Read(AppConfigTag, "db_pass");
+            service = AppConfig.Read(AppConfigTag, "db_service");
         }
 
         public void Connect()
@@ -36,7 +33,7 @@ namespace AOI_VTWIN_RNS.Src.Database
             */
 
             // Sin TNS
-            string connectionString = "Data Source=(DESCRIPTION= (ADDRESS= (PROTOCOL=TCP) (HOST="+server+") (PORT="+port+ ")) (CONNECT_DATA= (SERVICE_NAME=" + service + ")));User ID=" + user + ";Password=" + pass+ ";";
+            string connectionString = "Data Source=(DESCRIPTION= (ADDRESS= (PROTOCOL=TCP) (HOST="+host+") (PORT="+port+ ")) (CONNECT_DATA= (SERVICE_NAME=" + service + ")));User ID=" + user + ";Password=" + pass+ ";";
 
             oConnection = new OracleConnection(connectionString);
             oConnection.Open();

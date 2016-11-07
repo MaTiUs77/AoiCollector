@@ -5,9 +5,9 @@ using System.Text;
 
 namespace AOI_VTWIN_RNS.Aoicollector.Rns.Controller
 {
-    class InspectionResultObject
+    class InspectionTextFileAtrribute
     {
-        public string header = "";
-        public Dictionary<string, string> value = new Dictionary<string, string>();
+        public string variable = "";
+        public string valor = "";
     }
 }

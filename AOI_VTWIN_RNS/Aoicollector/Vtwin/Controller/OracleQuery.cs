@@ -20,7 +20,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin.Controller
 
                 filtro = @"	
 	                PCI.TEST_MACHINE_ID = " + createMachineId + @" AND 
-	                PCI.END_DATE > TO_DATE('" + endDate + @"', 'YYYY-MM-DD HH24:MI:SS')  
+	                PCI.END_DATE > TO_DATE('2016-09-29 09:31:20', 'YYYY-MM-DD HH24:MI:SS')  
                 ";
 
             }

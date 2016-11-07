@@ -21,6 +21,8 @@ namespace AOI_VTWIN_RNS.Aoicollector
     {
         public bool aoiReady = false;
         public OracleConnector oracle = new OracleConnector();
+        public SqlServerConnector sqlserver = new SqlServerConnector();
+
         public Config aoiConfig      { get; set; }
         public Worker aoiWorker { get; set; }
         public RichLog aoiLog { get; set; }
@@ -55,15 +57,44 @@ namespace AOI_VTWIN_RNS.Aoicollector
         private void LoadOracle()
         {
             oracle.LoadConfig(aoiConfig.machineType);
-            if(oracle.server != null)
+            if(oracle.host != null)
             {
                 aoiLog.log("------------------- Oracle config -----------------------");
-                aoiLog.log("+ Server: " + oracle.server);
-                aoiLog.log("+ Service: " + oracle.service);
+                aoiLog.log("+ Server: " + oracle.host);
                 aoiLog.log("+ Port: " + oracle.port);
                 aoiLog.log("+ User: " + oracle.user);
                 aoiLog.log("+ Pass: " + oracle.pass);
+                aoiLog.log("+ Service: " + oracle.service);
                 aoiLog.log("---------------------------------------------------------");
+            }
+        }
+
+        private void LoadSqlserver()
+        {
+            sqlserver.LoadConfig(aoiConfig.machineType);
+            if (sqlserver.host != null)
+            {
+                aoiLog.log("------------------- SqlServer config -----------------------");
+                aoiLog.log("+ Server: " + sqlserver.host);
+                aoiLog.log("+ Port: " + sqlserver.port);
+                aoiLog.log("+ User: " + sqlserver.user);
+                aoiLog.log("+ Pass: " + sqlserver.pass);
+                aoiLog.log("+ Database: " + sqlserver.database);
+                aoiLog.log("---------------------------------------------------------");
+            }
+        }
+
+        public void LoadDB()
+        {
+            string dbType = AppConfig.Read(aoiConfig.machineType, "db_type");
+            switch(dbType)
+            {
+                case "sqlserver":
+                    LoadSqlserver();
+                    break;
+                case "oracle":
+                    LoadOracle();
+                    break;
             }
         }
 
@@ -74,10 +105,16 @@ namespace AOI_VTWIN_RNS.Aoicollector
 
             LoadConfig(machineType, machineNameKey);
             LoadWorker(progress, WorkerStart);
-            LoadOracle();
+            LoadDB();
             UseCredential();
 
             aoiLog.log("Prepare() de " + machineType + " completo");
+        }
+
+        public void TotalMachines()
+        {
+            IEnumerable<Machine> machines = Machine.list.Where(obj => obj.tipo == aoiConfig.machineNameKey);
+            aoiLog.notify(string.Format("Maquinas: {0} ", machines.Count()));
         }
 
         public async void Start(bool forceStart = false)
@@ -92,7 +129,9 @@ namespace AOI_VTWIN_RNS.Aoicollector
                 aoiLog.warning("No se pudo descargar informacion del servidor.");
                 aoiLog.verbose("Re intentando conexion...");
 
-                bool downloaded = await Task.Run(() => Config.dbDownload());
+                bool downloaded = await Task.Run(() => 
+                    Config.dbDownload()
+                );
 
                 if (downloaded)
                 {
@@ -169,6 +208,11 @@ namespace AOI_VTWIN_RNS.Aoicollector
             return complete;
         }
 
+
+        /// <summary>
+        /// Agrega un TAB dinamico, con su respectivo box de logeo
+        /// </summary>
+        /// <param name="inspMachine"></param>
         public void DynamicTab(Machine inspMachine)
         {
             MethodInvoker makeDyndamicTab = new MethodInvoker(() =>

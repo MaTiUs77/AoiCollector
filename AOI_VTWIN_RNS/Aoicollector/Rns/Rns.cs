@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.ComponentModel;
 using System.Windows.Forms;
-using System.Threading;
 using System.IO;
 
 using AOI_VTWIN_RNS.Src.Util.Files;
-using AOI_VTWIN_RNS.Aoicollector.Core;
 
 namespace AOI_VTWIN_RNS.Aoicollector.Rns
 {

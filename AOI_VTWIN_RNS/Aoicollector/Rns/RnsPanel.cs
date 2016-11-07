@@ -8,6 +8,7 @@ using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
 using AOI_VTWIN_RNS.Aoicollector.Inspection;
 using AOI_VTWIN_RNS.Src.Util.Files;
 using AOI_VTWIN_RNS.Aoicollector.Rns.Controller;
+using System.Text.RegularExpressions;
 
 namespace AOI_VTWIN_RNS.Aoicollector.Rns
 {
@@ -16,10 +17,10 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns
         private RnsInspection rnsi;
 
         /// <summary>
-        /// Completa los datos del panel inspeccionado
+        /// Busca todos los datos de inspeccion relacionados con el panel
         /// </summary>
-        /// <param name="r"></param>
-        /// <param name="inspMachine"></param>
+        /// <param name="fileInfo"></param>
+        /// <param name="_rnsInspection"></param>
         public RnsPanel(FileInfo fileInfo, RnsInspection _rnsInspection)
         {
             rnsi = _rnsInspection;
@@ -31,13 +32,11 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns
         {
             DataTable contenidoCsv = null;
 
-            #region INTENTA ABRIR ARCHIVO CSV
+            #region ABRE Y LEE TODAS LAS FILAS DEL ARCHIVO CSV
             try
             {
                 rnsi.aoiLog.debug("Leyendo: " + csvFilePath.FullName);
                 contenidoCsv = FilesHandler.FileToTable(csvFilePath.FullName, ',');
-                //    string newFile = @"\\vt-rns-srv\CGSData\InspectionCSVFiles\" + file.Name;
-                //    File.Copy(file.FullName,newFile, true);
             }
             catch (Exception ex)
             {
@@ -50,7 +49,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns
             {
                 if (contenidoCsv.Rows.Count > 0)
                 {
-                    #region LEE COLUMNAS DE ARCHIVO CSV
+                    #region LEE COLUMNAS DE ARCHIVO CSV Y VALIDA BARCODE
                     DataRow info = contenidoCsv.Rows[0];
 
                     csvFile = csvFilePath.Name;
@@ -63,7 +62,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns
 
                     maquina = info[5].ToString().Replace("\"", "").Trim();
                     programa = info[7].ToString().Replace("\"", "").Trim();
-
+ 
                     barcode = info[36].ToString().Replace("\"", "").Trim();
 
                     BarcodeValidate();
@@ -90,7 +89,11 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns
                             rnsi.DynamicTab(machine);
 
                             machine.LogBroadcast("info",
-                                string.Format("{0} | Maquina {1} | Ultima inspeccion {2}", machine.smd, machine.line_barcode, machine.ultima_inspeccion)
+                                string.Format("{0} | Maquina {1} | Ultima inspeccion {2}", 
+                                    machine.smd, 
+                                    machine.line_barcode, 
+                                    machine.ultima_inspeccion
+                                )
                             );
 
                             // Adjunto informacion del PCB usado para inspeccionar, contiene numero de bloques y block_id entre otros datos.
@@ -100,23 +103,23 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns
                                 pcbInfo = pcb_info;
                             }
 
-                            // Obtiene detalle de errores del panel completo
+                            // Adhiere las rutas a las carpetas de inspecciones
+                            InspectionResult inspResult = new InspectionResult(this,rnsi);
+
                             detailList = GetInspectionDetail(contenidoCsv);
 
                             if (!maquina.Contains("PT"))
                             {
-                                InspectionResultFile inspResult = new InspectionResultFile(this,rnsi);
+
                                 bloqueList = inspResult.GetBlockBarcodes();
                             }
 
                             MakeRevisionToAll();
 
                             machine.LogBroadcast("info",
-                               string.Format("Programa: [{0}] | Barcode: {1} | Bloques: {4} | Etiquetas: {2} | Secundaria: {3}", 
+                               string.Format("Programa: [{0}] | Barcode: {1} | Bloques: {2}", 
                                programa, 
                                barcode, 
-                               pcbInfo.etiquetas, 
-                               pcbInfo.secundaria,
                                totalBloques
                                )
                             );
@@ -130,13 +133,16 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns
             }
         }
 
+
         /// <summary>
-        /// Obtiene los detalles de la inspeccion
+        /// Obtiene detalle de errores del panel completo (extraidos del resumen del csv)
         /// </summary>
-        /// <param name="contenidoCSV"></param>
-        /// <returns>List<InspectionDetail></returns>
+        /// <param name="contenidoCsv"></param>
+        /// <returns></returns>
         private List<Detail> GetInspectionDetail(DataTable contenidoCsv)
         {
+            List<FileInfo> imageFiles = rnsCurrentInspectionResultDirectory.GetFiles("*.jpg").ToList();
+
             List<Detail> detalles = new List<Detail>();
             // Recorro todos los detalles de la inspeccion
             foreach (DataRow r in contenidoCsv.Rows)
@@ -147,11 +153,13 @@ namespace AOI_VTWIN_RNS.Aoicollector.Rns
                 det.referencia = r[42].ToString().Replace("\"", "").Trim();
                 if (!det.referencia.Trim().Equals(""))
                 {
-
+                    det.componentNo = int.Parse(r[41].ToString().Replace("\"", "").Trim());
                     det.bloqueId = int.Parse(r[39].ToString().Replace("\"", "").Trim());
                     det.faultcode = r[49].ToString().Replace("\"", "").Trim();
                     det.realFaultcode = r[50].ToString().Replace("\"", "").Trim();
                     det.descripcionFaultcode = Faultcode.Description(det.faultcode);
+
+                    det.faultImages = imageFiles.Where(x => x.Name.Contains(det.componentNo+"-")).ToList();
 
                     // Si el real_faultcode no se detecto el error es FALSO 
                     if (det.realFaultcode.Equals("0") || det.realFaultcode.Equals(""))

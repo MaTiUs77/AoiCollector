@@ -1,44 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Data;
-using System.Windows.Forms;
 using System.Data.SqlClient;
 
 using AOI_VTWIN_RNS.Src.Config;
 
 namespace AOI_VTWIN_RNS.Src.Database
 {
-    class SqlServerConnector
+    public class SqlServerConnector
     {
         private SqlConnection connection;
-        public static string server = "";
-        public static string database = "";
-        public static string user = "";
-        public static string password = "";
+        public string host = "";
+        public string port = "";
+        public string user = "";
+        public string pass = "";
+        public string database = "";
 
         public bool rows = false;
 
-        public static void LoadConfig() 
+        public void LoadConfig(string AppConfigTag) 
         {
-            SqlServerConnector.database = AppConfig.Read("SQLSERVER", "database");
-            SqlServerConnector.server = AppConfig.Read("SQLSERVER", "server");
-            SqlServerConnector.user = AppConfig.Read("SQLSERVER", "user");
-            SqlServerConnector.password = AppConfig.Read("SQLSERVER", "pass");
+            host = AppConfig.Read(AppConfigTag, "db_host");
+            port = AppConfig.Read(AppConfigTag, "db_port");
+            user = AppConfig.Read(AppConfigTag, "db_user");
+            pass = AppConfig.Read(AppConfigTag, "db_pass");
+            database = AppConfig.Read(AppConfigTag, "db_database");
         }
 
-        public SqlServerConnector()
-        {
-            Initialize();
-        }
-
-        private void Initialize()
+        private void Connect()
         {
             string connectionString;
-            connectionString = "User Id=" + SqlServerConnector.user + ";" +
-                               "Password=" + SqlServerConnector.password + ";Server=" + SqlServerConnector.server + ";" +
-                               "Database=" + SqlServerConnector.database + ";"; 
+            connectionString = "User Id=" + user + ";" +
+                               "Password=" + pass + ";Server=" + host + ";" +
+                               "Database=" + database + ";"; 
             connection = new SqlConnection(connectionString);
         }
 
@@ -91,7 +84,9 @@ namespace AOI_VTWIN_RNS.Src.Database
         public bool Ejecutar(string query)
         {
             bool rs = false;
-            if (this.OpenConnection() == true)
+            Connect();
+
+            if (OpenConnection() == true)
             {
                 SqlCommand cmd = new SqlCommand(query, connection);
 
@@ -115,7 +110,7 @@ namespace AOI_VTWIN_RNS.Src.Database
                     }
                     rs = false;
                 }
-                this.CloseConnection();
+                CloseConnection();
             }
             return rs;
         }     
@@ -123,15 +118,15 @@ namespace AOI_VTWIN_RNS.Src.Database
         public DataTable Select(string query)
         {
             DataTable rs = new DataTable();
-
-            if (this.OpenConnection() == true)
+            Connect();
+            if (OpenConnection() == true)
             {
                 SqlCommand cmd = new SqlCommand(query, connection);
 
                 SqlDataAdapter adapter = new SqlDataAdapter();
                 adapter.SelectCommand = cmd;
                 adapter.Fill(rs);
-                this.CloseConnection();
+                CloseConnection();
             }
             Rows(rs);
             return rs;

@@ -33,66 +33,75 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
                        pendiente,
                        totalErroresFalsos,
                        totalErroresReales
+
                    )
                 );
 
-                if(!pendiente)
+                if (!pendiente)
                 {
-                    // Obtiene datos de produccion de la linea
-                    Stopwatch sw = Stopwatch.StartNew();
-
                     machine.GetProductionInfoFromIAServer();
-                    if(machine.service.exception == null)
+                    if (machine.prodService.error == null) // El stack lo muestro en el metodo GetProductionInfoFromIAServer
                     {
-                        // Solo si la OP se encuentra activa, procedo
-                        if (machine.service.result.produccion.wip.active)
+                        if (machine.prodService.result.error == null)
                         {
-                            // Verifico que la OP tenga placas restantes
-                            panelService = PanelHandlerService();
-
-                            sw.Stop();
-
-                            machine.LogBroadcast("info",
-                                string.Format("+ Tiempo de respuesta de services: (ms) {0} ",
-                                (long)sw.ElapsedMilliseconds)
-                            );
-
-                            if (panelId > 0 && panelService.exception == null && machine.service.exception == null)
+                            if (machine.prodService.result.produccion != null)
                             {
-                               
-                                #region SAVE BLOCKS
-                                // Verifico que la OP del panel inspeccionado, corresponda a la OP configurada en produccion
-                                if (op == machine.service.result.produccion.op)
+                                #region OPERAR
+                                // Solo si la OP se encuentra activa, procedo
+                                if (machine.prodService.result.produccion.wip.active)
                                 {
-                                    SaveBlocks(path);
+                                    // Verifico que la OP tenga placas restantes
+                                    panelService = PanelHandlerService();
+
+                                    if (panelId > 0 && panelService.error == null && machine.prodService.error == null)
+                                    {
+                                        #region SAVE BLOCKS
+                                        // Verifico que la OP del panel inspeccionado, corresponda a la OP configurada en produccion
+                                        if (op == machine.prodService.result.produccion.op)
+                                        {
+                                            SaveBlocks(path);
+                                        }
+                                        else
+                                        {
+                                            machine.LogBroadcast("warning",
+                                                string.Format("+ El panel {0} esta registrado con {1}, es diferente de {2} en produccion",
+                                                barcode,
+                                                op,
+                                                machine.prodService.result.produccion.op)
+                                            );
+                                        }
+                                        #endregion
+                                    }
                                 }
-                                else
-                                {
+                                else {
                                     machine.LogBroadcast("warning",
-                                        string.Format("+ El panel {0} esta registrado con {1}, es diferente de {2} en produccion",
-                                        barcode,
-                                        op,
-                                        machine.service.result.produccion.op)
+                                        string.Format("+ La {0} definida en produccion, no se encuentra activa!, se cancela la operacion", op)
                                     );
                                 }
                                 #endregion
+                            } else
+                            {
+                                machine.LogBroadcast("warning",
+                                    string.Format("+ Error al obtener datos de produccion del service, se cancela la operacion")
+                                );
                             }
                         } else
                         {
-                            machine.LogBroadcast("warning",
-                                string.Format("+ La {0} definida en produccion, no se encuentra activa!, se cancela la operacion", op)
+                            machine.LogBroadcast("error",
+                                string.Format("+ Error al obtener resultados del service {0}", machine.prodService.result.error)
                             );
                         }
-                    }                    
+                    } 
                 } else
                 {
                     machine.LogBroadcast("warning",
-                        string.Format("+ El panel {0} se encuentra en estado PENDIENTE de inspeccion, se cancela la operacion", barcode)
-                    );
+                            string.Format("+ El panel se encuentra pendiente de inspeccion, se cancela la operacion")
+                        );
                 }
-            } else
+            }
+            else
             {
-                machine.LogBroadcast("warning", 
+                machine.LogBroadcast("warning",
                     string.Format("+ Etiqueta virtual {0} en {1} | Maquina: {2}, se cancela la operacion", barcode, programa, machine.maquina)
                 );
             }
@@ -100,33 +109,42 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
 
         private PanelService PanelHandlerService()
         {
+            Stopwatch sw = Stopwatch.StartNew();
             PanelService panelService = GetBarcodeInfoFromIAServer();
 
+            sw.Stop();
+
+            machine.LogBroadcast("verbose",
+                string.Format("+ API GetBarcodeInfo Tiempo de respuesta: (ms) {0} ",
+                (long)sw.ElapsedMilliseconds)
+            );
+
             // Solo proceso si el servicio respondio sin problemas
-            
-            if (panelService.exception == null)
+
+            if (panelService.error == null)
             {
                 machine.LogBroadcast("debug",
                     string.Format("+ Modo: {0}", spMode)
                 );
 
                 // Si la linea tiene configurada la Trazabilidad por Cogiscan, valida ruta
-                if (machine.service.result.produccion.cogiscan.Equals("T"))
+                if (machine.prodService.result.produccion.cogiscan.Equals("T"))
                 {
                     machine.LogBroadcast("info",
                         string.Format("+ Validando ruta de cogiscan")
                     );
 
-                    if (panelService.result.cogiscan.product.attributes.operation.Equals("AOI"))
-                    {
-                        SavePanel(panelService);
-                    }
-                    else
-                    {
-                        machine.LogBroadcast("warning",
-                            string.Format("+ El panel {0} no se encuentra en la ruta AOI", barcode)
-                        );
-                    }
+                    // Comentado hasta que repare el service
+                    //if (panelService.result.cogiscan.product.attributes.operation.Equals("AOI"))
+                    //{
+                    //    SavePanel(panelService);
+                    //}
+                    //else
+                    //{
+                    //    machine.LogBroadcast("warning",
+                    //        string.Format("+ El panel {0} no se encuentra en la ruta AOI", barcode)
+                    //    );
+                    //}
                 } else
                 {
                     SavePanel(panelService);
@@ -135,7 +153,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
             {
                 machine.log.stack(
                     string.Format("+ PanelService exception"
-                ), this, panelService.exception);
+                ), this, panelService.error);
             }
 
             return panelService;
@@ -237,12 +255,12 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
                     }
                     #endregion
 
-                    if (machine.service.result.produccion.sfcs.declara.Equals("1"))
+                    if (machine.prodService.result.produccion.sfcs.declara.Equals("1"))
                     {
                         machine.LogBroadcast("notify",
                             string.Format("+ {0} declarar con {1}", 
                             bloque.barcode,
-                            machine.service.result.produccion.op
+                            machine.prodService.result.produccion.op
                         ));
                         //Trazabilidad traza = new Trazabilidad();
                         //traza.declareIfNeeded(blockBarcode.barcode);

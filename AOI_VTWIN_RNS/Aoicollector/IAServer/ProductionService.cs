@@ -1,38 +1,34 @@
 ﻿
-using AOI_VTWIN_RNS.Src.Config;
-using IAServerServiceDll;
-using IAServerServiceDll.Mapper;
+using AOI_VTWIN_RNS.Aoicollector.IAServer.Mapper;
+using Newtonsoft.Json;
 using System;
 
 namespace AOI_VTWIN_RNS.Aoicollector
 {
-    public class ProductionService
+    public class ProductionService : Api
     {
-        public ProduccionMapper result;
-        public Exception exception;
+        public ProdInfoMapper result;
 
-        public ProduccionMapper GetProductionInfo(string aoibarcode)
+        public ProdInfoMapper GetProdInfo(string aoibarcode)
         {
+            result = new ProdInfoMapper();
+            hasResponse = false;
+
             try
             {
-                IAServerService ias = new IAServerService();
-                result = ias.GetProductionInfo(aoibarcode);
-                if (ias.error != null)
-                {
-                    throw ias.error;
-                }
-                else
-                {
-                    return result;
-                }
+                string path = apiUrl + "prodinfo/" + aoibarcode;
+                //string path = "http://localhost:8080/aoibarcode/VTRNS6061";
+                
+                string jsonData = Consume(path);
+                hasResponse = true;
+                result = JsonConvert.DeserializeObject<ProdInfoMapper>(jsonData);
             }
             catch (Exception ex)
             {
-                exception = ex;
+                error = ex;
             }
 
             return result;
-
         }
     }
 }
