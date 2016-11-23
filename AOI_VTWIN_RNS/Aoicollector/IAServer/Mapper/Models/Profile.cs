@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace AOI_VTWIN_RNS.Aoicollector.IAServer.Mapper.Models
+namespace CollectorPackage.Aoicollector.IAServer.Mapper.Models
 {
     public class Profile
     {

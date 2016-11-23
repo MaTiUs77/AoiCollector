@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Data;
 
-using AOI_VTWIN_RNS.Src.Database;
-using AOI_VTWIN_RNS.Aoicollector.Core;
+using CollectorPackage.Src.Database;
+using CollectorPackage.Aoicollector.Core;
 using System.Diagnostics;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
+namespace CollectorPackage.Aoicollector.Inspection.Model
 {
     // Datos de maquina en DB MySql
     public class Machine
@@ -21,7 +21,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
         public int oracle_id;
 
         public string maquina;
-        public string linea;
+        public int nroLinea;
         public string smd;
         public string tipo;
         public string ultima_inspeccion;
@@ -92,8 +92,9 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
         public void Ping()
         {
             MySqlConnector sql = new MySqlConnector();
+            sql.LoadConfig("IASERVER");
             string query = @"UPDATE  `aoidata`.`maquina` SET  `ping` =  NOW() WHERE  `id` = " + mysql_id + " LIMIT 1;";
-            DataTable sp = sql.Select(query);
+            DataTable sp = sql.Query(query);
         }
 
         public static void Download()
@@ -117,7 +118,8 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
             ";
 
             MySqlConnector sql = new MySqlConnector();
-            DataTable dt = sql.Select(query);
+            sql.LoadConfig("IASERVER");
+            DataTable dt = sql.Query(query);
             if (sql.rows)
             {
                 foreach (DataRow r in dt.Rows)
@@ -125,28 +127,34 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
                     Machine mac = new Machine();
                     mac.mysql_id = int.Parse(r["id"].ToString());
                     mac.maquina = r["maquina"].ToString();
-                    mac.linea = r["linea"].ToString();
-                    mac.smd = "SMD-"+mac.linea;
+                    mac.nroLinea = int.Parse(r["linea"].ToString());
+                    mac.smd = "SMD-"+mac.nroLinea;
                     mac.tipo = r["tipo"].ToString();
                     mac.ultima_inspeccion = r["ultima_inspeccion"].ToString();
                     mac.line_barcode = r["barcode"].ToString();
                     mac.active = bool.Parse(r["active"].ToString());
                     mac.ping = r["ping"].ToString();
-                    Machine.list.Add(mac);
+                    list.Add(mac);
                 }
             }
+        }
+
+        public static Machine findByCode(string aoicode)
+        {
+            return list.Find(obj => obj.maquina == aoicode);
         }
 
         public static void UpdateInspectionDate(int id, DateTime custom_date)
         {
             MySqlConnector sql = new MySqlConnector();
+            sql.LoadConfig("IASERVER");
             string query = @"CALL sp_updateInspeccionMaquina(" + id + ",'" + custom_date.ToString("yyyy-MM-dd HH:mm:ss") + "');";
-            DataTable sp = sql.Select(query);
+            DataTable sp = sql.Query(query);
             if (sql.rows)
             {
                 string ultima_inspeccion = sp.Rows[0]["ultima_inspeccion"].ToString();
 
-                Machine update = Machine.list.Find(obj => obj.mysql_id == id);
+                Machine update = list.Find(obj => obj.mysql_id == id);
                 update.ultima_inspeccion = ultima_inspeccion;
             }
         }
@@ -154,13 +162,14 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
         public static void UpdateInspectionDate(int id)
         {
             MySqlConnector sql = new MySqlConnector();
+            sql.LoadConfig("IASERVER");
             string query = @"CALL sp_updateInspeccionMaquina(" + id + ", NOW());";
-            DataTable sp = sql.Select(query);
+            DataTable sp = sql.Query(query);
             if (sql.rows)
             {
                 string ultima_inspeccion = sp.Rows[0]["ultima_inspeccion"].ToString();
 
-                Machine update = Machine.list.Find(obj => obj.mysql_id == id);
+                Machine update = list.Find(obj => obj.mysql_id == id);
                 update.ultima_inspeccion = ultima_inspeccion;
             }
         }

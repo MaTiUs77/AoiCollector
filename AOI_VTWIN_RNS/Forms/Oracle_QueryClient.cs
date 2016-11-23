@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
-using AOI_VTWIN_RNS.Src.Database;
+using CollectorPackage.Src.Database;
 
-namespace AOI_VTWIN_RNS
+namespace CollectorPackage
 {
     public partial class Oracle_QueryClient : Form
     {

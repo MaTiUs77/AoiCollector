@@ -7,12 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-using AOI_VTWIN_RNS.Src.Database;
-using AOI_VTWIN_RNS.Aoicollector.Vtwin;
-using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
-using AOI_VTWIN_RNS.Aoicollector.Core;
+using CollectorPackage.Src.Database;
+using CollectorPackage.Aoicollector.Vtwin;
+using CollectorPackage.Aoicollector.Inspection.Model;
+using CollectorPackage.Aoicollector.Core;
 
-namespace AOI_VTWIN_RNS
+namespace CollectorPackage
 {
     public partial class Oracle_PanelData : Form
     {

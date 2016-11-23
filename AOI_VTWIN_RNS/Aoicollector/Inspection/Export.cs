@@ -7,10 +7,10 @@ using System.Xml.Linq;
 using System.Text.RegularExpressions;
 using System.Data;
 
-using AOI_VTWIN_RNS.Src.Database;
-using AOI_VTWIN_RNS.Aoicollector.Core;
+using CollectorPackage.Src.Database;
+using CollectorPackage.Aoicollector.Core;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Inspection
+namespace CollectorPackage.Aoicollector.Inspection
 {
     public class Export
     {
@@ -54,7 +54,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
         /// </summary>
         public static void toXML(InspectionController ictrl, Bloque bloque, string path)
         {
-            string exportPath = Path.Combine(path, ictrl.machine.line_barcode + "_smd-" + ictrl.machine.linea);
+            string exportPath = Path.Combine(path, ictrl.machine.line_barcode + "_" + ictrl.machine.smd);
 
             DirectoryInfo di = new DirectoryInfo(exportPath);
             if (!di.Exists)
@@ -139,7 +139,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
                     new XAttribute(XNamespace.Xmlns + "xsd", xsd),
                         new XElement("aoi",
                             new XElement("info",
-                                new XElement("linea", "SMD-" + ictrl.machine.linea),
+                                new XElement("linea", ictrl.machine.smd),
                                 new XElement("maquina", ictrl.machine.maquina),
                                 new XElement("programa", ictrl.programa),
                                 new XElement("total_bloques", ictrl.pcbInfo.bloques.ToString()),

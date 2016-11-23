@@ -1,12 +1,12 @@
-﻿using AOI_VTWIN_RNS.Aoicollector.Inspection;
-using AOI_VTWIN_RNS.Src.Util.Files;
+﻿using CollectorPackage.Aoicollector.Inspection;
+using CollectorPackage.Src.Util.Files;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Rns.Controller
+namespace CollectorPackage.Aoicollector.Rns.Controller
 {
     class InspectionResult : InspectionTextFileHandler
     {

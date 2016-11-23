@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Data;
 
-using AOI_VTWIN_RNS.Src.Database;
-using AOI_VTWIN_RNS.Aoicollector.Core;
+using CollectorPackage.Src.Database;
+using CollectorPackage.Aoicollector.Core;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Inspection
+namespace CollectorPackage.Aoicollector.Inspection
 {
     public class History
     {
@@ -26,7 +23,8 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
             {
                 string query = "CALL aoidata.sp_insertHistoryPanel(" + save_id_panel + ", '" + mode + "')";
                 MySqlConnector sql = new MySqlConnector();
-                DataTable dt = sql.Select(query);
+                sql.LoadConfig("IASERVER");
+                DataTable dt = sql.Query(query);
                 if (sql.rows)
                 {
                     DataRow r = dt.Rows[0];
@@ -36,7 +34,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
             catch (Exception ex)
             {
                 isStackError = true;
-                Log.Stack("SavePanel()", this, ex);
+                Log.Stack("HistorySavePanel()", this, ex);
             }
         }
 
@@ -52,7 +50,8 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
                 {
                     string query = "CALL aoidata.sp_insertHistoryBlock(" + idPanel + "," + save_id_bloque + ")";
                     MySqlConnector sql = new MySqlConnector();
-                    DataTable dt = sql.Select(query);
+                    sql.LoadConfig("IASERVER");
+                    DataTable dt = sql.Query(query);
                     if (sql.rows)
                     {
                         DataRow r = dt.Rows[0];
@@ -63,7 +62,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
             catch (Exception ex)
             {
                 isStackError = true;
-                Log.Stack("SaveBloque()", this, ex);
+                Log.Stack("HistorySaveBloque()", this, ex);
             }
         }
 
@@ -79,13 +78,14 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
                 {
                     string query = "CALL aoidata.sp_insertHistoryDetail(" + save_id_bloque + ")";
                     MySqlConnector sql = new MySqlConnector();
-                    DataTable dt = sql.Select(query);
+                    sql.LoadConfig("IASERVER");
+                    DataTable dt = sql.Query(query);
                 }
             }
             catch (Exception ex)
             {
                 isStackError = true;
-                Log.Stack("SaveBloque()", this, ex);
+                Log.Stack("HustorySaveDetalle()", this, ex);
             }
         }
     }

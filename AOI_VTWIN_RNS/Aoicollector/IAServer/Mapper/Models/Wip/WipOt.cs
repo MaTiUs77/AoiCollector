@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace AOI_VTWIN_RNS.Aoicollector.IAServer.Mapper.Models.WipModel
+namespace CollectorPackage.Aoicollector.IAServer.Mapper.Models.WipModel
 {
     public class WipOt
     {

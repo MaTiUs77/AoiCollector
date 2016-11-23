@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace AOI_VTWIN_RNS.Src.Prompt
+namespace CollectorPackage.Src.Prompt
 {
     public static class Prompter
     {

@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Data;
 
-using AOI_VTWIN_RNS.Src.Config;
+using CollectorPackage.Src.Config;
 using Oracle.DataAccess.Client;
 
-namespace AOI_VTWIN_RNS.Src.Database
+namespace CollectorPackage.Src.Database
 {
-    public class OracleConnector
+    public class OracleConnector : IDatabase
     {
-        public string user = "";
-        public string pass = "";
-        public string host = "";
-        public string service = "";
-        public string port = "";
+        public string host { get; set; }
+        public string port { get; set; }
+        public string user { get; set; }
+        public string pass { get; set; }
+        public string service { get; set; }
 
-        public OracleConnection oConnection;
+        public OracleConnection connection;
 
         public void LoadConfig(string AppConfigTag) 
         {
@@ -35,14 +35,14 @@ namespace AOI_VTWIN_RNS.Src.Database
             // Sin TNS
             string connectionString = "Data Source=(DESCRIPTION= (ADDRESS= (PROTOCOL=TCP) (HOST="+host+") (PORT="+port+ ")) (CONNECT_DATA= (SERVICE_NAME=" + service + ")));User ID=" + user + ";Password=" + pass+ ";";
 
-            oConnection = new OracleConnection(connectionString);
-            oConnection.Open();
+            connection = new OracleConnection(connectionString);
+            connection.Open();
         }
 
         public void Disconnect()
         {
-            oConnection.Close();
-            oConnection.Dispose();
+            connection.Close();
+            connection.Dispose();
         }
 
         public DataTable Query(string query) {
@@ -54,7 +54,7 @@ namespace AOI_VTWIN_RNS.Src.Database
 
             Connect();
 
-            oCommand = new OracleCommand(query,oConnection);
+            oCommand = new OracleCommand(query, connection);
             oAdapter = new OracleDataAdapter(oCommand);
             oCommandBuilder = new OracleCommandBuilder(oAdapter);
             oAdapter.Fill(table);

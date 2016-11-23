@@ -1,8 +1,8 @@
 ﻿using System;
-using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
+using CollectorPackage.Aoicollector.Inspection.Model;
 using System.Data;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Zenith.Controller
+namespace CollectorPackage.Aoicollector.Zenith.Controller
 {
     public class SqlServerController : SqlServerQuery
     {

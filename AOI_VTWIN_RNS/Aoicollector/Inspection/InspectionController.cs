@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Data;
 
-using AOI_VTWIN_RNS.Aoicollector.Core;
-using AOI_VTWIN_RNS.Src.Database;
-using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
-using System.Threading.Tasks;
-using AOI_VTWIN_RNS.Aoicollector.IAServer;
+using CollectorPackage.Aoicollector.Core;
+using CollectorPackage.Src.Database;
+using CollectorPackage.Aoicollector.IAServer;
 using System.Diagnostics;
+using CollectorPackage.Aoicollector.Inspection.Model;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Inspection
+namespace CollectorPackage.Aoicollector.Inspection
 {
     public class InspectionController : Panel
     {
@@ -21,7 +20,6 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
         public void TrazaSave(string path)
         {
             history = new History();
-            PanelService panelService = new PanelService();
 
             // Solo proceso si la etiqueta es FISICA, las etiquetas virtuales no se aceptan mas
             if (tipoBarcode.Equals("E"))
@@ -37,52 +35,30 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
                    )
                 );
 
-                if (!pendiente)
+                if (pendiente)
                 {
+                    machine.LogBroadcast("warning",
+                        string.Format("+ Agregando panel a estado pendiente, se verificara en la siguiente ronda")
+                    );
+
+                    Pendiente.Save(this);
+                }
+                else
+                { 
                     machine.GetProductionInfoFromIAServer();
                     if (machine.prodService.error == null) // El stack lo muestro en el metodo GetProductionInfoFromIAServer
                     {
                         if (machine.prodService.result.error == null)
                         {
+                            // Existe configuracion de produccion?
                             if (machine.prodService.result.produccion != null)
                             {
-                                #region OPERAR
-                                // Solo si la OP se encuentra activa, procedo
-                                if (machine.prodService.result.produccion.wip.active)
-                                {
-                                    // Verifico que la OP tenga placas restantes
-                                    panelService = PanelHandlerService();
-
-                                    if (panelId > 0 && panelService.error == null && machine.prodService.error == null)
-                                    {
-                                        #region SAVE BLOCKS
-                                        // Verifico que la OP del panel inspeccionado, corresponda a la OP configurada en produccion
-                                        if (op == machine.prodService.result.produccion.op)
-                                        {
-                                            SaveBlocks(path);
-                                        }
-                                        else
-                                        {
-                                            machine.LogBroadcast("warning",
-                                                string.Format("+ El panel {0} esta registrado con {1}, es diferente de {2} en produccion",
-                                                barcode,
-                                                op,
-                                                machine.prodService.result.produccion.op)
-                                            );
-                                        }
-                                        #endregion
-                                    }
-                                }
-                                else {
-                                    machine.LogBroadcast("warning",
-                                        string.Format("+ La {0} definida en produccion, no se encuentra activa!, se cancela la operacion", op)
-                                    );
-                                }
-                                #endregion
-                            } else
+                                PanelHandlerService(path);
+                            }
+                            else
                             {
                                 machine.LogBroadcast("warning",
-                                    string.Format("+ Error al obtener datos de produccion del service, se cancela la operacion")
+                                    string.Format("+ Error al obtener datos de {0} produccion del service, se cancela la operacion",op)
                                 );
                             }
                         } else
@@ -92,12 +68,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
                             );
                         }
                     } 
-                } else
-                {
-                    machine.LogBroadcast("warning",
-                            string.Format("+ El panel se encuentra pendiente de inspeccion, se cancela la operacion")
-                        );
-                }
+                } 
             }
             else
             {
@@ -107,11 +78,11 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
             }
         }
 
-        private PanelService PanelHandlerService()
+        private PanelService PanelHandlerService(string path)
         {
             Stopwatch sw = Stopwatch.StartNew();
-            PanelService panelService = GetBarcodeInfoFromIAServer();
-
+            // Si la ruta declara, obtiene estado de declaracion del panel si es que existe en IAServer
+            PanelService panelService = GetBarcodeInfoFromIAServer(machine.serviceDeclaraToBool());
             sw.Stop();
 
             machine.LogBroadcast("verbose",
@@ -120,11 +91,10 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
             );
 
             // Solo proceso si el servicio respondio sin problemas
-
             if (panelService.error == null)
             {
                 machine.LogBroadcast("debug",
-                    string.Format("+ Modo: {0}", spMode)
+                    string.Format("+ Panel Modo: {0}", spMode)
                 );
 
                 // Si la linea tiene configurada la Trazabilidad por Cogiscan, valida ruta
@@ -156,6 +126,25 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
                 ), this, panelService.error);
             }
 
+
+            if (panelId > 0 && panelService.error == null)
+            {
+                // Verifico que la OP del panel inspeccionado, corresponda a la OP configurada en produccion
+                if (op == machine.prodService.result.produccion.op)
+                {
+                    SaveBlocks(path);
+                }
+                else
+                {
+                    machine.LogBroadcast("warning",
+                        string.Format("+ El panel {0} esta registrado con {1}, es diferente de {2} en produccion",
+                        barcode,
+                        op,
+                        machine.prodService.result.produccion.op)
+                    );
+                }
+            }
+
             return panelService;
         }
 
@@ -169,11 +158,12 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
                 string query = @"CALL sp_setInspectionPanel_optimizando('" + panelId + "','" + machine.mysql_id + "',  '" + barcode + "',  '" + programa + "',  '" + fecha + "',  '" + hora + "',  '',  '" + revisionAoi + "',  '" + revisionIns + "',  '" + totalErrores + "',  '" + totalErroresFalsos + "',  '" + totalErroresReales + "',  '" + pcbInfo.bloques + "',  '" + tipoBarcode + "',  '" + Convert.ToInt32(pendiente) + "' ,  '" + machine.oracle_id + "' ,  '" + vtwinProgramNameId + "' ,  '" + spMode + "'  );";
 
                 machine.LogBroadcast("debug", 
-                    string.Format("+ Ejecutando StoreProcedure: sp_setInspectionPanel_optimizando() =>", barcode)
+                    string.Format("+ Ejecutando StoreProcedure: sp_setInspectionPanel_optimizando({0}) =>", barcode)
                 );
 
                 MySqlConnector sql = new MySqlConnector();
-                DataTable sp = sql.Select(query);
+                sql.LoadConfig("IASERVER");
+                DataTable sp = sql.Query(query);
                 if (sql.rows)
                 {
                     // En caso de insert, informo el id_panel creado, si fue un update, seria el mismo id_panel...
@@ -183,12 +173,11 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
                     //    Pendiente.Save(this);
                     //}
 
-                    //if (pendienteDelete)
-                    //{
-                    //    Pendiente.Delete(this);
-                    //}
+                    if (pendienteDelete)
+                    {
+                        Pendiente.Delete(this);
+                    }
 
-                    // Solo cuando se inserta por primera vez
                     if (panelId > 0)
                     {
                         try
@@ -236,7 +225,8 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
 
                     #region GUARDA EN DB
                     MySqlConnector sql = new MySqlConnector();
-                    DataTable sp = sql.Select(query);
+                    sql.LoadConfig("IASERVER");
+                    DataTable sp = sql.Query(query);
                     if (sql.rows)
                     {
                         int id_inspeccion_bloque = 0;
@@ -281,7 +271,8 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
             {
                 string query = @"CALL sp_addInspectionDetail('" + id_inspeccion_bloque + "',  '" + detail.referencia + "',  '" + detail.faultcode + "',  '" + detail.estado + "');";
                 MySqlConnector sql = new MySqlConnector();
-                DataTable sp = sql.Select(query);
+                sql.LoadConfig("IASERVER");
+                DataTable sp = sql.Query(query);
             }
 
             // Una vez insertados los detalles de inspeccion del bloque, genero un historial 

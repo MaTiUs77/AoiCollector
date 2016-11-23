@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Security.Cryptography;
 
-namespace AOI_VTWIN_RNS.Src.Util.Crypt
+namespace CollectorPackage.Src.Util.Crypt
 {
     class Crypt
     {

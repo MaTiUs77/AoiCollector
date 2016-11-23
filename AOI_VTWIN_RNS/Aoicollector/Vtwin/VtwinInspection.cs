@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
-using AOI_VTWIN_RNS.Aoicollector.Vtwin.Controller;
+using CollectorPackage.Aoicollector.Inspection.Model;
+using CollectorPackage.Aoicollector.Vtwin.Controller;
 using System.Data;
-using AOI_VTWIN_RNS.Aoicollector.Core;
+using CollectorPackage.Aoicollector.Core;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
+namespace CollectorPackage.Aoicollector.Vtwin
 {
     public class VtwinInspection : AoiController
     {
@@ -102,7 +102,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
                         int oracle_id = int.Parse(oracleLastRow["TEST_MACHINE_ID"].ToString());
                         Machine inspMachine = Machine.list.Single(obj => obj.tipo == aoiConfig.machineNameKey && obj.oracle_id == oracle_id);
 
-                        if (Config.isByPassMode(inspMachine.linea))
+                        if (Config.isByPassMode(inspMachine))
                         {
                             // SKIP MACHINE
                             inspMachine.LogBroadcast("warning",string.Format("{1} | Maquina en ByPass, no se analiza modo pendiente de {0}", pend.barcode, inspMachine.smd));
@@ -114,7 +114,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
                             if (panel.pendiente)
                             {
                                 // Aun sigue pendiente... no hago nada...
-                                inspMachine.LogBroadcast("log", string.Format("Sigue pendiente {0} desde la fecha {1}", pend.barcode, pend.endDate));
+                                inspMachine.LogBroadcast("log", string.Format("Sigue pendiente {0} desde la fecha {1}", pend.barcode, pend.fechaMaquina));
                             }
                             else
                             {

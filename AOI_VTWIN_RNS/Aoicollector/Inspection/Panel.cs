@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
+using CollectorPackage.Aoicollector.Inspection.Model;
 using System.IO;
-using AOI_VTWIN_RNS.Aoicollector.IAServer;
+using CollectorPackage.Aoicollector.IAServer;
 using System.Threading.Tasks;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Inspection
+namespace CollectorPackage.Aoicollector.Inspection
 {
     public class Panel: Revision
     {
@@ -57,7 +57,13 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
         public int vtwinRevisionNo;
         public int vtwinSerialNo;
         public int vtwinLoadCount;
-        
+
+        // ZENITH
+        public string zenithPcbguid;
+        public string zenithImageDb;
+        public string zenithResultDb;
+        public string zenithPcbRepair;
+
         /// <summary>
         /// Procesa la informacion de cada bloque segun sus detalles
         /// </summary>
@@ -85,7 +91,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
         /// Obtiene datos de panel desde el webservice
         /// </summary>
         /// <returns>InspectionService</returns>
-        public PanelService GetBarcodeInfoFromIAServer()
+        public PanelService GetBarcodeInfoFromIAServer(bool verifyDeclared = false)
         {
             machine.LogBroadcast("verbose",
                 string.Format("+ Verificando datos de barcode desde IAServer ({0})", barcode)
@@ -93,31 +99,29 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
             PanelService panelService = new PanelService();
 
             // Comentado hasta que solucione el service
-            //panelService.GetInspectionInfo(barcode);
-            //if (panelService.error == null)
-            //{
-            //    if (panelService.result.panel != null)
-            //    {
-            //        panelId = panelService.result.panel.id;
-            //        op = panelService.result.panel.inspected_op;                   
+            panelService.GetPanelInfo(barcode, verifyDeclared);
+            if (panelService.error == null)
+            {
+                if (panelService.result.panel != null)
+                {
+                    panelId = panelService.result.panel.id;
+                    op = panelService.result.panel.inspected_op;                   
 
-            //        machine.LogBroadcast("notify",
-            //            string.Format("+ OP Asignada: {1} | Panel ID: ({0})", panelId, op)
-            //        );
-            //    }
-            //    else
-            //    {
-            //        machine.LogBroadcast("warning",
-            //            string.Format("+ El panel no fue registrado en IAServer ({0})", barcode)
-            //        );
-            //    }
-            //}
-            //else
-            //{
-            //    machine.log.stack(
-            //        string.Format("+ Stack Error en la verificacion de panel en IAServer ({0}) ", barcode
-            //    ), this, panelService.exception);
-            //}
+                    machine.LogBroadcast("notify",
+                        string.Format("+ El panel ID: ({0}) tiene OP Asignada: {1}", panelId, op)
+                    );
+                }
+                else
+                {
+                    machine.LogBroadcast("warning",
+                        string.Format("+ El panel no fue registrado en IAServer ({0})", barcode)
+                    );
+                }
+            } else {
+                machine.log.stack(
+                    string.Format("+ Stack Error en la verificacion de panel en IAServer ({0}) ", barcode
+                ), this, panelService.error);
+            }
 
             if (panelId == 0)
             {

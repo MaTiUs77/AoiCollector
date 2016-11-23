@@ -3,9 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace AOI_VTWIN_RNS.Aoicollector.IAServer.Mapper.Models
+namespace CollectorPackage.Aoicollector.IAServer.Mapper.Models
 {
     public class Smt
     {
@@ -44,5 +45,18 @@ namespace AOI_VTWIN_RNS.Aoicollector.IAServer.Mapper.Models
 
         [JsonProperty("restantes")]
         public int? restantes { get; set; }
+
+        public bool isBottom()
+        {
+            Regex regex = new Regex(@"^OP-\d+-B$");
+            if (regex.IsMatch(op))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

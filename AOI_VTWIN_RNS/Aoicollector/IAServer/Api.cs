@@ -1,8 +1,8 @@
-﻿using AOI_VTWIN_RNS.Src.Config;
-using AOI_VTWIN_RNS.Src.Service;
+﻿using CollectorPackage.Src.Config;
+using CollectorPackage.Src.Service;
 using System;
 
-namespace AOI_VTWIN_RNS.Aoicollector
+namespace CollectorPackage.Aoicollector
 {
     public class Api : ServiceJson
     {
@@ -12,7 +12,7 @@ namespace AOI_VTWIN_RNS.Aoicollector
         {
             if(apiUrl.Equals(""))
             {
-                apiUrl = AppConfig.Read("SERVICE", "url");
+                apiUrl = AppConfig.Read("IASERVER", "apiurl");
             }
         }
 

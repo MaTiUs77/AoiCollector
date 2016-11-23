@@ -6,7 +6,7 @@ using System.Xml.Linq;
 using System.IO;
 using System.Xml.Serialization;
 
-namespace AOI_VTWIN_RNS.Src.Service
+namespace CollectorPackage.Src.Service
 {
     public class ServiceXml
     {

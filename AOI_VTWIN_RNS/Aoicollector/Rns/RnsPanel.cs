@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data;
 
-using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
-using AOI_VTWIN_RNS.Aoicollector.Inspection;
-using AOI_VTWIN_RNS.Src.Util.Files;
-using AOI_VTWIN_RNS.Aoicollector.Rns.Controller;
+using CollectorPackage.Aoicollector.Inspection.Model;
+using CollectorPackage.Aoicollector.Inspection;
+using CollectorPackage.Src.Util.Files;
+using CollectorPackage.Aoicollector.Rns.Controller;
 using System.Text.RegularExpressions;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Rns
+namespace CollectorPackage.Aoicollector.Rns
 {
     public class RnsPanel : InspectionController
     {

@@ -9,10 +9,10 @@ using System.Windows.Forms;
 using System.Collections.Specialized;
 using System.Configuration;
 
-using AOI_VTWIN_RNS.Src.Config;
-using AOI_VTWIN_RNS.Aoicollector;
+using CollectorPackage.Src.Config;
+using CollectorPackage.Aoicollector;
 
-namespace AOI_VTWIN_RNS
+namespace CollectorPackage
 {
     public partial class Rns_FormConfiguration : Form
     {

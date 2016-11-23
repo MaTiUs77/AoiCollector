@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
-using AOI_VTWIN_RNS.Aoicollector.Core;
-using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
-using AOI_VTWIN_RNS.Aoicollector.Vtwin.Controller;
+using CollectorPackage.Aoicollector.Core;
+using CollectorPackage.Aoicollector.Inspection.Model;
+using CollectorPackage.Aoicollector.Vtwin.Controller;
 using System.Data;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
+namespace CollectorPackage.Aoicollector.Vtwin
 {
     public class VTWIN : VtwinInspection
     {
@@ -56,7 +56,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
                 List<Machine> endInspect = new List<Machine>();
 
                 // Generacion de tabs segun las maquinas descargadas
-                foreach (Machine inspMachine in oracleMachines.OrderBy(o => int.Parse(o.linea)))
+                foreach (Machine inspMachine in oracleMachines.OrderBy(o => o.nroLinea))
                 {
                     DynamicTab(inspMachine);
                 }
@@ -74,7 +74,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
                 foreach (Machine inspMachine in oracleMachines)
                 {
                     // Algunas maquinas las inspecciono al final, porque son lentas para procesar
-                    if (Config.isEndInspect(inspMachine.linea))
+                    if (Config.isEndInspect(inspMachine))
                     {
                         endInspect.Add(inspMachine);
                     }
@@ -98,10 +98,10 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin
         
         private void TryInspectionProccess(Machine inspMachine)
         {
-            if (Config.isByPassMode(inspMachine.linea))
+            if (Config.isByPassMode(inspMachine))
             {
-                inspMachine.LogBroadcast("warning", 
-                    string.Format("{0} en ByPass {1}", inspMachine.smd, inspMachine.line_barcode)
+                inspMachine.LogBroadcast("warning",
+                    string.Format("{0} {1} | En ByPass / Se detiene el proceso de inspeccion", inspMachine.maquina, inspMachine.smd)
                 );
             }
             else

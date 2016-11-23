@@ -4,11 +4,11 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Data;
 
-using AOI_VTWIN_RNS.Aoicollector.Core;
-using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
-using AOI_VTWIN_RNS.Aoicollector.Vts500.Controller;
+using CollectorPackage.Aoicollector.Core;
+using CollectorPackage.Aoicollector.Inspection.Model;
+using CollectorPackage.Aoicollector.Vts500.Controller;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Vts500
+namespace CollectorPackage.Aoicollector.Vts500
 {
     public class VTS500 : Vts500Inspection
     {
@@ -48,7 +48,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500
                 IEnumerable<Machine> oracleMachines = Machine.list.Where(obj => obj.tipo == aoiConfig.machineNameKey);
 
                 // Generacion de tabs segun las maquinas descargadas
-                foreach (Machine inspMachine in oracleMachines.OrderBy(o => int.Parse(o.linea)))
+                foreach (Machine inspMachine in oracleMachines.OrderBy(o => o.nroLinea))
                 {
                     DynamicTab(inspMachine);
                 }
@@ -66,10 +66,12 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500
                 foreach (Machine inspMachine in oracleMachines)
                 {
                     // Filtro maquinas en ByPass
-                    if (Config.isByPassMode(inspMachine.linea))
+                    if (Config.isByPassMode(inspMachine))
                     {
                         // SKIP MACHINE
-                        aoiLog.warning("Maquina en ByPass: " + inspMachine.linea);
+                        aoiLog.warning(
+                            string.Format("{0} {1} | En ByPass / Se detiene el proceso de inspeccion", inspMachine.maquina, inspMachine.smd)
+                        );
                     }
                     else
                     {
@@ -82,10 +84,10 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500
 
         private void TryInspectionProccess(Machine inspMachine)
         {
-            if (Config.isByPassMode(inspMachine.linea))
+            if (Config.isByPassMode(inspMachine))
             {
                 inspMachine.LogBroadcast("warning",
-                    string.Format("{0} en ByPass {1}", inspMachine.smd, inspMachine.line_barcode)
+                     string.Format("{0} {1} | En ByPass / Se detiene el proceso de inspeccion", inspMachine.maquina, inspMachine.smd)
                 );
             }
             else

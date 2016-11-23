@@ -7,7 +7,7 @@ using System.IO;
 using System.Xml.Serialization;
 using System.Net;
 
-namespace AOI_VTWIN_RNS.Src.Service
+namespace CollectorPackage.Src.Service
 {
     public class ServiceJson
     {

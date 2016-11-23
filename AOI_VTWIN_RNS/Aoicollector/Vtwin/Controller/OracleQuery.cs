@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
-using AOI_VTWIN_RNS.Aoicollector.Inspection;
+using CollectorPackage.Aoicollector.Inspection.Model;
+using CollectorPackage.Aoicollector.Inspection;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Vtwin.Controller
+namespace CollectorPackage.Aoicollector.Vtwin.Controller
 {
     public class OracleQuery
     {
@@ -20,7 +20,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin.Controller
 
                 filtro = @"	
 	                PCI.TEST_MACHINE_ID = " + createMachineId + @" AND 
-	                PCI.END_DATE > TO_DATE('2016-09-29 09:31:20', 'YYYY-MM-DD HH24:MI:SS')  
+	                PCI.END_DATE > TO_DATE('" + endDate + @"', 'YYYY-MM-DD HH24:MI:SS')  
                 ";
 
             }
@@ -28,10 +28,10 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vtwin.Controller
             {
                 filtro = @"
                 (	
-                    PCI.END_DATE >= TO_DATE('" + pend.endDate + @"', 'YYYY-MM-DD HH24:MI:SS')  AND
+                    PCI.END_DATE >= TO_DATE('" + pend.fechaMaquina + @"', 'YYYY-MM-DD HH24:MI:SS')  AND
                     PCI.BARCODE = '" + pend.barcode + @"' AND 
-                    PCI.TEST_MACHINE_ID = " + pend.testMachineId + @" AND 
-                    PCI.PROGRAM_NAME_ID = " + pend.programNameId + @" 
+                    PCI.TEST_MACHINE_ID = " + pend.vtwinTestMachineId + @" AND 
+                    PCI.PROGRAM_NAME_ID = " + pend.vtwinProgramNameId + @" 
                 ) ";
             }
 

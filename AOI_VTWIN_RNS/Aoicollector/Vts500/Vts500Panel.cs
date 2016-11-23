@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
+using CollectorPackage.Aoicollector.Inspection.Model;
 using System.Data;
-using AOI_VTWIN_RNS.Aoicollector.Inspection;
-using AOI_VTWIN_RNS.Src.Database;
+using CollectorPackage.Aoicollector.Inspection;
+using CollectorPackage.Src.Database;
 using System;
-using AOI_VTWIN_RNS.Aoicollector.Vts500.Controller;
+using CollectorPackage.Aoicollector.Vts500.Controller;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Vts500
+namespace CollectorPackage.Aoicollector.Vts500
 {
     public class Vts500Panel : InspectionController
     {

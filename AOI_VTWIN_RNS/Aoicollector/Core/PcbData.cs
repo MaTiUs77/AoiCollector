@@ -6,10 +6,10 @@ using System.Text.RegularExpressions;
 using System.IO;
 using System.Windows.Forms;
 
-using AOI_VTWIN_RNS.Src.Util.Files;
-using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
+using CollectorPackage.Src.Util.Files;
+using CollectorPackage.Aoicollector.Inspection.Model;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Core
+namespace CollectorPackage.Aoicollector.Core
 {
     /// <summary>
     /// Las maquinas RNS y VTWIN tienen las informacion de los programas en archivos .PCB, lo cual 

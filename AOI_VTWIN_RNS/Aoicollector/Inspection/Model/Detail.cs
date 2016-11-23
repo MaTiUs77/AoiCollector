@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Inspection
+namespace CollectorPackage.Aoicollector.Inspection
 {
     public class Detail
     {

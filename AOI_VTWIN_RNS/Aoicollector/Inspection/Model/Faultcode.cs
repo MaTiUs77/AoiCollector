@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Data;
 
-using AOI_VTWIN_RNS.Src.Database;
+using CollectorPackage.Src.Database;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
+namespace CollectorPackage.Aoicollector.Inspection.Model
 {
     // Datos de Faultcodes en Mysql
     class Faultcode
@@ -27,7 +27,8 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
             string query = @"SELECT id,faultcode,descripcion FROM aoidata.rns_faultcode ";
 
             MySqlConnector sql = new MySqlConnector();
-            DataTable dt = sql.Select(query);
+            sql.LoadConfig("IASERVER");
+            DataTable dt = sql.Query(query);
             if (sql.rows)
             {
                 foreach (DataRow r in dt.Rows)

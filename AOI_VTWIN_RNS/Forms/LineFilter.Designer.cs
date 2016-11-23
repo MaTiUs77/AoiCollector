@@ -1,4 +1,4 @@
-﻿namespace AOI_VTWIN_RNS
+﻿namespace CollectorPackage
 {
     partial class LineFilter
     {
@@ -30,8 +30,8 @@
         {
             this.gridLine = new System.Windows.Forms.DataGridView();
             this.colCheck = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.idCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colLinea = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colIntLine = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colTipo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colByPass = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -40,6 +40,7 @@
             this.rnsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.vtwinToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.verTodasLasMaquinasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.zENITHToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.gridLine)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -53,8 +54,8 @@
             this.gridLine.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.gridLine.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colCheck,
+            this.idCol,
             this.colLinea,
-            this.colIntLine,
             this.colTipo,
             this.colByPass});
             this.gridLine.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -76,6 +77,13 @@
             this.colCheck.ReadOnly = true;
             this.colCheck.Width = 5;
             // 
+            // idCol
+            // 
+            this.idCol.HeaderText = "id";
+            this.idCol.Name = "idCol";
+            this.idCol.ReadOnly = true;
+            this.idCol.Visible = false;
+            // 
             // colLinea
             // 
             this.colLinea.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
@@ -84,13 +92,6 @@
             this.colLinea.ReadOnly = true;
             this.colLinea.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.colLinea.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
-            // colIntLine
-            // 
-            this.colIntLine.HeaderText = "id";
-            this.colIntLine.Name = "colIntLine";
-            this.colIntLine.ReadOnly = true;
-            this.colIntLine.Visible = false;
             // 
             // colTipo
             // 
@@ -126,7 +127,8 @@
             this.byPassallToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.allToolStripMenuItem,
             this.rnsToolStripMenuItem,
-            this.vtwinToolStripMenuItem});
+            this.vtwinToolStripMenuItem,
+            this.zENITHToolStripMenuItem});
             this.byPassallToolStripMenuItem.Name = "byPassallToolStripMenuItem";
             this.byPassallToolStripMenuItem.Size = new System.Drawing.Size(78, 20);
             this.byPassallToolStripMenuItem.Text = "ByPass (all)";
@@ -134,21 +136,21 @@
             // allToolStripMenuItem
             // 
             this.allToolStripMenuItem.Name = "allToolStripMenuItem";
-            this.allToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
+            this.allToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.allToolStripMenuItem.Text = "All";
             this.allToolStripMenuItem.Click += new System.EventHandler(this.allToolStripMenuItem_Click);
             // 
             // rnsToolStripMenuItem
             // 
             this.rnsToolStripMenuItem.Name = "rnsToolStripMenuItem";
-            this.rnsToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
+            this.rnsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.rnsToolStripMenuItem.Text = "RNS";
             this.rnsToolStripMenuItem.Click += new System.EventHandler(this.rnsToolStripMenuItem_Click);
             // 
             // vtwinToolStripMenuItem
             // 
             this.vtwinToolStripMenuItem.Name = "vtwinToolStripMenuItem";
-            this.vtwinToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
+            this.vtwinToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.vtwinToolStripMenuItem.Text = "VTWIN";
             this.vtwinToolStripMenuItem.Click += new System.EventHandler(this.vtwinToolStripMenuItem_Click);
             // 
@@ -158,6 +160,13 @@
             this.verTodasLasMaquinasToolStripMenuItem.Size = new System.Drawing.Size(128, 20);
             this.verTodasLasMaquinasToolStripMenuItem.Text = "Remover ByPass (all)";
             this.verTodasLasMaquinasToolStripMenuItem.Click += new System.EventHandler(this.verTodasLasMaquinasToolStripMenuItem_Click);
+            // 
+            // zENITHToolStripMenuItem
+            // 
+            this.zENITHToolStripMenuItem.Name = "zENITHToolStripMenuItem";
+            this.zENITHToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.zENITHToolStripMenuItem.Text = "ZENITH";
+            this.zENITHToolStripMenuItem.Click += new System.EventHandler(this.zenithToolStripMenuItem_Click);
             // 
             // LineFilter
             // 
@@ -187,13 +196,14 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem verTodasLasMaquinasToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem byPassallToolStripMenuItem;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn colCheck;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colLinea;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colIntLine;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colTipo;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colByPass;
         private System.Windows.Forms.ToolStripMenuItem allToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rnsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem vtwinToolStripMenuItem;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn colCheck;
+        private System.Windows.Forms.DataGridViewTextBoxColumn idCol;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colLinea;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colTipo;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colByPass;
+        private System.Windows.Forms.ToolStripMenuItem zENITHToolStripMenuItem;
     }
 }

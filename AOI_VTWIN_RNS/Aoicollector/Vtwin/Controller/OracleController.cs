@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
-using AOI_VTWIN_RNS.Aoicollector.Inspection;
+using CollectorPackage.Aoicollector.Inspection.Model;
 using System.Data;
-using AOI_VTWIN_RNS.Src.Database;
-using AOI_VTWIN_RNS.Aoicollector.Core;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Vtwin.Controller
+namespace CollectorPackage.Aoicollector.Vtwin.Controller
 {
     public class OracleController : OracleQuery
     {

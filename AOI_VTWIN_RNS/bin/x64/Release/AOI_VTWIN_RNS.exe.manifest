@@ -43,14 +43,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="AOI_VTWIN_RNS.exe" size="1304576">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="AOI_VTWIN_RNS.exe" size="1307648">
       <assemblyIdentity name="AOI_VTWIN_RNS" version="1.0.0.0" language="neutral" processorArchitecture="amd64" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>aVYUix0Qn7BWAiKb0j6G+o7wnVnZ3hJe3eXUEBBpouE=</dsig:DigestValue>
+        <dsig:DigestValue>Juq4+fd4EmBBfAsmoTVFjotDAjWDdawKVb08e5AG4co=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -90,13 +90,13 @@
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="AOI_VTWIN_RNS.exe.config" size="3927">
+  <file name="AOI_VTWIN_RNS.exe.config" size="3824">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>5r17yD0IWsWRiNQ6qx2Pbz7Vd9n4UCIgDKUEAsX8QTI=</dsig:DigestValue>
+      <dsig:DigestValue>2ZhpWC3Z4cgZnwFZpyvAYRN+NOgGZ/1kYmJz29HZilc=</dsig:DigestValue>
     </hash>
   </file>
   <file name="icono.ico" size="370070">

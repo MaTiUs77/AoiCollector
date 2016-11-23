@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
-using AOI_VTWIN_RNS.Aoicollector.Inspection;
+using CollectorPackage.Aoicollector.Inspection.Model;
+using CollectorPackage.Aoicollector.Inspection;
 using System.Data;
-using AOI_VTWIN_RNS.Src.Database;
-using AOI_VTWIN_RNS.Aoicollector.Core;
+using CollectorPackage.Src.Database;
+using CollectorPackage.Aoicollector.Core;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Vts500.Controller
+namespace CollectorPackage.Aoicollector.Vts500.Controller
 {
     public class OracleController : OracleQuery
     {

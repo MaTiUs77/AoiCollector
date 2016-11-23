@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Rns.Controller
+namespace CollectorPackage.Aoicollector.Rns.Controller
 {
     class InspectionTextFileHeader
     {

@@ -3,9 +3,9 @@ using System.Linq;
 using System.Windows.Forms;
 using System.IO;
 
-using AOI_VTWIN_RNS.Src.Util.Files;
+using CollectorPackage.Src.Util.Files;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Rns
+namespace CollectorPackage.Aoicollector.Rns
 {
     public class RNS : RnsInspection
     {

@@ -1,4 +1,4 @@
-﻿namespace AOI_VTWIN_RNS.Properties {
+﻿namespace CollectorPackage.Properties {
     
     
     // This class allows you to handle specific events on the settings class:

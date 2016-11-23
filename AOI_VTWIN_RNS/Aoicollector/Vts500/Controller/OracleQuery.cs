@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
-using AOI_VTWIN_RNS.Aoicollector.Inspection;
+using CollectorPackage.Aoicollector.Inspection.Model;
+using CollectorPackage.Aoicollector.Inspection;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Vts500.Controller
+namespace CollectorPackage.Aoicollector.Vts500.Controller
 {
     public class OracleQuery
     {
@@ -45,7 +45,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500.Controller
             {
                 filtro = @"
                 (	
-                    SUM.INSP_BEGIN_DATE >= TO_DATE('" + pend.endDate + @"', 'YYYY-MM-DD HH24:MI:SS')  AND
+                    SUM.INSP_BEGIN_DATE >= TO_DATE('" + pend.fechaMaquina + @"', 'YYYY-MM-DD HH24:MI:SS')  AND
                     SUM.BOARD_BARCODE = '" + pend.barcode + @"' 
                 ) ";
             }

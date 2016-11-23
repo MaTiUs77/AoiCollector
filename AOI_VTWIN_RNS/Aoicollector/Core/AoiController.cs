@@ -6,16 +6,16 @@ using System.Windows.Forms;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 
-using AOI_VTWIN_RNS.Src.Config;
-using AOI_VTWIN_RNS.Src.Util.Network;
-using AOI_VTWIN_RNS.Src.Database;
-using AOI_VTWIN_RNS.Aoicollector.Core;
-using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
-using AOI_VTWIN_RNS.Aoicollector.Inspection;
+using CollectorPackage.Src.Config;
+using CollectorPackage.Src.Util.Network;
+using CollectorPackage.Src.Database;
+using CollectorPackage.Aoicollector.Core;
+using CollectorPackage.Aoicollector.Inspection.Model;
+using CollectorPackage.Aoicollector.Inspection;
 using System.Drawing;
 using System.Threading.Tasks;
 
-namespace AOI_VTWIN_RNS.Aoicollector
+namespace CollectorPackage.Aoicollector
 {
     public class AoiController
     {
@@ -28,7 +28,6 @@ namespace AOI_VTWIN_RNS.Aoicollector
         public RichLog aoiLog { get; set; }
         public TabControl aoiTabControl { get; set; }
         public List<RichLog> aoiTabLogList { get; set; }
-//        public InspectionController aoiInsp { get; set; }
 
         public AoiController()
         {
@@ -217,15 +216,15 @@ namespace AOI_VTWIN_RNS.Aoicollector
         {
             MethodInvoker makeDyndamicTab = new MethodInvoker(() =>
             {
-                string id = "log" + inspMachine.linea;
-                string smd = "SMD-" + inspMachine.linea;
+                string id = "dyn" + inspMachine.line_barcode;
+                string smd = inspMachine.smd;
 
                 RichLog rlog = aoiTabLogList.Find(o => o.id.Equals(id));
                 if (rlog == null)
                 {
                     TabPage dynTab = new TabPage();
                     aoiTabControl.Controls.Add(dynTab);
-                    dynTab.Name = "tab" + id;
+                    dynTab.Name = "tab_" + id;
                     dynTab.Text = smd;
                     dynTab.UseVisualStyleBackColor = true;
 
@@ -238,10 +237,9 @@ namespace AOI_VTWIN_RNS.Aoicollector
                     richTextBoxDyn.Dock = DockStyle.Fill;
                     richTextBoxDyn.Font = new Font("Verdana", 9.75F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
                     richTextBoxDyn.ForeColor = Color.White;
-                    richTextBoxDyn.Name = dynTab.Name + "richTextBox";
+                    richTextBoxDyn.Name = dynTab.Name + "_rich";
                     richTextBoxDyn.ReadOnly = true;
                     richTextBoxDyn.Text = "";
-                    richTextBoxDyn.Name = "rich"+id;
                
                     RichLog addrlog = new RichLog(richTextBoxDyn);
                     addrlog.id = id;

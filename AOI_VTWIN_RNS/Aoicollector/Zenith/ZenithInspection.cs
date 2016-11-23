@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
-using AOI_VTWIN_RNS.Aoicollector.Zenith.Controller;
+using CollectorPackage.Aoicollector.Inspection.Model;
+using CollectorPackage.Aoicollector.Zenith.Controller;
 using System.Data;
-using AOI_VTWIN_RNS.Aoicollector.Core;
+using CollectorPackage.Aoicollector.Core;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Zenith
+namespace CollectorPackage.Aoicollector.Zenith
 {
     public class ZenithInspection : AoiController
     {
         public void HandleInspection(Machine inspMachine)
         {
-            DateTime last_oracle_inspection = new DateTime(1, 1, 1);
+            DateTime new_last_inspection = new DateTime(1, 1, 1);
             inspMachine.LogBroadcast("info", 
                 string.Format("{0} | Maquina {1} | Ultima inspeccion {2}", 
                     inspMachine.smd, 
@@ -21,8 +21,8 @@ namespace AOI_VTWIN_RNS.Aoicollector.Zenith
                 )
             );
 
-            string query = SqlServerQuery.ListLastInspections(inspMachine.oracle_id, inspMachine.ultima_inspeccion);
-            DataTable dt = sqlserver.Select(query);
+            string query = SqlServerQuery.ListLastInspections(inspMachine.maquina, inspMachine.ultima_inspeccion);
+            DataTable dt = sqlserver.Query(query);
             int totalRows = dt.Rows.Count;
 
             aoiWorker.SetProgressTotal(totalRows);
@@ -30,7 +30,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Zenith
             if (totalRows > 0)
             {
                 inspMachine.LogBroadcast("notify", 
-                    string.Format("Se encontraron({0}) inspecciones.", totalRows)
+                    string.Format("Se encontraron ({0}) inspecciones.", totalRows)
                 );
 
                 int count = 0;
@@ -39,7 +39,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Zenith
                 foreach (DataRow r in dt.Rows)              
                 {
                     count++;
-                    ZenithPanel panel = new ZenithPanel(oracle,r, inspMachine);
+                    ZenithPanel panel = new ZenithPanel(sqlserver,r, inspMachine);
 
                     inspMachine.LogBroadcast("info", 
                         string.Format("+ Programa: [{0}] | Barcode: {1} | Bloques: {2} | Pendiente: {3}", panel.programa, panel.barcode, panel.totalBloques, panel.pendiente)
@@ -49,22 +49,21 @@ namespace AOI_VTWIN_RNS.Aoicollector.Zenith
                     aoiWorker.SetProgressWorking(count);
 
                     // Ultima inspeccion realizada en la maquina ORACLE.
-                    last_oracle_inspection = DateTime.Parse(panel.fecha + " " + panel.hora);
+                    new_last_inspection = DateTime.Parse(panel.fecha + " " + panel.hora);
                 }
 
-                if (last_oracle_inspection.Year.Equals(1))
+                if (new_last_inspection.Year.Equals(1))
                 {
-                    last_oracle_inspection = oracle.GetSysDate();
+                    new_last_inspection = oracle.GetSysDate();
                 }
                 #endregion
 
-                inspMachine.LogBroadcast("debug", 
-                    string.Format("Actualizando horario de ultima inspeccion de maquina {0}", last_oracle_inspection.ToString("HH:mm:ss"))
-                );
-
                 if (!Config.debugMode)
                 {
-                    Machine.UpdateInspectionDate(inspMachine.mysql_id, last_oracle_inspection);
+                    inspMachine.LogBroadcast("debug",
+                       string.Format("Actualizando horario de ultima inspeccion de maquina {0}", new_last_inspection.ToString("HH:mm:ss"))
+                    );
+                    Machine.UpdateInspectionDate(inspMachine.mysql_id, new_last_inspection);
                 }
             }
             else
@@ -89,44 +88,40 @@ namespace AOI_VTWIN_RNS.Aoicollector.Zenith
 
                 foreach (Pendiente pend in pendList)
                 {
-                    // Busco ultimo estado del barcode en ORACLE.
-                    string query = SqlServerQuery.ListLastInspections(0, "", pend);
-                    DataTable dt = oracle.Query(query);
+                    // Busco ultimo estado del barcode
+                    string query = SqlServerQuery.ListPanelBarcodeInfo(pend);
+                    DataTable dt = sqlserver.Query(query);
                     int totalRows = dt.Rows.Count;
 
                     if (totalRows > 0)
                     {
                         count++;
+                        DataRow lastRow = dt.Rows[0];
+                        Machine inspMachine = Machine.list.Single(obj => obj.tipo == aoiConfig.machineNameKey && obj.mysql_id == pend.idMaquina);
 
-                        DataRow oracleLastRow = dt.Rows[totalRows - 1];
-                        int oracle_id = int.Parse(oracleLastRow["TEST_MACHINE_ID"].ToString());
-                        Machine inspMachine = Machine.list.Single(obj => obj.tipo == aoiConfig.machineNameKey && obj.oracle_id == oracle_id);
-
-                        if (Config.isByPassMode(inspMachine.linea))
+                        if (Config.isByPassMode(inspMachine))
                         {
                             // SKIP MACHINE
-                            inspMachine.LogBroadcast("warning",string.Format("{1} | Maquina en ByPass, no se analiza modo pendiente de {0}", pend.barcode, inspMachine.smd));
+                            inspMachine.LogBroadcast("warning", string.Format("{1} | Maquina en ByPass, no se analiza modo pendiente de {0}", pend.barcode, inspMachine.smd));
                         }
                         else
                         {
-                            ZenithPanel panel = new ZenithPanel(oracle, oracleLastRow, inspMachine);
+                            ZenithPanel panel = new ZenithPanel(sqlserver, lastRow, inspMachine);
 
-                            if (panel.pendiente)
+                            if(panel.pendiente)
                             {
-                                // Aun sigue pendiente... no hago nada...
-                                inspMachine.LogBroadcast("log", string.Format("Sigue pendiente {0} desde la fecha {1}", pend.barcode, pend.endDate));
-                            }
-                            else
+                                inspMachine.LogBroadcast("info",
+                                   string.Format("+ Sigue pendiente Programa: [{0}] | Barcode: {1} | Bloques: {2} | Pendiente: {3}", panel.programa, panel.barcode, panel.totalBloques, panel.pendiente)
+                               );
+                            } else
                             {
-                                // No esta mas pendiente!!, se realizo la inspeccion!! Guardo datos.
-                                inspMachine.LogBroadcast("notify",string.Format("Inspeccion detectada! {0}", pend.barcode));
-
-                                //panel.pendienteDelete = true;
+                                inspMachine.LogBroadcast("info",
+                                    string.Format("+ Inspeccion detectada! Programa: [{0}] | Barcode: {1} | Bloques: {2} | Pendiente: {3}", panel.programa, panel.barcode, panel.totalBloques, panel.pendiente)
+                                );
+                                panel.pendienteDelete = true;
 
                                 panel.TrazaSave(aoiConfig.xmlExportPath);
                             }
-
-                            aoiWorker.SetProgressWorking(count);
                         }
                     }
                     else
@@ -135,14 +130,6 @@ namespace AOI_VTWIN_RNS.Aoicollector.Zenith
                     }
                 }
             }
-        }
-
-        public DataTable PanelBarcodeInfo(string barcode)
-        {
-            string query = SqlServerQuery.ListPanelBarcodeInfo(barcode);
-            DataTable dt = oracle.Query(query);
-
-            return dt;
         }
     }
 }

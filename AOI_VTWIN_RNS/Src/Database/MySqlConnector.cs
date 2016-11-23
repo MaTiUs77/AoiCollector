@@ -1,131 +1,146 @@
 ﻿using System;
 using System.Data;
 
-using AOI_VTWIN_RNS.Src.Config;
+using CollectorPackage.Src.Config;
 using MySql.Data.MySqlClient;
 
-namespace AOI_VTWIN_RNS.Src.Database
+namespace CollectorPackage.Src.Database
 {
-    class MySqlConnector
+    public class MySqlConnector : IDatabase
     {
-        private MySqlConnection connection;
-        public static string server = "";
-        public static string database = "";
-        public static string user = "";
-        public static string password = "";
-
         public bool rows = false;
+        private MySqlConnection connection;
 
-        public static void LoadConfig() 
+        public string host { get; set; }
+        public string port { get; set; }
+        public string user { get; set; }
+        public string pass { get; set; }
+        public string database { get; set; }
+
+        public void LoadConfig(string AppConfigTag) 
         {
-            database = AppConfig.Read("MYSQL", "database");
-            server = AppConfig.Read("MYSQL", "server");
-            user = AppConfig.Read("MYSQL", "user");
-            password = AppConfig.Read("MYSQL", "pass");
+            host = AppConfig.Read(AppConfigTag, "db_host");
+            port = AppConfig.Read(AppConfigTag, "db_port");
+            user = AppConfig.Read(AppConfigTag, "db_user");
+            pass = AppConfig.Read(AppConfigTag, "db_pass");
+            database = AppConfig.Read(AppConfigTag, "db_database");
         }
 
-        public MySqlConnector()
+        public void Connect()
         {
-            Initialize();
-        }
-
-        private void Initialize()
-        {
-            string connectionString;
-            connectionString = "SERVER=" + server + ";" + "DATABASE=" + database + ";" + "UID=" + user + ";" + "PASSWORD=" + password + ";";
+            string connectionString = "SERVER=" + host + ";" + "DATABASE=" + database + ";" + "UID=" + user + ";" + "PASSWORD=" + pass + ";";
             connection = new MySqlConnection(connectionString);
         }
 
-        public bool OpenConnection()
+        public void Disconnect()
         {
+            try
+            {
+                connection.Close();
+            }
+            catch (MySqlException ex)
+            {
+                throw new InvalidOperationException("MYSQL: (" + ex.Number + ") " + ex.Message);
+            }
+        }
+
+        private bool OpenConnection()
+        {
+            Connect();
+            bool connected = false;
+
             try
             {
                 if (connection.State != ConnectionState.Open)
                 {
                     connection.Open();
+                    connected = true;
+                } else
+                {
+                    connected = false;
                 }
-                return true;
             }
             catch (MySqlException ex)
             {
+                string errMsg = "";
+
                 switch (ex.Number)
                 {
                     case 1042:
-                        throw new InvalidOperationException("MYSQL: No se pudo conectar al servidor. " + ex.Message);
+                        errMsg = "MYSQL: No se pudo conectar al servidor. " + ex.Message;
                         break;
                     case 1045:
-                        throw new InvalidOperationException("MYSQL: Usuario/Password incorrectos. " + ex.Message);
+                        errMsg = "MYSQL: Usuario/Password incorrectos. " + ex.Message;
                         break;
                     case 1044:
-                        throw new InvalidOperationException("MYSQL: Acceso denegado a la tabla. " + ex.Message);
+                        errMsg = "MYSQL: Acceso denegado a la tabla. " + ex.Message;
                         break;
                     default:
-                        throw new InvalidOperationException("MYSQL: (" + ex.Number + ") " + ex.Message);
+                        errMsg = "MYSQL: (" + ex.Number + ") " + ex.Message;
                         break;
                 }
 
-                return false;
+                connected = false;
+
+                throw new InvalidOperationException(errMsg);
             }
-        }
-        
-        public bool CloseConnection()
-        {
-            try
-            {
-                connection.Close();
-                return true;
-            }
-            catch (MySqlException ex)
-            {
-                throw new InvalidOperationException("MYSQL: (" + ex.Number + ") " + ex.Message);
-                return false;
-            }
+
+            return connected;
         }
 
-        public bool Ejecutar(string query)
+        public bool NonQuery(string query)
         {
-            bool rs = false;
-            if (this.OpenConnection() == true)
+            bool response = false;
+
+            if (OpenConnection() == true)
             {
                 MySqlCommand cmd = new MySqlCommand(query, connection);
 
                 try
                 {
-                    if (cmd.ExecuteNonQuery() > 0) { rs = true; }
+                    if (cmd.ExecuteNonQuery() > 0) {
+                        response = true;
+                    }
                 }
                 catch (MySqlException ex)
                 {
+                    string errMsg = "";
                     switch (ex.Number)
                     {
                         case 1451: // Existen campos enlazados a clave referenciada
-                            throw new InvalidOperationException("MYSQL: Existen datos enlazados a este campo, no se puede eliminar. " + ex.Message);
+                           errMsg = "MYSQL: Existen datos enlazados a este campo, no se puede eliminar. " + ex.Message;
                             break;
                         case 1062: // Duplicados en UNIQUE
-                            throw new InvalidOperationException("MYSQL: Elemento duplicado, ya se encuentra registrado. " + ex.Message);
+                            errMsg = "MYSQL: Elemento duplicado, ya se encuentra registrado. " + ex.Message;
                             break;
                         default:
-                            throw new InvalidOperationException("MYSQL: (" + ex.Number + ") " + ex.Message);
+                            errMsg = "MYSQL: (" + ex.Number + ") " + ex.Message;
                             break;
                     }
-                    rs = false;
+                    response = false;
+
+                    throw new InvalidOperationException(errMsg);
                 }
-                this.CloseConnection();
+
+                Disconnect();
             }
-            return rs;
+
+            return response;
         }     
 
-        public DataTable Select(string query)
+        public DataTable Query(string query)
         {
             DataTable rs = new DataTable();
+            Connect();
 
-            if (this.OpenConnection() == true)
+            if (OpenConnection() == true)
             {
                 MySqlCommand cmd = new MySqlCommand(query, connection);
 
                 MySqlDataAdapter adapter = new MySqlDataAdapter();
                 adapter.SelectCommand = cmd;
                 adapter.Fill(rs);
-                this.CloseConnection();
+                Disconnect();
             }
             Rows(rs);
             return rs;

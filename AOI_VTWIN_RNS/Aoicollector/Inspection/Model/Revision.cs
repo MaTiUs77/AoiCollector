@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Inspection
+namespace CollectorPackage.Aoicollector.Inspection
 {
     public class Revision
     {
@@ -29,7 +29,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection
 
         public void MakeRevision()
         {
-            IEnumerable<Detail> detListReal = detailList.Where(obj => obj.estado == "REAL");
+            IEnumerable<Detail> detListReal = detailList.Where(x=>x.estado.Equals("REAL"));
             IEnumerable<Detail> detListFalso = detailList.Where(obj => obj.estado == "FALSO");
             IEnumerable<Detail> detListPendiente = detailList.Where(obj => obj.estado == "PENDIENTE");
 

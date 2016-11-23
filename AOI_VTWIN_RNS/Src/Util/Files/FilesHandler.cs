@@ -6,7 +6,7 @@ using System.IO;
 using System.Data;
 using System.Security.Cryptography;
 
-namespace AOI_VTWIN_RNS.Src.Util.Files
+namespace CollectorPackage.Src.Util.Files
 {
     class FilesHandler
     {

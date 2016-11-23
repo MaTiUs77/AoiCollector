@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
-using AOI_VTWIN_RNS.Src.Config;
+using CollectorPackage.Aoicollector.Inspection.Model;
+using CollectorPackage.Src.Config;
 using System.Threading;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Core
+namespace CollectorPackage.Aoicollector.Core
 {
     public class Config
     {
         public static bool downloading = false;
-        public static bool debugMode = true;
+        public static bool debugMode = false;
 
         public string machineType       { get; set; }
         public string machineNameKey    { get; set; }
@@ -22,11 +22,11 @@ namespace AOI_VTWIN_RNS.Aoicollector.Core
         public string inspectionCsvPath { get; set; }
 
         public static bool dbDownloadComplete { get; set; }
-        public static List<int> byPassLine = new List<int>();
-        public static List<int> toEndInspect = new List<int>();
-        public static bool isByPassMode(string linea)
+        public static List<Machine> byPassLine = new List<Machine>();
+        public static List<Machine> toEndInspect = new List<Machine>();
+        public static bool isByPassMode(Machine aoi)
         {
-            int exist = Config.byPassLine.Where(o => o.ToString() == linea.ToString()).Count();
+            int exist = byPassLine.Where(o => o.maquina.ToString() == aoi.maquina.ToString()).Count();
             if (exist > 0)
             {
                 return true;
@@ -37,9 +37,9 @@ namespace AOI_VTWIN_RNS.Aoicollector.Core
             }
         }
 
-        public static bool isEndInspect(string linea)
+        public static bool isEndInspect(Machine aoi)
         {
-            int exist = Config.toEndInspect.Where(o => o.ToString() == linea.ToString()).Count();
+            int exist = toEndInspect.Where(o => o.maquina.ToString() == aoi.maquina.ToString()).Count();
             if (exist > 0)
             {
                 return true;
@@ -52,7 +52,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Core
 
         public static bool isAutoStart()
         {
-            return AppConfig.Read("SERVICE", "autostart").ToString().Equals("true");
+            return AppConfig.Read("APP", "autostart").ToString().Equals("true");
         }
 
         public static bool dbDownload()

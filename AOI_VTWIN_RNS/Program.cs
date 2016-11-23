@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace AOI_VTWIN_RNS
+namespace CollectorPackage
 {
     static class Program
     {

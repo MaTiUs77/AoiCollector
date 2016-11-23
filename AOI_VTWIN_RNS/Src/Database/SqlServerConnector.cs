@@ -2,20 +2,20 @@
 using System.Data;
 using System.Data.SqlClient;
 
-using AOI_VTWIN_RNS.Src.Config;
+using CollectorPackage.Src.Config;
 
-namespace AOI_VTWIN_RNS.Src.Database
+namespace CollectorPackage.Src.Database
 {
-    public class SqlServerConnector
+    public class SqlServerConnector : IDatabase
     {
-        private SqlConnection connection;
-        public string host = "";
-        public string port = "";
-        public string user = "";
-        public string pass = "";
-        public string database = "";
-
         public bool rows = false;
+        private SqlConnection connection;
+
+        public string host { get; set; }
+        public string port { get; set; }
+        public string user { get; set; }
+        public string pass { get; set; }
+        public string database { get; set; }
 
         public void LoadConfig(string AppConfigTag) 
         {
@@ -26,17 +26,29 @@ namespace AOI_VTWIN_RNS.Src.Database
             database = AppConfig.Read(AppConfigTag, "db_database");
         }
 
-        private void Connect()
+        public void Connect()
         {
-            string connectionString;
-            connectionString = "User Id=" + user + ";" +
+            string connectionString = "User Id=" + user + ";" +
                                "Password=" + pass + ";Server=" + host + ";" +
                                "Database=" + database + ";"; 
             connection = new SqlConnection(connectionString);
         }
 
-        public bool OpenConnection()
+        public void Disconnect()
         {
+            try
+            {
+                connection.Close();
+            }
+            catch (SqlException ex)
+            {
+                throw new InvalidOperationException("SQLSERVER: (" + ex.Number + ") " + ex.Message);
+            }
+        }
+
+        private bool OpenConnection()
+        {
+            Connect();
             try
             {
                 if (connection.State != ConnectionState.Open)
@@ -67,21 +79,7 @@ namespace AOI_VTWIN_RNS.Src.Database
             }
         }
 
-        public bool CloseConnection()
-        {
-            try
-            {
-                connection.Close();
-                return true;
-            }
-            catch (SqlException ex)
-            {
-                throw new InvalidOperationException("SQLSERVER: (" + ex.Number + ") " + ex.Message);
-                return false;
-            }
-        }
-
-        public bool Ejecutar(string query)
+        public bool NonQuery(string query)
         {
             bool rs = false;
             Connect();
@@ -110,12 +108,12 @@ namespace AOI_VTWIN_RNS.Src.Database
                     }
                     rs = false;
                 }
-                CloseConnection();
+                Disconnect();
             }
             return rs;
         }     
 
-        public DataTable Select(string query)
+        public DataTable Query(string query)
         {
             DataTable rs = new DataTable();
             Connect();
@@ -126,7 +124,7 @@ namespace AOI_VTWIN_RNS.Src.Database
                 SqlDataAdapter adapter = new SqlDataAdapter();
                 adapter.SelectCommand = cmd;
                 adapter.Fill(rs);
-                CloseConnection();
+                Disconnect();
             }
             Rows(rs);
             return rs;

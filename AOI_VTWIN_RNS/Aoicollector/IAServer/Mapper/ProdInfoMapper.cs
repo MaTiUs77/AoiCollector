@@ -1,7 +1,7 @@
-﻿using AOI_VTWIN_RNS.Aoicollector.IAServer.Mapper.Models;
+﻿using CollectorPackage.Aoicollector.IAServer.Mapper.Models;
 using Newtonsoft.Json;
 
-namespace AOI_VTWIN_RNS.Aoicollector.IAServer.Mapper
+namespace CollectorPackage.Aoicollector.IAServer.Mapper
 {
     public class ProdInfoMapper
     {

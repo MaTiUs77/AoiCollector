@@ -6,7 +6,7 @@ using System.Xml;
 using System.Configuration;
 using System.Collections.Specialized;
 
-namespace AOI_VTWIN_RNS.Src.Config
+namespace CollectorPackage.Src.Config
 {
     class AppConfig
     {

@@ -1,4 +1,4 @@
-﻿namespace AOI_VTWIN_RNS
+﻿namespace CollectorPackage
 {
     partial class MainForm
     {
@@ -66,7 +66,6 @@
             this.autoscrollToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ModeAutoScroll_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.prgRns = new System.Windows.Forms.ProgressBar();
-            this.rnsTab = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.rnsLogGeneral = new System.Windows.Forms.RichTextBox();
             this.tabSystem = new System.Windows.Forms.TabPage();
@@ -74,27 +73,27 @@
             this.systemRichLog = new System.Windows.Forms.RichTextBox();
             this.tabVTS = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.vtsProgressBar = new System.Windows.Forms.ProgressBar();
             this.vtsTabControl = new System.Windows.Forms.TabControl();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.vtsTabGeneral = new System.Windows.Forms.TabPage();
             this.vtsRichLog = new System.Windows.Forms.RichTextBox();
+            this.vtsProgressBar = new System.Windows.Forms.ProgressBar();
             this.tabVTWIN = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.vtwinTabControl = new System.Windows.Forms.TabControl();
+            this.vtwinTabGeneral = new System.Windows.Forms.TabPage();
+            this.vtwinRichLog = new System.Windows.Forms.RichTextBox();
+            this.vtwinProgressBar = new System.Windows.Forms.ProgressBar();
             this.allTabs = new System.Windows.Forms.TabControl();
             this.tabRNS = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.rnsTabControl = new System.Windows.Forms.TabControl();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.rnsTabGeneral = new System.Windows.Forms.TabPage();
             this.rnsRichLog = new System.Windows.Forms.RichTextBox();
             this.rnsProgressBar = new System.Windows.Forms.ProgressBar();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.vtwinTabControl = new System.Windows.Forms.TabControl();
-            this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.vtwinRichLog = new System.Windows.Forms.RichTextBox();
-            this.vtwinProgressBar = new System.Windows.Forms.ProgressBar();
             this.tabZENITH = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.zenithTabControl = new System.Windows.Forms.TabControl();
-            this.tabPage7 = new System.Windows.Forms.TabPage();
+            this.zenithTabGeneral = new System.Windows.Forms.TabPage();
             this.zenithRichLog = new System.Windows.Forms.RichTextBox();
             this.zenithProgressBar = new System.Windows.Forms.ProgressBar();
             this.menuStrip1.SuspendLayout();
@@ -103,20 +102,20 @@
             this.tabVTS.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.vtsTabControl.SuspendLayout();
-            this.tabPage2.SuspendLayout();
+            this.vtsTabGeneral.SuspendLayout();
             this.tabVTWIN.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
+            this.vtwinTabControl.SuspendLayout();
+            this.vtwinTabGeneral.SuspendLayout();
             this.allTabs.SuspendLayout();
             this.tabRNS.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.rnsTabControl.SuspendLayout();
-            this.tabPage4.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
-            this.vtwinTabControl.SuspendLayout();
-            this.tabPage5.SuspendLayout();
+            this.rnsTabGeneral.SuspendLayout();
             this.tabZENITH.SuspendLayout();
             this.tableLayoutPanel5.SuspendLayout();
             this.zenithTabControl.SuspendLayout();
-            this.tabPage7.SuspendLayout();
+            this.zenithTabGeneral.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -405,15 +404,6 @@
             this.prgRns.Size = new System.Drawing.Size(832, 19);
             this.prgRns.TabIndex = 2;
             // 
-            // rnsTab
-            // 
-            this.rnsTab.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rnsTab.Location = new System.Drawing.Point(3, 3);
-            this.rnsTab.Name = "rnsTab";
-            this.rnsTab.SelectedIndex = 0;
-            this.rnsTab.Size = new System.Drawing.Size(832, 295);
-            this.rnsTab.TabIndex = 3;
-            // 
             // tabPage1
             // 
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
@@ -502,17 +492,9 @@
             this.tableLayoutPanel3.Size = new System.Drawing.Size(838, 326);
             this.tableLayoutPanel3.TabIndex = 1;
             // 
-            // vtsProgressBar
-            // 
-            this.vtsProgressBar.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.vtsProgressBar.Location = new System.Drawing.Point(3, 304);
-            this.vtsProgressBar.Name = "vtsProgressBar";
-            this.vtsProgressBar.Size = new System.Drawing.Size(832, 19);
-            this.vtsProgressBar.TabIndex = 1;
-            // 
             // vtsTabControl
             // 
-            this.vtsTabControl.Controls.Add(this.tabPage2);
+            this.vtsTabControl.Controls.Add(this.vtsTabGeneral);
             this.vtsTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.vtsTabControl.Location = new System.Drawing.Point(3, 3);
             this.vtsTabControl.Name = "vtsTabControl";
@@ -520,16 +502,16 @@
             this.vtsTabControl.Size = new System.Drawing.Size(832, 295);
             this.vtsTabControl.TabIndex = 3;
             // 
-            // tabPage2
+            // vtsTabGeneral
             // 
-            this.tabPage2.Controls.Add(this.vtsRichLog);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(824, 269);
-            this.tabPage2.TabIndex = 0;
-            this.tabPage2.Text = "General";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.vtsTabGeneral.Controls.Add(this.vtsRichLog);
+            this.vtsTabGeneral.Location = new System.Drawing.Point(4, 22);
+            this.vtsTabGeneral.Name = "vtsTabGeneral";
+            this.vtsTabGeneral.Padding = new System.Windows.Forms.Padding(3);
+            this.vtsTabGeneral.Size = new System.Drawing.Size(824, 269);
+            this.vtsTabGeneral.TabIndex = 0;
+            this.vtsTabGeneral.Text = "General";
+            this.vtsTabGeneral.UseVisualStyleBackColor = true;
             // 
             // vtsRichLog
             // 
@@ -545,6 +527,14 @@
             this.vtsRichLog.TabIndex = 8;
             this.vtsRichLog.Text = "";
             // 
+            // vtsProgressBar
+            // 
+            this.vtsProgressBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.vtsProgressBar.Location = new System.Drawing.Point(3, 304);
+            this.vtsProgressBar.Name = "vtsProgressBar";
+            this.vtsProgressBar.Size = new System.Drawing.Size(832, 19);
+            this.vtsProgressBar.TabIndex = 1;
+            // 
             // tabVTWIN
             // 
             this.tabVTWIN.Controls.Add(this.tableLayoutPanel1);
@@ -555,6 +545,66 @@
             this.tabVTWIN.TabIndex = 1;
             this.tabVTWIN.Text = "VT-WIN";
             this.tabVTWIN.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 371F));
+            this.tableLayoutPanel1.Controls.Add(this.vtwinTabControl, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.vtwinProgressBar, 0, 1);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(838, 326);
+            this.tableLayoutPanel1.TabIndex = 3;
+            // 
+            // vtwinTabControl
+            // 
+            this.vtwinTabControl.Controls.Add(this.vtwinTabGeneral);
+            this.vtwinTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.vtwinTabControl.Location = new System.Drawing.Point(3, 3);
+            this.vtwinTabControl.Name = "vtwinTabControl";
+            this.vtwinTabControl.SelectedIndex = 0;
+            this.vtwinTabControl.Size = new System.Drawing.Size(832, 295);
+            this.vtwinTabControl.TabIndex = 2;
+            // 
+            // vtwinTabGeneral
+            // 
+            this.vtwinTabGeneral.Controls.Add(this.vtwinRichLog);
+            this.vtwinTabGeneral.Location = new System.Drawing.Point(4, 22);
+            this.vtwinTabGeneral.Name = "vtwinTabGeneral";
+            this.vtwinTabGeneral.Padding = new System.Windows.Forms.Padding(3);
+            this.vtwinTabGeneral.Size = new System.Drawing.Size(824, 269);
+            this.vtwinTabGeneral.TabIndex = 0;
+            this.vtwinTabGeneral.Text = "General";
+            this.vtwinTabGeneral.UseVisualStyleBackColor = true;
+            // 
+            // vtwinRichLog
+            // 
+            this.vtwinRichLog.BackColor = System.Drawing.Color.Black;
+            this.vtwinRichLog.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.vtwinRichLog.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.vtwinRichLog.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.vtwinRichLog.ForeColor = System.Drawing.Color.White;
+            this.vtwinRichLog.Location = new System.Drawing.Point(3, 3);
+            this.vtwinRichLog.Name = "vtwinRichLog";
+            this.vtwinRichLog.ReadOnly = true;
+            this.vtwinRichLog.Size = new System.Drawing.Size(818, 263);
+            this.vtwinRichLog.TabIndex = 7;
+            this.vtwinRichLog.Text = "";
+            // 
+            // vtwinProgressBar
+            // 
+            this.vtwinProgressBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.vtwinProgressBar.Location = new System.Drawing.Point(3, 304);
+            this.vtwinProgressBar.Name = "vtwinProgressBar";
+            this.vtwinProgressBar.Size = new System.Drawing.Size(832, 19);
+            this.vtwinProgressBar.TabIndex = 1;
             // 
             // allTabs
             // 
@@ -605,7 +655,7 @@
             // 
             // rnsTabControl
             // 
-            this.rnsTabControl.Controls.Add(this.tabPage4);
+            this.rnsTabControl.Controls.Add(this.rnsTabGeneral);
             this.rnsTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rnsTabControl.Location = new System.Drawing.Point(3, 3);
             this.rnsTabControl.Name = "rnsTabControl";
@@ -613,16 +663,16 @@
             this.rnsTabControl.Size = new System.Drawing.Size(832, 295);
             this.rnsTabControl.TabIndex = 2;
             // 
-            // tabPage4
+            // rnsTabGeneral
             // 
-            this.tabPage4.Controls.Add(this.rnsRichLog);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(824, 269);
-            this.tabPage4.TabIndex = 0;
-            this.tabPage4.Text = "General";
-            this.tabPage4.UseVisualStyleBackColor = true;
+            this.rnsTabGeneral.Controls.Add(this.rnsRichLog);
+            this.rnsTabGeneral.Location = new System.Drawing.Point(4, 22);
+            this.rnsTabGeneral.Name = "rnsTabGeneral";
+            this.rnsTabGeneral.Padding = new System.Windows.Forms.Padding(3);
+            this.rnsTabGeneral.Size = new System.Drawing.Size(824, 269);
+            this.rnsTabGeneral.TabIndex = 0;
+            this.rnsTabGeneral.Text = "General";
+            this.rnsTabGeneral.UseVisualStyleBackColor = true;
             // 
             // rnsRichLog
             // 
@@ -645,66 +695,6 @@
             this.rnsProgressBar.Name = "rnsProgressBar";
             this.rnsProgressBar.Size = new System.Drawing.Size(832, 19);
             this.rnsProgressBar.TabIndex = 1;
-            // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 371F));
-            this.tableLayoutPanel1.Controls.Add(this.vtwinTabControl, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.vtwinProgressBar, 0, 1);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(838, 326);
-            this.tableLayoutPanel1.TabIndex = 3;
-            // 
-            // vtwinTabControl
-            // 
-            this.vtwinTabControl.Controls.Add(this.tabPage5);
-            this.vtwinTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.vtwinTabControl.Location = new System.Drawing.Point(3, 3);
-            this.vtwinTabControl.Name = "vtwinTabControl";
-            this.vtwinTabControl.SelectedIndex = 0;
-            this.vtwinTabControl.Size = new System.Drawing.Size(832, 295);
-            this.vtwinTabControl.TabIndex = 2;
-            // 
-            // tabPage5
-            // 
-            this.tabPage5.Controls.Add(this.vtwinRichLog);
-            this.tabPage5.Location = new System.Drawing.Point(4, 22);
-            this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(824, 269);
-            this.tabPage5.TabIndex = 0;
-            this.tabPage5.Text = "General";
-            this.tabPage5.UseVisualStyleBackColor = true;
-            // 
-            // vtwinRichLog
-            // 
-            this.vtwinRichLog.BackColor = System.Drawing.Color.Black;
-            this.vtwinRichLog.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.vtwinRichLog.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.vtwinRichLog.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.vtwinRichLog.ForeColor = System.Drawing.Color.White;
-            this.vtwinRichLog.Location = new System.Drawing.Point(3, 3);
-            this.vtwinRichLog.Name = "vtwinRichLog";
-            this.vtwinRichLog.ReadOnly = true;
-            this.vtwinRichLog.Size = new System.Drawing.Size(818, 263);
-            this.vtwinRichLog.TabIndex = 7;
-            this.vtwinRichLog.Text = "";
-            // 
-            // vtwinProgressBar
-            // 
-            this.vtwinProgressBar.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.vtwinProgressBar.Location = new System.Drawing.Point(3, 304);
-            this.vtwinProgressBar.Name = "vtwinProgressBar";
-            this.vtwinProgressBar.Size = new System.Drawing.Size(832, 19);
-            this.vtwinProgressBar.TabIndex = 1;
             // 
             // tabZENITH
             // 
@@ -736,7 +726,7 @@
             // 
             // zenithTabControl
             // 
-            this.zenithTabControl.Controls.Add(this.tabPage7);
+            this.zenithTabControl.Controls.Add(this.zenithTabGeneral);
             this.zenithTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.zenithTabControl.Location = new System.Drawing.Point(3, 3);
             this.zenithTabControl.Name = "zenithTabControl";
@@ -744,16 +734,16 @@
             this.zenithTabControl.Size = new System.Drawing.Size(832, 295);
             this.zenithTabControl.TabIndex = 2;
             // 
-            // tabPage7
+            // zenithTabGeneral
             // 
-            this.tabPage7.Controls.Add(this.zenithRichLog);
-            this.tabPage7.Location = new System.Drawing.Point(4, 22);
-            this.tabPage7.Name = "tabPage7";
-            this.tabPage7.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage7.Size = new System.Drawing.Size(824, 269);
-            this.tabPage7.TabIndex = 0;
-            this.tabPage7.Text = "General";
-            this.tabPage7.UseVisualStyleBackColor = true;
+            this.zenithTabGeneral.Controls.Add(this.zenithRichLog);
+            this.zenithTabGeneral.Location = new System.Drawing.Point(4, 22);
+            this.zenithTabGeneral.Name = "zenithTabGeneral";
+            this.zenithTabGeneral.Padding = new System.Windows.Forms.Padding(3);
+            this.zenithTabGeneral.Size = new System.Drawing.Size(824, 269);
+            this.zenithTabGeneral.TabIndex = 0;
+            this.zenithTabGeneral.Text = "General";
+            this.zenithTabGeneral.UseVisualStyleBackColor = true;
             // 
             // zenithRichLog
             // 
@@ -797,20 +787,20 @@
             this.tabVTS.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             this.vtsTabControl.ResumeLayout(false);
-            this.tabPage2.ResumeLayout(false);
+            this.vtsTabGeneral.ResumeLayout(false);
             this.tabVTWIN.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.vtwinTabControl.ResumeLayout(false);
+            this.vtwinTabGeneral.ResumeLayout(false);
             this.allTabs.ResumeLayout(false);
             this.tabRNS.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.rnsTabControl.ResumeLayout(false);
-            this.tabPage4.ResumeLayout(false);
-            this.tableLayoutPanel1.ResumeLayout(false);
-            this.vtwinTabControl.ResumeLayout(false);
-            this.tabPage5.ResumeLayout(false);
+            this.rnsTabGeneral.ResumeLayout(false);
             this.tabZENITH.ResumeLayout(false);
             this.tableLayoutPanel5.ResumeLayout(false);
             this.zenithTabControl.ResumeLayout(false);
-            this.tabPage7.ResumeLayout(false);
+            this.zenithTabGeneral.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -863,26 +853,26 @@
         private System.Windows.Forms.TabPage tabVTS;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.TabControl vtsTabControl;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabPage vtsTabGeneral;
         private System.Windows.Forms.RichTextBox vtsRichLog;
         public System.Windows.Forms.ProgressBar vtsProgressBar;
         private System.Windows.Forms.TabPage tabVTWIN;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.TabControl vtwinTabControl;
-        private System.Windows.Forms.TabPage tabPage5;
+        private System.Windows.Forms.TabPage vtwinTabGeneral;
         private System.Windows.Forms.RichTextBox vtwinRichLog;
         public System.Windows.Forms.ProgressBar vtwinProgressBar;
         private System.Windows.Forms.TabControl allTabs;
         private System.Windows.Forms.TabPage tabRNS;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.TabControl rnsTabControl;
-        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.TabPage rnsTabGeneral;
         private System.Windows.Forms.RichTextBox rnsRichLog;
         public System.Windows.Forms.ProgressBar rnsProgressBar;
         private System.Windows.Forms.TabPage tabZENITH;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
         private System.Windows.Forms.TabControl zenithTabControl;
-        private System.Windows.Forms.TabPage tabPage7;
+        private System.Windows.Forms.TabPage zenithTabGeneral;
         private System.Windows.Forms.RichTextBox zenithRichLog;
         public System.Windows.Forms.ProgressBar zenithProgressBar;
     }

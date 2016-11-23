@@ -1,4 +1,4 @@
-﻿namespace AOI_VTWIN_RNS
+﻿namespace CollectorPackage
 {
     partial class Vts500_FormConfiguration
     {

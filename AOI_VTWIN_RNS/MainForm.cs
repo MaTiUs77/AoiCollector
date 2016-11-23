@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Windows.Forms;
 
-using AOI_VTWIN_RNS.Src.Database;
-using AOI_VTWIN_RNS.Aoicollector.Core;
-
-using AOI_VTWIN_RNS.Aoicollector.Rns;
-using AOI_VTWIN_RNS.Aoicollector.Vtwin;
-using AOI_VTWIN_RNS.Aoicollector.Vts500;
-using AOI_VTWIN_RNS.Aoicollector.Zenith;
+using CollectorPackage.Aoicollector.Core;
+using CollectorPackage.Aoicollector.Rns;
+using CollectorPackage.Aoicollector.Vtwin;
+using CollectorPackage.Aoicollector.Vts500;
+using CollectorPackage.Aoicollector.Zenith;
 
 using System.Threading.Tasks;
+using CollectorPackage.Aoicollector.Inspection.Model;
 
-namespace AOI_VTWIN_RNS
+namespace CollectorPackage
 {
     public partial class MainForm : Form
     {
@@ -60,12 +59,9 @@ namespace AOI_VTWIN_RNS
 
         private async void InitializeApp()
         {
-            // Carga configuracion de AppConfig
-            MySqlConnector.LoadConfig();
-
             Log.system = new RichLog(systemRichLog);
 
-            rns = new RNS(rnsRichLog, rnsTab, rnsProgressBar);
+            rns = new RNS(rnsRichLog, rnsTabControl, rnsProgressBar);
             vtwin = new VTWIN(vtwinRichLog, vtwinTabControl, vtwinProgressBar);
             vts500 = new VTS500(vtsRichLog, vtsTabControl, vtsProgressBar);
             zenith = new ZENITH(zenithRichLog, zenithTabControl, zenithProgressBar);
@@ -76,9 +72,9 @@ namespace AOI_VTWIN_RNS
 
             if (downloaded)
             {
-                // Envio la linea 14 a la ultima posicion de la lista de maquinas a inspeccionar
+                // Envio la AOI VTWIN22309 a la ultima posicion de la lista de maquinas a inspeccionar
                 // Por algun motivo demora mas que el resto en procesar las inspecciones
-                Config.toEndInspect.Add(14);
+                Config.toEndInspect.Add(Machine.findByCode("VT-WIN2-2309"));
 
                 rns.TotalMachines();
                 vtwin.TotalMachines();

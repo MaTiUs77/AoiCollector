@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Data;
 
-using AOI_VTWIN_RNS.Src.Database;
+using CollectorPackage.Src.Database;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
+namespace CollectorPackage.Aoicollector.Inspection.Model
 {
     public class Pendiente
     {
@@ -17,9 +17,9 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
 
         public string programa;
         public string barcode;
-        public string endDate;
-        public string programNameId;      // id de programa en oracle 
-        public int testMachineId = 0;    // id de maquina en oracle 
+        public string fechaMaquina;
+        public string vtwinProgramNameId;      // id de programa en oracle 
+        public int vtwinTestMachineId = 0;    // id de maquina en oracle 
 
         public static void Delete(InspectionController ictrl)
         {
@@ -27,65 +27,70 @@ namespace AOI_VTWIN_RNS.Aoicollector.Inspection.Model
                 string.Format("+ Pendiente.Delete({0}) ", ictrl.barcode)
             );
 
-            string query = "CALL sp_removePendient(" + ictrl.panelId + ")";
+            string query = string.Format("CALL sp_removeProcesarPendient('{0}')", ictrl.barcode);
             MySqlConnector sql = new MySqlConnector();
-            bool rs = sql.Ejecutar(query);
+            sql.LoadConfig("IASERVER");
+            bool rs = sql.NonQuery(query);
         }
 
-        public static void Save(InspectionController ictrl, bool insert = true)
+        public static void Save(InspectionController ictrl)
         {
             DateTime customDate = DateTime.Parse(ictrl.fecha + " " + ictrl.hora);
-            if (insert)
-            {
-                ictrl.machine.LogBroadcast("debug",
-                   string.Format("+ Pendiente.Save({0}) ", ictrl.barcode)
-                );
+            ictrl.machine.LogBroadcast("debug",
+                string.Format("+ Pendiente.Save({0}) ", ictrl.barcode)
+            );
 
-                string query = "CALL sp_addInspectionPendient('" + ictrl.panelId + "', '" + ictrl.barcode + "',  '" + customDate.ToString("yyyy-MM-dd HH:mm:ss") + "');";
-                MySqlConnector sql = new MySqlConnector();
-                bool rs = sql.Ejecutar(query);
-            }
+            string query = string.Format("CALL sp_addProcesarPendient('{0}', '{1}', '{2}', '{3}', '{4}', '{5}');",
+                ictrl.barcode,
+                customDate.ToString("yyyy-MM-dd HH:mm:ss"),
+                ictrl.machine.mysql_id,
+                ictrl.programa,
+                ictrl.vtwinProgramNameId,
+                ictrl.vtwinTestMachineId
+            );
+
+            MySqlConnector sql = new MySqlConnector();
+            sql.LoadConfig("IASERVER");
+            bool rs = sql.NonQuery(query);
         }
         
         public static List<Pendiente> Download(string machineNameKey)
         {
             List<Pendiente> pendlist = new List<Pendiente>();
             string query = @"
-            SELECT                
-                ip.id,
-                p.id as id_panel,
-                DATE_FORMAT(ip.end_date,'%Y-%m-%d %H:%i:%s') as end_date,
-                ip.barcode,
-                p.test_machine_id,
+            SELECT          
+                p.id,      
+                p.barcode,
+                CAST(p.fecha_maquina as CHAR) as fecha_maquina,
                 p.id_maquina,
                 p.programa,
-                p.program_name_id
+                p.vtwin_program_name_id,
+                p.vtwin_test_machine_id
                 
             from
-            aoidata.inspeccion_pendiente ip,
-            aoidata.inspeccion_panel p ,           
+            aoidata.procesar_pendiente p,
             aoidata.maquina m            
             
             where 
-            p.id = ip.id_panel  and
             m.id = p.id_maquina and
-            m.tipo = '"+machineNameKey+"' ";
+            m.active = 1 and
+            m.tipo = '" + machineNameKey + "' ";
 
             MySqlConnector sql = new MySqlConnector();
-            DataTable dt = sql.Select(query);
+            sql.LoadConfig("IASERVER");
+            DataTable dt = sql.Query(query);
             if (sql.rows)
             {
                 foreach (DataRow r in dt.Rows)
                 {
                     Pendiente ipen = new Pendiente();
                     ipen.idPendiente = int.Parse(r["id"].ToString());
-                    ipen.idPanel = int.Parse(r["id_panel"].ToString());
-                    ipen.endDate = r["end_date"].ToString();
                     ipen.barcode = r["barcode"].ToString();
-                    ipen.testMachineId = int.Parse(r["test_machine_id"].ToString());
+                    ipen.fechaMaquina = r["fecha_maquina"].ToString();
                     ipen.idMaquina = int.Parse(r["id_maquina"].ToString());
                     ipen.programa = r["programa"].ToString();
-                    ipen.programNameId = r["program_name_id"].ToString();
+                    ipen.vtwinTestMachineId = int.Parse(r["vtwin_test_machine_id"].ToString());
+                    ipen.vtwinProgramNameId = r["vtwin_program_name_id"].ToString();
                     pendlist.Add(ipen);
                 }
             }

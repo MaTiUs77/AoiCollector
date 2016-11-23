@@ -1,9 +1,9 @@
 ﻿
-using AOI_VTWIN_RNS.Aoicollector.IAServer.Mapper;
+using CollectorPackage.Aoicollector.IAServer.Mapper;
 using Newtonsoft.Json;
 using System;
 
-namespace AOI_VTWIN_RNS.Aoicollector
+namespace CollectorPackage.Aoicollector
 {
     public class ProductionService : Api
     {
@@ -16,8 +16,7 @@ namespace AOI_VTWIN_RNS.Aoicollector
 
             try
             {
-                string path = apiUrl + "prodinfo/" + aoibarcode;
-                //string path = "http://localhost:8080/aoibarcode/VTRNS6061";
+                string path = string.Format("{0}/aoicollector/prodinfo/{1}", apiUrl, aoibarcode);
                 
                 string jsonData = Consume(path);
                 hasResponse = true;

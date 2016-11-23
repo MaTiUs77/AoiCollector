@@ -1,9 +1,9 @@
-﻿using AOI_VTWIN_RNS.Src.Util.Files;
+﻿using CollectorPackage.Src.Util.Files;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Rns.Controller
+namespace CollectorPackage.Aoicollector.Rns.Controller
 {
     class InspectionTextFileHandler
     {

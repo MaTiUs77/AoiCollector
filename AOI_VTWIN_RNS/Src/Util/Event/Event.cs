@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 
-namespace AOI_VTWIN_RNS.Src.Util.Event
+namespace CollectorPackage.Src.Util.Event
 {
     class Event
     {

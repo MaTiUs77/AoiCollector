@@ -5,9 +5,9 @@ using System.Text;
 using System.Windows.Forms;
 using System.ComponentModel;
 using System.IO;
-using AOI_VTWIN_RNS.Src.Config;
+using CollectorPackage.Src.Config;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Core
+namespace CollectorPackage.Aoicollector.Core
 {
     public class Log
     {

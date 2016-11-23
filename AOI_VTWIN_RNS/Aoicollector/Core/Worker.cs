@@ -5,7 +5,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.ComponentModel;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Core
+namespace CollectorPackage.Aoicollector.Core
 {
     public class Worker
     {

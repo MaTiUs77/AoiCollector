@@ -5,10 +5,10 @@ using System.Text;
 using System.Windows.Forms;
 using System.ComponentModel;
 using System.IO;
-using AOI_VTWIN_RNS.Src.Config;
+using CollectorPackage.Src.Config;
 using System.Drawing;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Core
+namespace CollectorPackage.Aoicollector.Core
 {
     public class RichLog
     {
@@ -48,19 +48,22 @@ namespace AOI_VTWIN_RNS.Aoicollector.Core
 
         private Color getColorMode(string mode)
         {
+            Color color = colorInfo;
             switch (mode)
             {
-                case "error": return colorError; break;
-                case "info": return colorInfo; break;
-                case "warning": return colorWarning; break;
-                case "debug": return colorDebug; break;
-                case "log": return colorLog; break;
-                case "verbose": return colorVerbose; break;
-                case "stack": return colorStack; break;
-                case "success": return colorSuccess; break;
-                case "notify": return colorNotify; break;
-                default: return colorInfo; break;
+                case "error": color =  colorError; break;
+                case "info": color = colorInfo; break;
+                case "warning": color = colorWarning; break;
+                case "debug": color = colorDebug; break;
+                case "log": color = colorLog; break;
+                case "verbose": color = colorVerbose; break;
+                case "stack": color = colorStack; break;
+                case "success": color = colorSuccess; break;
+                case "notify": color = colorNotify; break;
+                default: color = colorInfo; break;
             }
+
+            return color;
         }
 
         public string putLog(string mensaje, string mode, bool withDateTime = true)

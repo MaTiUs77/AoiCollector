@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
-using System.Configuration;
-using System.Collections.Specialized;
+﻿using System.Text;
 using System.Net;
-using System.Xml.Linq;
 
-namespace AOI_VTWIN_RNS.Src.Http
+namespace CollectorPackage.Src.Http
 {
     class Http
     {

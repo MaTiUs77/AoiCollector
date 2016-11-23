@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using AOI_VTWIN_RNS.Src.Util.Crypt;
-using AOI_VTWIN_RNS.Src.Config;
+using CollectorPackage.Src.Util.Crypt;
+using CollectorPackage.Src.Config;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Inspection
+namespace CollectorPackage.Aoicollector.Inspection
 {
     public class BarcodeValidator
     {

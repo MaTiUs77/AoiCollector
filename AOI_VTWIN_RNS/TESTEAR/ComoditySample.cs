@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AOI_VTWIN_RNS
+namespace CollectorPackage
 {
     public class Auto
     {

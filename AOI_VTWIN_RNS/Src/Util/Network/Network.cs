@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 
-using AOI_VTWIN_RNS.Src.Config;
+using CollectorPackage.Src.Config;
 
 
-namespace AOI_VTWIN_RNS.Src.Util.Network
+namespace CollectorPackage.Src.Util.Network
 {
     class Network
     {

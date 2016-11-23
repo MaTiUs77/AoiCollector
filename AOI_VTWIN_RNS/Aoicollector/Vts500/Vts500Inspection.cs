@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using AOI_VTWIN_RNS.Aoicollector.Inspection.Model;
-using AOI_VTWIN_RNS.Aoicollector.Vts500.Controller;
+using CollectorPackage.Aoicollector.Inspection.Model;
+using CollectorPackage.Aoicollector.Vts500.Controller;
 using System.Data;
-using AOI_VTWIN_RNS.Aoicollector.Core;
-using AOI_VTWIN_RNS.Aoicollector.Inspection;
+using CollectorPackage.Aoicollector.Core;
+using CollectorPackage.Aoicollector.Inspection;
 
-namespace AOI_VTWIN_RNS.Aoicollector.Vts500
+namespace CollectorPackage.Aoicollector.Vts500
 {
     public class Vts500Inspection : AoiController
     {
@@ -105,10 +105,15 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500
 
                         DataRow oracleLastRow = dt.Rows[totalRows - 1];
 
-                        if (Config.isByPassMode(inspMachine.linea))
+                        if (Config.isByPassMode(inspMachine))
                         {
                             // SKIP MACHINE
-                            inspMachine.LogBroadcast("warning", string.Format("{1} | Maquina en ByPass, no se analiza modo pendiente de {0}", pend.barcode, inspMachine.smd));
+                            inspMachine.LogBroadcast("warning", 
+                                string.Format("{0} {1} | En ByPass, no se analiza modo pendiente de {2}",
+                                inspMachine.maquina,
+                                inspMachine.smd,
+                                pend.barcode)
+                            );
                         }
                         else
                         {
@@ -117,7 +122,7 @@ namespace AOI_VTWIN_RNS.Aoicollector.Vts500
                             if (panel.pendiente)
                             {
                                 // Aun sigue pendiente... no hago nada...
-                                inspMachine.LogBroadcast("log", string.Format("Sigue pendiente {0} desde la fecha {1}", pend.barcode, pend.endDate));
+                                inspMachine.LogBroadcast("log", string.Format("Sigue pendiente {0} desde la fecha {1}", pend.barcode, pend.fechaMaquina));
                             }
                             else
                             {

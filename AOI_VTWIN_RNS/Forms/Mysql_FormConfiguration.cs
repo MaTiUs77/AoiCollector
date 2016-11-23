@@ -7,10 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-using AOI_VTWIN_RNS.Src.Config;
-using AOI_VTWIN_RNS.Src.Database;
+using CollectorPackage.Src.Config;
+using CollectorPackage.Src.Database;
 
-namespace AOI_VTWIN_RNS
+namespace CollectorPackage
 {
     public partial class Mysql_FormConfiguration : Form
     {
@@ -21,10 +21,14 @@ namespace AOI_VTWIN_RNS
 
         private void confDB_Load(object sender, EventArgs e)
         {
-            MyUser.Text = AppConfig.Read("MYSQL", "user");
-            MyPass.Text = AppConfig.Read("MYSQL", "pass");
-            MyServer.Text = AppConfig.Read("MYSQL", "server");
-            MyDatabase.Text = AppConfig.Read("MYSQL", "database");
+            MySqlConnector iaserverDatabase = new MySqlConnector();
+            iaserverDatabase.LoadConfig("IASERVER");
+
+            MyServer.Text = iaserverDatabase.host;
+//            MyPort.Text = iaserverDatabase.port;
+            MyUser.Text = iaserverDatabase.user;
+            MyPass.Text = iaserverDatabase.pass;
+            MyDatabase.Text = iaserverDatabase.database;
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -33,11 +37,12 @@ namespace AOI_VTWIN_RNS
 
             close = ValidarMysql();
 
-            MySqlConnector.LoadConfig();
+            MySqlConnector iaserverDatabase = new MySqlConnector();
+            iaserverDatabase.LoadConfig("IASERVER");
 
             if (close)
             {
-                this.Close();
+                Close();
             }
         }
 
@@ -46,7 +51,7 @@ namespace AOI_VTWIN_RNS
             bool valid = true;
             if (!MyUser.Text.Trim().Equals(""))
             {
-                AppConfig.Save("MYSQL", "user", MyUser.Text.Trim());
+                AppConfig.Save("IASERVER", "db_user", MyUser.Text.Trim());
             }
             else
             {
@@ -56,7 +61,7 @@ namespace AOI_VTWIN_RNS
 
             if (!MyPass.Text.Trim().Equals(""))
             {
-                AppConfig.Save("MYSQL", "pass", MyPass.Text.Trim());
+                AppConfig.Save("IASERVER", "db_pass", MyPass.Text.Trim());
             }
             else
             {
@@ -66,7 +71,7 @@ namespace AOI_VTWIN_RNS
 
             if (!MyServer.Text.Trim().Equals(""))
             {
-                AppConfig.Save("MYSQL", "server", MyServer.Text.Trim());
+                AppConfig.Save("IASERVER", "db_host", MyServer.Text.Trim());
             }
             else
             {
@@ -76,7 +81,7 @@ namespace AOI_VTWIN_RNS
 
             if (!MyDatabase.Text.Trim().Equals(""))
             {
-                AppConfig.Save("MYSQL", "database", MyDatabase.Text.Trim());
+                AppConfig.Save("IASERVER", "db_database", MyDatabase.Text.Trim());
             }
             else
             {
