@@ -19,7 +19,7 @@ namespace CollectorPackage.Aoicollector.Vts500
 
         private void WorkerStart(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            aoiLog.log("WorkerStart()");
+            aoiLog.debug("WorkerStart()");
  
             try
             {
@@ -33,7 +33,7 @@ namespace CollectorPackage.Aoicollector.Vts500
 
         private void StartInspection()
         {
-            aoiLog.log("StartInspection()");
+            aoiLog.debug("StartInspection()");
 
             bool OracleSuccess = false;
             

@@ -105,7 +105,12 @@ namespace CollectorPackage.Aoicollector.Vtwin
                         if (Config.isByPassMode(inspMachine))
                         {
                             // SKIP MACHINE
-                            inspMachine.LogBroadcast("warning",string.Format("{1} | Maquina en ByPass, no se analiza modo pendiente de {0}", pend.barcode, inspMachine.smd));
+                            inspMachine.LogBroadcast("warning",
+                                string.Format("{0} {1} | En ByPass, no se analiza modo pendiente de {2}",
+                                inspMachine.maquina,
+                                inspMachine.smd,
+                                pend.barcode)
+                            );
                         }
                         else
                         {
@@ -113,15 +118,16 @@ namespace CollectorPackage.Aoicollector.Vtwin
 
                             if (panel.pendiente)
                             {
-                                // Aun sigue pendiente... no hago nada...
-                                inspMachine.LogBroadcast("log", string.Format("Sigue pendiente {0} desde la fecha {1}", pend.barcode, pend.fechaMaquina));
+                                inspMachine.LogBroadcast("info",
+                                  string.Format("+ Sigue pendiente Programa: [{0}] | Barcode: {1} | Bloques: {2} | Pendiente: {3}", panel.programa, panel.barcode, panel.totalBloques, panel.pendiente)
+                                );
                             }
                             else
                             {
-                                // No esta mas pendiente!!, se realizo la inspeccion!! Guardo datos.
-                                inspMachine.LogBroadcast("notify",string.Format("Inspeccion detectada! {0}", pend.barcode));
-
-                                //panel.pendienteDelete = true;
+                                inspMachine.LogBroadcast("info",
+                                   string.Format("+ Inspeccion detectada! Programa: [{0}] | Barcode: {1} | Bloques: {2} | Pendiente: {3}", panel.programa, panel.barcode, panel.totalBloques, panel.pendiente)
+                                );
+                                panel.pendienteDelete = true;
 
                                 panel.TrazaSave(aoiConfig.xmlExportPath);
                             }
@@ -131,7 +137,7 @@ namespace CollectorPackage.Aoicollector.Vtwin
                     }
                     else
                     {
-                        aoiLog.log("No se detectaron actualizaciones de estado");
+                        aoiLog.debug("No se detectaron actualizaciones de estado");
                     }
                 }
             }

@@ -97,12 +97,21 @@ namespace CollectorPackage.Aoicollector.Inspection
                     string.Format("+ Panel Modo: {0}", spMode)
                 );
 
+                if (op == machine.prodService.result.produccion.op)
+                {
+                    machine.LogBroadcast("warning",
+                        string.Format("Es necesario verificar el estado de produccion, para detener en caso de exceder!!")
+                    );
+                }
+
                 // Si la linea tiene configurada la Trazabilidad por Cogiscan, valida ruta
                 if (machine.prodService.result.produccion.cogiscan.Equals("T"))
                 {
                     machine.LogBroadcast("info",
-                        string.Format("+ Validando ruta de cogiscan")
+                        string.Format("Esta ruta requiere validacion con cogiscan")
                     );
+
+                    SavePanel(panelService);
 
                     // Comentado hasta que repare el service
                     //if (panelService.result.cogiscan.product.attributes.operation.Equals("AOI"))
@@ -126,23 +135,10 @@ namespace CollectorPackage.Aoicollector.Inspection
                 ), this, panelService.error);
             }
 
-
+            // Solo guardo bloques, si se realizaron correctamente las tareas anteriores
             if (panelId > 0 && panelService.error == null)
             {
-                // Verifico que la OP del panel inspeccionado, corresponda a la OP configurada en produccion
-                if (op == machine.prodService.result.produccion.op)
-                {
-                    SaveBlocks(path);
-                }
-                else
-                {
-                    machine.LogBroadcast("warning",
-                        string.Format("+ El panel {0} esta registrado con {1}, es diferente de {2} en produccion",
-                        barcode,
-                        op,
-                        machine.prodService.result.produccion.op)
-                    );
-                }
+                SaveBlocks(path);
             }
 
             return panelService;

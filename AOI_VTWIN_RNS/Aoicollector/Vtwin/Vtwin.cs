@@ -19,9 +19,7 @@ namespace CollectorPackage.Aoicollector.Vtwin
 
         private void WorkerStart(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            aoiLog.verbose("WorkerStart()");
             CheckPcbFiles();
-
             try
             {
                 if (aoiReady)
@@ -40,8 +38,6 @@ namespace CollectorPackage.Aoicollector.Vtwin
 
         private void StartInspection()
         {
-            aoiLog.verbose("StartInspection()");
-
             bool OracleSuccess = false;
 
             OracleController oc = new OracleController(this);
@@ -49,7 +45,7 @@ namespace CollectorPackage.Aoicollector.Vtwin
 
             if (OracleSuccess)
             {
-                aoiLog.info("Comenzando analisis de inspecciones");
+                aoiLog.debug("Comenzando analisis de inspecciones");
 
                 // Lista de maquinas VTWIN
                 IEnumerable<Machine> oracleMachines = Machine.list.Where(obj => obj.tipo == aoiConfig.machineNameKey);

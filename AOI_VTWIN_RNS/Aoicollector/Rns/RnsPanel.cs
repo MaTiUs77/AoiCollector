@@ -62,7 +62,7 @@ namespace CollectorPackage.Aoicollector.Rns
 
                     maquina = info[5].ToString().Replace("\"", "").Trim();
                     programa = info[7].ToString().Replace("\"", "").Trim();
- 
+
                     barcode = info[36].ToString().Replace("\"", "").Trim();
 
                     BarcodeValidate();
@@ -89,9 +89,9 @@ namespace CollectorPackage.Aoicollector.Rns
                             rnsi.DynamicTab(machine);
 
                             machine.LogBroadcast("info",
-                                string.Format("{0} | Maquina {1} | Ultima inspeccion {2}", 
-                                    machine.smd, 
-                                    machine.line_barcode, 
+                                string.Format("{0} | Maquina {1} | Ultima inspeccion {2}",
+                                    machine.smd,
+                                    machine.line_barcode,
                                     machine.ultima_inspeccion
                                 )
                             );
@@ -104,7 +104,7 @@ namespace CollectorPackage.Aoicollector.Rns
                             }
 
                             // Adhiere las rutas a las carpetas de inspecciones
-                            InspectionResult inspResult = new InspectionResult(this,rnsi);
+                            InspectionResult inspResult = new InspectionResult(this, rnsi);
 
                             detailList = GetInspectionDetail(contenidoCsv);
 
@@ -117,15 +117,19 @@ namespace CollectorPackage.Aoicollector.Rns
                             MakeRevisionToAll();
 
                             machine.LogBroadcast("info",
-                               string.Format("Programa: [{0}] | Barcode: {1} | Bloques: {2}", 
-                               programa, 
-                               barcode, 
+                               string.Format("Programa: [{0}] | Barcode: {1} | Bloques: {2}",
+                               programa,
+                               barcode,
                                totalBloques
                                )
                             );
                         }
-                    } // IF panelBarcode != ""
-                } // IF csv has rows
+                    }
+                    else
+                    {
+                        rnsi.aoiLog.warning("El archivo no tiene codigo de panel");
+                    }
+                }
                 else
                 {
                     rnsi.aoiLog.warning("El archivo " + csvFilePath.FullName + " no tiene filas");

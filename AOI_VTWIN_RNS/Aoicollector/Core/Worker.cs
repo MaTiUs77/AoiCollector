@@ -16,8 +16,6 @@ namespace CollectorPackage.Aoicollector.Core
         public int timerInterval = 10;
         public ProgressBar progressBar;
         public BackgroundWorker bgWorker = new BackgroundWorker();
-        public int timesCompleted = 0;
-        public int timesToResetLog = 50;
 
         public DoWorkEventHandler WorkerStart;
 
@@ -105,15 +103,7 @@ namespace CollectorPackage.Aoicollector.Core
         private void WorkerRunCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             progressBar.Value = 0;
-            aoi.aoiLog.verbose(string.Format("*** Operacion completa | Runs ({0}) ***", timesCompleted));
-
-            if (timesCompleted >= timesToResetLog)
-            {
-                aoi.aoiLog.reset();
-                timesCompleted = 0;
-            }
-
-            timesCompleted++;
+            aoi.aoiLog.verbose(string.Format("*** Operacion completa ***"));
         }
 
         private void WorkerProgressChanged(object sender, ProgressChangedEventArgs e)

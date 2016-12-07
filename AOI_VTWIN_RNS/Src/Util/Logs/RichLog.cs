@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using System.ComponentModel;
 using System.IO;
-using CollectorPackage.Src.Config;
 using System.Drawing;
 
 namespace CollectorPackage.Aoicollector.Core
@@ -16,11 +12,13 @@ namespace CollectorPackage.Aoicollector.Core
         public string smd { get; set; }
         public bool autoscroll = true;
 
+        public int linelimit = 200;
+        public int linecount = 0;
+
         protected Color colorError = Color.Red;
         protected Color colorInfo = Color.Cyan;
         protected Color colorWarning = Color.Yellow;
         protected Color colorDebug = Color.Gray;
-        protected Color colorLog = Color.Gray;
         protected Color colorVerbose = Color.Green;
         protected Color colorStack = Color.Orange;
         protected Color colorSuccess = Color.Green;
@@ -44,6 +42,7 @@ namespace CollectorPackage.Aoicollector.Core
         public void reset()
         {
             richTextBox.Text = string.Empty;
+            linecount = 0;
         }
 
         private Color getColorMode(string mode)
@@ -55,7 +54,6 @@ namespace CollectorPackage.Aoicollector.Core
                 case "info": color = colorInfo; break;
                 case "warning": color = colorWarning; break;
                 case "debug": color = colorDebug; break;
-                case "log": color = colorLog; break;
                 case "verbose": color = colorVerbose; break;
                 case "stack": color = colorStack; break;
                 case "success": color = colorSuccess; break;
@@ -86,7 +84,12 @@ namespace CollectorPackage.Aoicollector.Core
 
             MethodInvoker updatListBox = new MethodInvoker(() =>
             {
-                if(mode != "lastline")
+                if (linecount >= linelimit)
+                {
+                    reset();
+                }
+
+                if (mode != "lastline")
                 {
                     richTextBox.SelectionStart = richTextBox.TextLength;
                     richTextBox.SelectionLength = 0;
@@ -101,6 +104,8 @@ namespace CollectorPackage.Aoicollector.Core
                     richTextBox.SelectionStart = richTextBox.Text.Length;
                     richTextBox.ScrollToCaret();
                 }
+
+                linecount++;
             });
 
             if (richTextBox.InvokeRequired)
@@ -138,10 +143,6 @@ namespace CollectorPackage.Aoicollector.Core
         {
             return putLog(msg, "debug");
         }    
-        public string log(string msg)
-        {
-            return putLog(msg, "log");
-        }
 
         public string put(string msg)
         {

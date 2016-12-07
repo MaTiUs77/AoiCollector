@@ -16,7 +16,7 @@ namespace CollectorPackage.Aoicollector.Rns
 
         private void WorkerStart(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            aoiLog.verbose("WorkerStart()");
+            //aoiLog.debug("WorkerStart()");
             CheckPcbFiles();
             try
             {
@@ -36,7 +36,7 @@ namespace CollectorPackage.Aoicollector.Rns
 
         private void StartInspection() 
         {
-            aoiLog.verbose("StartInspection() => Localizando CSV de Inspeccion");
+            aoiLog.verbose("Localizando CSV de Inspeccion");
 
             // Obtengo archivos CSV en InspectionFolder
             IOrderedEnumerable<FileInfo> csv = FilesHandler.GetFiles("*", aoiConfig.inspectionCsvPath);

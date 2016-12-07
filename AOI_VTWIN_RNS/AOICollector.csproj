@@ -28,7 +28,7 @@
     <UpdateUrl>\\ush-nt-3\v1\Users\INSAUT\PLANTA_3\TECNICOS_3\Programacion\Software\Matias\AoiCollector\</UpdateUrl>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>7</ApplicationRevision>
+    <ApplicationRevision>14</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>

@@ -65,7 +65,7 @@ namespace CollectorPackage
                                   panel.totalErroresReales
                               ));
 
-                            log.log(
+                            log.debug(
                                 string.Format("========================================================")
                             );
                         }

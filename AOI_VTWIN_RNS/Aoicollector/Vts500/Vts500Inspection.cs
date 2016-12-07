@@ -121,14 +121,17 @@ namespace CollectorPackage.Aoicollector.Vts500
 
                             if (panel.pendiente)
                             {
-                                // Aun sigue pendiente... no hago nada...
-                                inspMachine.LogBroadcast("log", string.Format("Sigue pendiente {0} desde la fecha {1}", pend.barcode, pend.fechaMaquina));
+                                inspMachine.LogBroadcast("info",
+                                  string.Format("+ Sigue pendiente Programa: [{0}] | Barcode: {1} | Bloques: {2} | Pendiente: {3}", panel.programa, panel.barcode, panel.totalBloques, panel.pendiente)
+                                );
                             }
                             else
                             {
-                                // No esta mas pendiente!!, se realizo la inspeccion!! Guardo datos.
-                                inspMachine.LogBroadcast("notify", string.Format("Inspeccion detectada! {0}", pend.barcode));
+                                inspMachine.LogBroadcast("info",
+                                   string.Format("+ Inspeccion detectada! Programa: [{0}] | Barcode: {1} | Bloques: {2} | Pendiente: {3}", panel.programa, panel.barcode, panel.totalBloques, panel.pendiente)
+                                );
                                 panel.pendienteDelete = true;
+
                                 panel.TrazaSave(aoiConfig.xmlExportPath);
                             }
 
@@ -137,7 +140,7 @@ namespace CollectorPackage.Aoicollector.Vts500
                     }
                     else
                     {
-                        aoiLog.log("No se detectaron actualizaciones de estado");
+                        aoiLog.debug("No se detectaron actualizaciones de estado");
                     }
                 }
             }

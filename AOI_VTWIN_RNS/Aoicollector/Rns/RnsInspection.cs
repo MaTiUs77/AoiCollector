@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Data;
-
-using CollectorPackage.Src.Util.Files;
+﻿using System.IO;
 using CollectorPackage.Aoicollector.Inspection.Model;
 using CollectorPackage.Aoicollector.Core;
 
@@ -25,24 +21,11 @@ namespace CollectorPackage.Aoicollector.Rns
                 }
                 else
                 {
-                    /*
-                        RNS no tiene inspecciones pendientes, directamente no se procesan porque el archivo se encuentra sin filas   
-                        por lo que se realiza el TrazaSave directamente sin verificar estados pendientes                 
-                    */
-                    //if(panel.pcbInfo.etiquetas==panel.totalBloques)
-                    //{
                     panel.TrazaSave(aoiConfig.xmlExportPath);
-                    //} else
-                    //{
-                    //    panel.machine.LogBroadcast("warning",
-                    //        string.Format("No se leyeron todas las etiquetas | Solicitadas: {0} | Leidas: {1}", panel.pcbInfo.etiquetas,panel.totalBloques)
-                    //    );
-                    //}
-
 
                     if (!Config.debugMode)
                     {
-                        aoiLog.log("Actualizando fecha de ultima inspeccion en maquina");
+                        aoiLog.debug("Actualizando fecha de ultima inspeccion en maquina");
                         Machine.UpdateInspectionDate(panel.machine.mysql_id);
                         panel.machine.Ping();
 
@@ -51,6 +34,11 @@ namespace CollectorPackage.Aoicollector.Rns
                         aoiLog.debug("Eliminando: " + panel.csvFilePath.FullName);
                     }
                 }
+            } else
+            {
+                // Elimino el archivo luego de procesarlo.
+                File.Delete(panel.csvFilePath.FullName);
+                aoiLog.debug("Eliminando: " + panel.csvFilePath.FullName);
             }
         }
     }

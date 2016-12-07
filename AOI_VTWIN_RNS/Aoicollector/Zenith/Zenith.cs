@@ -19,18 +19,12 @@ namespace CollectorPackage.Aoicollector.Zenith
 
         private void WorkerStart(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            aoiLog.verbose("WorkerStart()");
-
             StartInspection();
         }
 
         private void StartInspection()
         {
-            aoiLog.verbose("StartInspection()");
-
             SqlServerController sqlctrl = new SqlServerController(this);
-
-            aoiLog.info("Comenzando analisis de inspecciones");
 
             // Lista de maquinas Zenith
             IEnumerable<Machine> machines = Machine.list.Where(obj => obj.tipo == aoiConfig.machineNameKey);
@@ -40,7 +34,6 @@ namespace CollectorPackage.Aoicollector.Zenith
             {
                 DynamicTab(inspMachine);
             }
-
 
             try
             {
@@ -59,6 +52,12 @@ namespace CollectorPackage.Aoicollector.Zenith
         
         private void TryInspectionProccess(Machine inspMachine)
         {
+            inspMachine.LogBroadcast("debug", 
+                string.Format("============================ {0} ==== {1} ===============================",
+                    inspMachine.maquina, 
+                    inspMachine.smd
+                ));
+
             if (Config.isByPassMode(inspMachine))
             {
                 inspMachine.LogBroadcast("warning",
@@ -76,10 +75,6 @@ namespace CollectorPackage.Aoicollector.Zenith
                     inspMachine.log.stack(ex.Message, this, ex);
                 }
             }
-
-            inspMachine.LogBroadcast("verbose", 
-                string.Format("TryInspectionProccess({0}) Completo", inspMachine.smd)
-            );
         }
     }
 }

@@ -4,14 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.ComponentModel;
-using System.Text.RegularExpressions;
 
 using CollectorPackage.Src.Config;
 using CollectorPackage.Src.Util.Network;
 using CollectorPackage.Src.Database;
 using CollectorPackage.Aoicollector.Core;
 using CollectorPackage.Aoicollector.Inspection.Model;
-using CollectorPackage.Aoicollector.Inspection;
 using System.Drawing;
 using System.Threading.Tasks;
 
@@ -58,13 +56,13 @@ namespace CollectorPackage.Aoicollector
             oracle.LoadConfig(aoiConfig.machineType);
             if(oracle.host != null)
             {
-                aoiLog.log("------------------- Oracle config -----------------------");
-                aoiLog.log("+ Server: " + oracle.host);
-                aoiLog.log("+ Port: " + oracle.port);
-                aoiLog.log("+ User: " + oracle.user);
-                aoiLog.log("+ Pass: " + oracle.pass);
-                aoiLog.log("+ Service: " + oracle.service);
-                aoiLog.log("---------------------------------------------------------");
+                aoiLog.debug("------------------- Oracle config -----------------------");
+                aoiLog.debug("+ Server: " + oracle.host);
+                aoiLog.debug("+ Port: " + oracle.port);
+                aoiLog.debug("+ User: " + oracle.user);
+                aoiLog.debug("+ Pass: " + oracle.pass);
+                aoiLog.debug("+ Service: " + oracle.service);
+                aoiLog.debug("---------------------------------------------------------");
             }
         }
 
@@ -73,13 +71,13 @@ namespace CollectorPackage.Aoicollector
             sqlserver.LoadConfig(aoiConfig.machineType);
             if (sqlserver.host != null)
             {
-                aoiLog.log("------------------- SqlServer config -----------------------");
-                aoiLog.log("+ Server: " + sqlserver.host);
-                aoiLog.log("+ Port: " + sqlserver.port);
-                aoiLog.log("+ User: " + sqlserver.user);
-                aoiLog.log("+ Pass: " + sqlserver.pass);
-                aoiLog.log("+ Database: " + sqlserver.database);
-                aoiLog.log("---------------------------------------------------------");
+                aoiLog.debug("------------------- SqlServer config -----------------------");
+                aoiLog.debug("+ Server: " + sqlserver.host);
+                aoiLog.debug("+ Port: " + sqlserver.port);
+                aoiLog.debug("+ User: " + sqlserver.user);
+                aoiLog.debug("+ Pass: " + sqlserver.pass);
+                aoiLog.debug("+ Database: " + sqlserver.database);
+                aoiLog.debug("---------------------------------------------------------");
             }
         }
 
@@ -107,7 +105,7 @@ namespace CollectorPackage.Aoicollector
             LoadDB();
             UseCredential();
 
-            aoiLog.log("Prepare() de " + machineType + " completo");
+            aoiLog.debug("Prepare() de " + machineType + " completo");
         }
 
         public void TotalMachines()
@@ -120,7 +118,7 @@ namespace CollectorPackage.Aoicollector
         {
             if (Config.dbDownloadComplete)
             {
-                aoiLog.log("Iniciando operaciones");
+                aoiLog.debug("Iniciando operaciones");
                 aoiWorker.StartOperation(forceStart);
             }
             else
@@ -134,7 +132,7 @@ namespace CollectorPackage.Aoicollector
 
                 if (downloaded)
                 {
-                    aoiLog.log("Iniciando operaciones");
+                    aoiLog.debug("Iniciando operaciones");
                     aoiWorker.StartOperation(forceStart); 
                 }
             }
@@ -142,7 +140,7 @@ namespace CollectorPackage.Aoicollector
 
         public void Stop()
         {
-            aoiLog.log("Deteniendo operaciones");
+            aoiLog.debug("Deteniendo operaciones");
             aoiWorker.StopTimer();
         }
 
@@ -151,11 +149,11 @@ namespace CollectorPackage.Aoicollector
             bool complete = false;
             if (Convert.ToBoolean(AppConfig.Read(aoiConfig.machineType, "usar_credencial")))
             {
-                aoiLog.verbose("Ejecutando credencial: " + AppConfig.Read(aoiConfig.machineType, "server"));
+                aoiLog.debug("Ejecutando credencial: " + AppConfig.Read(aoiConfig.machineType, "server"));
                 try
                 {
                     Network.ConnectCredential(aoiConfig.machineType);
-                    aoiLog.log("Credencial ejecutada.");
+                    aoiLog.debug("Credencial ejecutada.");
                     complete = true;
                 }
                 catch (Exception ex)
@@ -179,11 +177,11 @@ namespace CollectorPackage.Aoicollector
         {
             bool complete = false;
 
-            aoiLog.log("CheckPcbFiles() " + aoiConfig.dataProgPath);
+            aoiLog.debug("CheckPcbFiles() " + aoiConfig.dataProgPath);
 
             if (UseCredential())
             {
-                aoiLog.verbose("Verificando cambios en PCB Files");
+                aoiLog.debug("Verificando cambios en PCB Files");
                 try
                 {
                     PcbData pcbData = new PcbData(this);
@@ -193,7 +191,7 @@ namespace CollectorPackage.Aoicollector
                         aoiLog.notify("Actualizando lista de PCB Files en memoria");
                         PcbInfo.Download(aoiConfig.machineNameKey);
                     }
-                    aoiLog.log("Verificacion de PCB Files completa");
+                    aoiLog.debug("Verificacion de PCB Files completa");
                     complete = true;
                 }
                 catch (Exception ex)

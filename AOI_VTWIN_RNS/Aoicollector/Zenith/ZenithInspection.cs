@@ -13,13 +13,14 @@ namespace CollectorPackage.Aoicollector.Zenith
         public void HandleInspection(Machine inspMachine)
         {
             DateTime new_last_inspection = new DateTime(1, 1, 1);
-            inspMachine.LogBroadcast("info", 
-                string.Format("{0} | Maquina {1} | Ultima inspeccion {2}", 
-                    inspMachine.smd, 
-                    inspMachine.line_barcode, 
-                    inspMachine.ultima_inspeccion
-                )
-            );
+
+            //inspMachine.LogBroadcast("info", 
+            //    string.Format("{0} | Maquina {1} | Ultima inspeccion {2}", 
+            //        inspMachine.smd, 
+            //        inspMachine.line_barcode, 
+            //        inspMachine.ultima_inspeccion
+            //    )
+            //);
 
             string query = SqlServerQuery.ListLastInspections(inspMachine.maquina, inspMachine.ultima_inspeccion);
             DataTable dt = sqlserver.Query(query);
@@ -42,7 +43,7 @@ namespace CollectorPackage.Aoicollector.Zenith
                     ZenithPanel panel = new ZenithPanel(sqlserver,r, inspMachine);
 
                     inspMachine.LogBroadcast("info", 
-                        string.Format("+ Programa: [{0}] | Barcode: {1} | Bloques: {2} | Pendiente: {3}", panel.programa, panel.barcode, panel.totalBloques, panel.pendiente)
+                        string.Format("Programa: [{0}] | Barcode: {1} | Bloques: {2} | Pendiente: {3}", panel.programa, panel.barcode, panel.totalBloques, panel.pendiente)
                     );
 
                     panel.TrazaSave(aoiConfig.xmlExportPath);
@@ -68,9 +69,7 @@ namespace CollectorPackage.Aoicollector.Zenith
             }
             else
             {
-                inspMachine.LogBroadcast("notify", 
-                    string.Format("{0} No se encontraron inspecciones", inspMachine.smd)
-                );
+                inspMachine.LogBroadcast("notify", "No se encontraron inspecciones");
             }
 
             inspMachine.Ping();
@@ -79,7 +78,7 @@ namespace CollectorPackage.Aoicollector.Zenith
         public void HandlePendientInspection()
         {
             List<Pendiente> pendList = Pendiente.Download(aoiConfig.machineNameKey);
-            aoiLog.info("Verificando inspecciones pendientes. Total: " + pendList.Count);
+            aoiLog.debug("Verificando inspecciones pendientes. Total: " + pendList.Count);
 
             if (pendList.Count > 0)
             {
@@ -102,7 +101,12 @@ namespace CollectorPackage.Aoicollector.Zenith
                         if (Config.isByPassMode(inspMachine))
                         {
                             // SKIP MACHINE
-                            inspMachine.LogBroadcast("warning", string.Format("{1} | Maquina en ByPass, no se analiza modo pendiente de {0}", pend.barcode, inspMachine.smd));
+                            inspMachine.LogBroadcast("warning",
+                                string.Format("{0} {1} | En ByPass, no se analiza modo pendiente de {2}",
+                                inspMachine.maquina,
+                                inspMachine.smd,
+                                pend.barcode)
+                            );
                         }
                         else
                         {
@@ -126,7 +130,7 @@ namespace CollectorPackage.Aoicollector.Zenith
                     }
                     else
                     {
-                        aoiLog.log("No se detectaron actualizaciones de estado");
+                        aoiLog.debug("No se detectaron actualizaciones de estado");
                     }
                 }
             }

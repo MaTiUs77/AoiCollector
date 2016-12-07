@@ -16,12 +16,12 @@ namespace CollectorPackage.Aoicollector.Vtwin.Controller
         public bool GetMachines()
         {
             bool success = false;
-            aoi.aoiLog.info("Descargando maquinas desde Oracle");
+            aoi.aoiLog.debug("Descargando maquinas desde Oracle");
 
             try
             {
                 GetAllMachines();
-                aoi.aoiLog.log("Descarga completa");
+                aoi.aoiLog.debug("Descarga completa");
                 success = true;
             }
             catch (Exception ex)

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <asmv1:assembly xsi:schemaLocation="urn:schemas-microsoft-com:asm.v1 assembly.adaptive.xsd" manifestVersion="1.0" xmlns:asmv1="urn:schemas-microsoft-com:asm.v1" xmlns="urn:schemas-microsoft-com:asm.v2" xmlns:asmv2="urn:schemas-microsoft-com:asm.v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:co.v1="urn:schemas-microsoft-com:clickonce.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:co.v2="urn:schemas-microsoft-com:clickonce.v2">
-  <asmv1:assemblyIdentity name="AOICollector.exe" version="1.0.0.6" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="amd64" type="win32" />
+  <asmv1:assemblyIdentity name="AOICollector.exe" version="1.0.0.14" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="amd64" type="win32" />
   <description asmv2:iconFile="icono.ico" xmlns="urn:schemas-microsoft-com:asm.v1" />
   <application />
   <entryPoint>
@@ -50,7 +50,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>WFrr/Nq1gb9l1KC6si/xCjmFzTlbNdkCl5BtTgMbv8A=</dsig:DigestValue>
+        <dsig:DigestValue>psCC5IyV8I6g1VFezI9BGxjTk9Rf87F2srlUrvQh50A=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -90,13 +90,13 @@
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="AOICollector.exe.config" size="3700">
+  <file name="AOICollector.exe.config" size="3325">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>E/tkCnDYHD34u5VYP++rAUIjfbu24ItfJ0/kQ5x3qUA=</dsig:DigestValue>
+      <dsig:DigestValue>rfuCYf+F7iLINlmBVrmSDI3zM6qDAL0PfjNTFcvLSso=</dsig:DigestValue>
     </hash>
   </file>
   <file name="icono.ico" size="370070">
