@@ -56,13 +56,13 @@ namespace CollectorPackage.Aoicollector
             oracle.LoadConfig(aoiConfig.machineType);
             if(oracle.host != null)
             {
-                aoiLog.debug("------------------- Oracle config -----------------------");
-                aoiLog.debug("+ Server: " + oracle.host);
-                aoiLog.debug("+ Port: " + oracle.port);
-                aoiLog.debug("+ User: " + oracle.user);
-                aoiLog.debug("+ Pass: " + oracle.pass);
-                aoiLog.debug("+ Service: " + oracle.service);
-                aoiLog.debug("---------------------------------------------------------");
+                aoiLog.info("------------------- Oracle config -----------------------");
+                aoiLog.info("+ Server: " + oracle.host);
+                aoiLog.info("+ Port: " + oracle.port);
+                aoiLog.info("+ User: " + oracle.user);
+                aoiLog.info("+ Pass: " + oracle.pass);
+                aoiLog.info("+ Service: " + oracle.service);
+                aoiLog.info("---------------------------------------------------------");
             }
         }
 
@@ -71,13 +71,13 @@ namespace CollectorPackage.Aoicollector
             sqlserver.LoadConfig(aoiConfig.machineType);
             if (sqlserver.host != null)
             {
-                aoiLog.debug("------------------- SqlServer config -----------------------");
-                aoiLog.debug("+ Server: " + sqlserver.host);
-                aoiLog.debug("+ Port: " + sqlserver.port);
-                aoiLog.debug("+ User: " + sqlserver.user);
-                aoiLog.debug("+ Pass: " + sqlserver.pass);
-                aoiLog.debug("+ Database: " + sqlserver.database);
-                aoiLog.debug("---------------------------------------------------------");
+                aoiLog.info("------------------- SqlServer config -----------------------");
+                aoiLog.info("+ Server: " + sqlserver.host);
+                aoiLog.info("+ Port: " + sqlserver.port);
+                aoiLog.info("+ User: " + sqlserver.user);
+                aoiLog.info("+ Pass: " + sqlserver.pass);
+                aoiLog.info("+ Database: " + sqlserver.database);
+                aoiLog.info("---------------------------------------------------------");
             }
         }
 
@@ -105,7 +105,7 @@ namespace CollectorPackage.Aoicollector
             LoadDB();
             UseCredential();
 
-            aoiLog.debug("Prepare() de " + machineType + " completo");
+            aoiLog.verbose("Prepare() de " + machineType + " completo");
         }
 
         public void TotalMachines()
@@ -118,7 +118,7 @@ namespace CollectorPackage.Aoicollector
         {
             if (Config.dbDownloadComplete)
             {
-                aoiLog.debug("Iniciando operaciones");
+                aoiLog.verbose("Iniciando operaciones");
                 aoiWorker.StartOperation(forceStart);
             }
             else
@@ -132,7 +132,7 @@ namespace CollectorPackage.Aoicollector
 
                 if (downloaded)
                 {
-                    aoiLog.debug("Iniciando operaciones");
+                    aoiLog.verbose("Iniciando operaciones");
                     aoiWorker.StartOperation(forceStart); 
                 }
             }
@@ -140,7 +140,7 @@ namespace CollectorPackage.Aoicollector
 
         public void Stop()
         {
-            aoiLog.debug("Deteniendo operaciones");
+            aoiLog.verbose("Deteniendo operaciones");
             aoiWorker.StopTimer();
         }
 
@@ -152,8 +152,8 @@ namespace CollectorPackage.Aoicollector
                 aoiLog.debug("Ejecutando credencial: " + AppConfig.Read(aoiConfig.machineType, "server"));
                 try
                 {
-                    Network.ConnectCredential(aoiConfig.machineType);
-                    aoiLog.debug("Credencial ejecutada.");
+                    Network.ConnectCredential(aoiConfig.machineType);                    
+                    aoiLog.debug("Credencial ejecutada");
                     complete = true;
                 }
                 catch (Exception ex)
@@ -177,7 +177,7 @@ namespace CollectorPackage.Aoicollector
         {
             bool complete = false;
 
-            aoiLog.debug("CheckPcbFiles() " + aoiConfig.dataProgPath);
+            //aoiLog.verbose("CheckPcbFiles() " + aoiConfig.dataProgPath);
 
             if (UseCredential())
             {
@@ -204,7 +204,6 @@ namespace CollectorPackage.Aoicollector
             aoiReady = complete;
             return complete;
         }
-
 
         /// <summary>
         /// Agrega un TAB dinamico, con su respectivo box de logeo
@@ -259,10 +258,5 @@ namespace CollectorPackage.Aoicollector
                 makeDyndamicTab();
             }
         }
-
-        //public void LogBroadcast(Machine inspMachine, string mode, string msg)
-        //{
-        //    inspMachine.log.putLog(aoiLog.putLog(msg, mode, false),mode,true);
-        //}
     }
 }

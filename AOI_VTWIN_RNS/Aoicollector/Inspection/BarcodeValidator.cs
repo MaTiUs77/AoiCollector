@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using CollectorPackage.Src.Util.Crypt;
-using CollectorPackage.Src.Config;
 
 namespace CollectorPackage.Aoicollector.Inspection
 {
@@ -20,10 +15,10 @@ namespace CollectorPackage.Aoicollector.Inspection
         public BarcodeValidator(string barcode)
         {
             this.barcode = barcode;
-            validateBarcode();
+            ValidateBarcode();
         }
 
-        public void validateBarcode()
+        public void ValidateBarcode()
         {
             // Solucion a problema de caracteres invalidos en barcode
             var regexItem = new Regex(regexInvalidCodeFilter);
@@ -41,12 +36,24 @@ namespace CollectorPackage.Aoicollector.Inspection
             {
                 tipoBarcode = "V";
             }
-        }
+        }       
 
         private bool BarcodeMatchExpresion(string barcode)
         {
-            // Etiquetas tipo: 00000123244
             Regex regex = new Regex(regexDefault);
+            if (regex.IsMatch(barcode))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }    
+
+        public bool ValidateBarcodeWithRegex(string barcode,string regexExpression)
+        {
+            Regex regex = new Regex(regexExpression);
             if (regex.IsMatch(barcode))
             {
                 return true;

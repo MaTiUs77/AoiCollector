@@ -81,7 +81,7 @@ namespace CollectorPackage.Aoicollector.Vtwin
         {
             List<Pendiente> pendList = Pendiente.Download(aoiConfig.machineNameKey);
             aoiLog.info("Verificando inspecciones pendientes. Total: " + pendList.Count);
-
+            string queryy = OracleQuery.ListLastInspections(0, "", null);
             if (pendList.Count > 0)
             {
                 int count = 0;

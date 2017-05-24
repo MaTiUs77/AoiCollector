@@ -5,6 +5,7 @@ using CollectorPackage.Aoicollector.Inspection.Model;
 using System.IO;
 using CollectorPackage.Aoicollector.IAServer;
 using System.Threading.Tasks;
+using AOICollector.Src.Redis;
 
 namespace CollectorPackage.Aoicollector.Inspection
 {
@@ -91,15 +92,12 @@ namespace CollectorPackage.Aoicollector.Inspection
         /// Obtiene datos de panel desde el webservice
         /// </summary>
         /// <returns>InspectionService</returns>
-        public PanelService GetBarcodeInfoFromIAServer(bool verifyDeclared = false)
-        {
-            machine.LogBroadcast("verbose",
-                string.Format("+ Verificando datos de barcode desde IAServer ({0})", barcode)
-            );
+        public PanelService GetBarcodeInfoFromIAServer()
+        {           
             PanelService panelService = new PanelService();
 
-            // Comentado hasta que solucione el service
-            panelService.GetPanelInfo(barcode, verifyDeclared);
+            // Por ahora no verifica si ya fue declarado....
+            panelService.GetPanelInfo(barcode, false);
             if (panelService.error == null)
             {
                 if (panelService.result.panel != null)
@@ -108,13 +106,13 @@ namespace CollectorPackage.Aoicollector.Inspection
                     op = panelService.result.panel.inspected_op;                   
 
                     machine.LogBroadcast("notify",
-                        string.Format("+ El panel ID: ({0}) tiene OP Asignada: {1}", panelId, op)
+                        string.Format("El panel ID: ({0}) tiene OP Asignada: {1}", panelId, op)
                     );
                 }
                 else
                 {
                     machine.LogBroadcast("warning",
-                        string.Format("+ El panel no fue registrado en IAServer ({0})", barcode)
+                        string.Format("El panel no fue registrado en IAServer ({0})", barcode)
                     );
                 }
             } else {

@@ -4,6 +4,8 @@ using System.Windows.Forms;
 using System.IO;
 
 using CollectorPackage.Src.Util.Files;
+using CollectorPackage.Aoicollector.Core;
+using Newtonsoft.Json.Linq;
 
 namespace CollectorPackage.Aoicollector.Rns
 {
@@ -16,7 +18,6 @@ namespace CollectorPackage.Aoicollector.Rns
 
         private void WorkerStart(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            //aoiLog.debug("WorkerStart()");
             CheckPcbFiles();
             try
             {
@@ -42,16 +43,31 @@ namespace CollectorPackage.Aoicollector.Rns
             IOrderedEnumerable<FileInfo> csv = FilesHandler.GetFiles("*", aoiConfig.inspectionCsvPath);
             int totalCsv = csv.Count();
 
-            aoiWorker.SetProgressTotal(totalCsv);
+            aoiWorker.SetProgressTotal(totalCsv);           
 
             if (totalCsv > 0)
             {
                 int file_count = 0;
-                aoiLog.info("CSV encontrados: " + totalCsv);
 
                 foreach (FileInfo file in csv)
                 {
                     file_count++;
+
+                    #region REDIS
+                        // Dato a enviar
+                        JObject json = new JObject();
+                        json["mode"] = "runtime";
+                        json["tipo"] = aoiConfig.machineType;
+                        json["current"] = file_count.ToString();
+                        json["total"] = totalCsv.ToString();
+                        // Enviar al canal 
+                        Realtime.send(json.ToString());
+                    #endregion
+
+                    aoiLog.info("---------------------------------------------");
+                    aoiLog.info(" Procesando " + file_count + " / " + totalCsv);
+                    aoiLog.info("---------------------------------------------");
+
                     HandleInspection(file);
 
                     aoiWorker.SetProgressWorking(file_count);
@@ -61,6 +77,17 @@ namespace CollectorPackage.Aoicollector.Rns
             }
             else
             {
+                #region REDIS
+                    // Dato a enviar
+                    JObject json = new JObject();
+                    json["mode"] = "runtime";
+                    json["tipo"] = aoiConfig.machineType;
+                    json["current"] = 0;
+                    json["total"] = 0;
+                    // Enviar al canal 
+                    Realtime.send(json.ToString());
+                #endregion
+
                 aoiLog.info("No se encontraron inspecciones.");
             }
         }

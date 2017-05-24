@@ -15,7 +15,7 @@ namespace CollectorPackage.Src.Service
 
         public string Consume(string route)
         {
-            string jsonData = WebDownload(route + "?filter=1&period=0&stocker=0&json");
+            string jsonData = WebDownload(route);
             return jsonData;
         }
 

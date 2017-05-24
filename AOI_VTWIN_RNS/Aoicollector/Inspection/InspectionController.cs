@@ -6,6 +6,8 @@ using CollectorPackage.Src.Database;
 using CollectorPackage.Aoicollector.IAServer;
 using System.Diagnostics;
 using CollectorPackage.Aoicollector.Inspection.Model;
+using AOICollector.Src.Redis;
+using Newtonsoft.Json.Linq;
 
 namespace CollectorPackage.Aoicollector.Inspection
 {
@@ -13,80 +15,111 @@ namespace CollectorPackage.Aoicollector.Inspection
     {
         /// <summary>
         /// La placa que llego a TrazaSave, no se encuentra pendiente de inspeccion.
-        /// Antes de guardar los datos de inspeccion en IAServer es preciso verificar si la OP se encuentra ACTIVA, y si 
-        /// no se completo la OP
         /// </summary>
         /// <param name="path"></param>
         public void TrazaSave(string path)
         {
+            Stopwatch tiempoEjecucion = Stopwatch.StartNew();
+
             history = new History();
 
             // Solo proceso si la etiqueta es FISICA, las etiquetas virtuales no se aceptan mas
             if (tipoBarcode.Equals("E"))
             {
-                machine.LogBroadcast("notify",
-                   string.Format("+ Aoi: {0} | Inspector: {1} | Falsos: {3} | Reales: {4} | Pendiente: {2}",
-                       revisionAoi,
-                       revisionIns,
-                       pendiente,
-                       totalErroresFalsos,
-                       totalErroresReales
-
-                   )
-                );
-
-                if (pendiente)
+                // Si se detectaron bloques
+                if(bloqueList.Count>0)
                 {
-                    machine.LogBroadcast("warning",
-                        string.Format("+ Agregando panel a estado pendiente, se verificara en la siguiente ronda")
+                    machine.LogBroadcast("verbose",
+                       string.Format("Aoi: {0} | Inspector: {1} | Falsos: {3} | Reales: {4} | Pendiente: {2}",
+                           revisionAoi,
+                           revisionIns,
+                           pendiente,
+                           totalErroresFalsos,
+                           totalErroresReales
+                       )
                     );
 
-                    Pendiente.Save(this);
-                }
-                else
-                { 
-                    machine.GetProductionInfoFromIAServer();
-                    if (machine.prodService.error == null) // El stack lo muestro en el metodo GetProductionInfoFromIAServer
+                    if (pendiente)
                     {
-                        if (machine.prodService.result.error == null)
+                        machine.LogBroadcast("warning",
+                            string.Format("Agregando panel a estado pendiente, se verificara en la siguiente ronda")
+                        );
+
+                        Pendiente.Save(this);
+                    } else {
+                        /*
+                        Se consume el service y se obtiene toda la info actual de produccion
+                        OP, Declaracion, Rutas, Regex, Inspector logueado etc...
+                        */
+                        machine.GetProductionInfoFromIAServer();
+                        if (machine.prodService.error == null) // El stack lo muestro en el metodo GetProductionInfoFromIAServer, si es null simplemente finaliza operaciones
                         {
-                            // Existe configuracion de produccion?
-                            if (machine.prodService.result.produccion != null)
+                            if (machine.prodService.result.error == null)
                             {
-                                PanelHandlerService(path);
-                            }
-                            else
-                            {
-                                machine.LogBroadcast("warning",
-                                    string.Format("+ Error al obtener datos de {0} produccion del service, se cancela la operacion",op)
+                                // Existe configuracion de produccion?
+                                if (machine.prodService.result.produccion != null)
+                                {
+                                    // Existe alguna configuracion de ruta?
+                                    if (machine.prodService.routeMode != null)
+                                    {
+                                        PanelHandlerService(path);
+                                    } else {
+                                        machine.LogBroadcast("error",
+                                           string.Format("Se cancela la operacion, no existe puesto de produccion para {0}", machine.prodService.result.produccion.op)
+                                       );
+                                    }
+                                } else {
+                                    machine.LogBroadcast("error",
+                                        string.Format("Error al obtener datos de OP en produccion del service, se cancela la operacion")
+                                    );
+                                }
+                            } else {
+                                machine.LogBroadcast("error",
+                                    string.Format("Error al obtener resultados del service {0}", machine.prodService.result.error)
                                 );
                             }
-                        } else
-                        {
-                            machine.LogBroadcast("error",
-                                string.Format("+ Error al obtener resultados del service {0}", machine.prodService.result.error)
-                            );
                         }
-                    } 
-                } 
-            }
-            else
-            {
-                machine.LogBroadcast("warning",
-                    string.Format("+ Etiqueta virtual {0} en {1} | Maquina: {2}, se cancela la operacion", barcode, programa, machine.maquina)
+                    }
+                } else {
+                    machine.LogBroadcast("error",
+                        string.Format("Error no se detectaron bloques")
+                    );
+                }                 
+            } else {
+                machine.LogBroadcast("error",
+                    string.Format("Etiqueta virtual {0} en {1} | Maquina: {2}, se cancela la operacion", barcode, programa, machine.maquina)
                 );
             }
+
+            #region MONITOR REDIS
+            string tiempoStyle = "success";
+            if (tiempoEjecucion.ElapsedMilliseconds > 4000) { tiempoStyle = "warning"; }
+            if (tiempoEjecucion.ElapsedMilliseconds > 6000) { tiempoStyle = "error"; }
+
+            machine.LogBroadcast(tiempoStyle,
+                string.Format("Tiempo de ejecucion (ms) {0} ",
+                tiempoEjecucion.ElapsedMilliseconds)
+            );
+
+            JObject json = new JObject();
+            json["tiempoEjecucion"] = tiempoEjecucion.ElapsedMilliseconds.ToString();
+            json["aoibarcode"] = machine.line_barcode.ToString();
+            json["smd"] = machine.smd.ToString();
+            json["tipo"] = machine.tipo.ToString();
+            Realtime.send(json.ToString());
+            #endregion
         }
 
         private PanelService PanelHandlerService(string path)
         {
             Stopwatch sw = Stopwatch.StartNew();
-            // Si la ruta declara, obtiene estado de declaracion del panel si es que existe en IAServer
-            PanelService panelService = GetBarcodeInfoFromIAServer(machine.serviceDeclaraToBool());
+
+            // Verifica si existe la placa en iaserver
+            PanelService panelService = GetBarcodeInfoFromIAServer();
             sw.Stop();
 
-            machine.LogBroadcast("verbose",
-                string.Format("+ API GetBarcodeInfo Tiempo de respuesta: (ms) {0} ",
+            machine.LogBroadcast("success",
+                string.Format("API GetBarcodeInfo Tiempo de respuesta: (ms) {0} ",
                 (long)sw.ElapsedMilliseconds)
             );
 
@@ -94,42 +127,58 @@ namespace CollectorPackage.Aoicollector.Inspection
             if (panelService.error == null)
             {
                 machine.LogBroadcast("debug",
-                    string.Format("+ Panel Modo: {0}", spMode)
+                    string.Format("Panel Modo: {0}", spMode)
                 );
 
-                if (op == machine.prodService.result.produccion.op)
+                try
                 {
-                    machine.LogBroadcast("warning",
-                        string.Format("Es necesario verificar el estado de produccion, para detener en caso de exceder!!")
-                    );
+                    if (spMode.Equals("insert"))
+                    {
+                        // Placa nueva, solo procedo si la OP no esta completa...
+                        /*
+                        if (machine.prodService.isFinished())
+                        {
+                            machine.LogBroadcast("warning",
+                                string.Format("Produccion finalizada")
+                            );
+                        }
+                        */
+                        SavePanel(panelService);
+                    }
+                    else
+                    {
+                        // La placa ya existe, actualizo sus datos
+                        SavePanel(panelService);
+                    }
+                } catch (Exception ex) {
+                    machine.log.stack(
+                        string.Format("+ SavePanel exception"
+                    ), this, ex);
                 }
 
                 // Si la linea tiene configurada la Trazabilidad por Cogiscan, valida ruta
+                #region Validacion con rutas de cogiscan
+                /*
                 if (machine.prodService.result.produccion.cogiscan.Equals("T"))
                 {
-                    machine.LogBroadcast("info",
+                    machine.LogBroadcast("warning",
                         string.Format("Esta ruta requiere validacion con cogiscan")
                     );
-
-                    SavePanel(panelService);
-
-                    // Comentado hasta que repare el service
-                    //if (panelService.result.cogiscan.product.attributes.operation.Equals("AOI"))
-                    //{
-                    //    SavePanel(panelService);
-                    //}
-                    //else
-                    //{
-                    //    machine.LogBroadcast("warning",
-                    //        string.Format("+ El panel {0} no se encuentra en la ruta AOI", barcode)
-                    //    );
-                    //}
-                } else
-                {
+                    if (panelService.result.cogiscan.product.attributes.operation.Equals("AOI"))
+                    {
+                        SavePanel(panelService);
+                    } else {
+                        machine.LogBroadcast("warning",
+                            string.Format("+ El panel {0} no se encuentra en la ruta AOI", barcode)
+                        );
+                    }
+                } else {
                     SavePanel(panelService);
                 }
-            } else
-            {
+                */
+                #endregion
+            }
+            else { // IF ERROR EN SERVICE
                 machine.log.stack(
                     string.Format("+ PanelService exception"
                 ), this, panelService.error);
@@ -139,6 +188,38 @@ namespace CollectorPackage.Aoicollector.Inspection
             if (panelId > 0 && panelService.error == null)
             {
                 SaveBlocks(path);
+
+                // Verifica si la ruta declara   
+                if (machine.prodService.routeDeclare)
+                {                     
+                    // Verifica si la produccion no termino AOI_PROD >= AOI_QTY
+                    if (!machine.prodService.isFinished())
+                    {
+                        machine.LogBroadcast("info",
+                            string.Format("Declarando panel")
+                        );
+
+                        Declarar declarar = new Declarar();
+                        declarar.withPanelBarcode(panelService.result.panel.panel_barcode);
+                    } else
+                    {
+                        machine.LogBroadcast("warning",
+                            string.Format("No se puede declarar el panel {0} se detecto produccion finalizada!", panelService.result.panel.panel_barcode)
+                        );
+                    }
+                }
+
+                #region Legacy mode, exporta XML
+                /*
+                foreach (Bloque bloque in bloqueList)
+                {
+                    if (machine.prodService.routeMode.Equals("sfcs"))
+                    {
+                        Export.toXML(this, bloque, path);
+                    }
+                }
+                */
+                #endregion
             }
 
             return panelService;
@@ -146,15 +227,16 @@ namespace CollectorPackage.Aoicollector.Inspection
 
         private PanelService SavePanel(PanelService panelService)
         {
+            Stopwatch sw = Stopwatch.StartNew();
             if (Config.debugMode)
             {
-                machine.LogBroadcast("warning", "+ Debug mode ON, no ejecuta StoreProcedure para guardar panel");
+                machine.LogBroadcast("warning", "Debug mode ON, no ejecuta StoreProcedure para guardar panel");
             } else { 
                 #region SAVE PANELS ON DB
                 string query = @"CALL sp_setInspectionPanel_optimizando('" + panelId + "','" + machine.mysql_id + "',  '" + barcode + "',  '" + programa + "',  '" + fecha + "',  '" + hora + "',  '',  '" + revisionAoi + "',  '" + revisionIns + "',  '" + totalErrores + "',  '" + totalErroresFalsos + "',  '" + totalErroresReales + "',  '" + pcbInfo.bloques + "',  '" + tipoBarcode + "',  '" + Convert.ToInt32(pendiente) + "' ,  '" + machine.oracle_id + "' ,  '" + vtwinProgramNameId + "' ,  '" + spMode + "'  );";
 
                 machine.LogBroadcast("debug", 
-                    string.Format("+ Ejecutando StoreProcedure: sp_setInspectionPanel_optimizando({0}) =>", barcode)
+                    string.Format("Ejecutando StoreProcedure: sp_setInspectionPanel_optimizando({0}) =>", barcode)
                 );
 
                 MySqlConnector sql = new MySqlConnector();
@@ -194,10 +276,18 @@ namespace CollectorPackage.Aoicollector.Inspection
             // Es necesario volver a ejecutar el service, para obtener la OP asignada al panel
             if(spMode == "insert")
             {
-                machine.LogBroadcast("debug", "+ Actualizando datos de panel insertado");
+                machine.LogBroadcast("debug", "Actualizando datos de panel insertado");
                 panelService = GetBarcodeInfoFromIAServer();
             }
-            
+
+            sw.Stop();
+
+            machine.LogBroadcast("success",
+                string.Format("Panel guardado: {0} (ms) {1} ",
+                barcode,
+                (long)sw.ElapsedMilliseconds)
+            );
+
             // Retorno ID, 0 si no pudo insertar, o actualizar
             return panelService;
         }
@@ -206,15 +296,17 @@ namespace CollectorPackage.Aoicollector.Inspection
         {
             foreach (Bloque bloque in bloqueList)
             {
+                Stopwatch sw = Stopwatch.StartNew();
+
                 if (Config.debugMode)
                 {
                     machine.LogBroadcast("warning",
-                        string.Format("+ Debug mode: ON, no se guarda el bloque")
+                        string.Format("Debug mode: ON, no se guarda el bloque")
                     );
                 } else { 
 
                     machine.LogBroadcast("debug",
-                        string.Format("+ Ejecutando sp_addInspectionBlock({0}) ", bloque.barcode)
+                        string.Format("Ejecutando sp_addInspectionBlock({0}) ", bloque.barcode)
                     );
 
                     string query = @"CALL sp_addInspectionBlock('" + panelId + "',  '" + bloque.barcode + "',  '" + bloque.tipoBarcode + "',  '" + bloque.revisionAoi + "',  '" + bloque.revisionIns + "',  '" + bloque.totalErrores + "',  '" + bloque.totalErroresFalsos + "',  '" + bloque.totalErroresReales + "',  '" + bloque.bloqueId + "' );";
@@ -239,30 +331,21 @@ namespace CollectorPackage.Aoicollector.Inspection
                             SaveDetail(id_inspeccion_bloque, bloque);
                         }
                     }
-                    #endregion
-
-                    if (machine.prodService.result.produccion.sfcs.declara.Equals("1"))
-                    {
-                        machine.LogBroadcast("notify",
-                            string.Format("+ {0} declarar con {1}", 
-                            bloque.barcode,
-                            machine.prodService.result.produccion.op
-                        ));
-                        //Trazabilidad traza = new Trazabilidad();
-                        //traza.declareIfNeeded(blockBarcode.barcode);
-                    }
+                    #endregion                    
                 }
 
-                Export.toXML(this, bloque, path);
+                sw.Stop();
+
+                machine.LogBroadcast("success",
+                    string.Format("Bloque guardado: {0} (ms) {1} ",
+                    bloque.barcode,
+                    (long)sw.ElapsedMilliseconds)
+                );
             }
         }
 
         private void SaveDetail(int id_inspeccion_bloque, Bloque bloque)
         {
-            machine.LogBroadcast("verbose",
-               string.Format("+ SaveDetail()")
-            );
-
             foreach (Detail detail in bloque.detailList)
             {
                 string query = @"CALL sp_addInspectionDetail('" + id_inspeccion_bloque + "',  '" + detail.referencia + "',  '" + detail.faultcode + "',  '" + detail.estado + "');";
@@ -274,6 +357,5 @@ namespace CollectorPackage.Aoicollector.Inspection
             // Una vez insertados los detalles de inspeccion del bloque, genero un historial 
             history.SaveDetalle(id_inspeccion_bloque);
         }
-
     }
 }

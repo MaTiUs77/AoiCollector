@@ -9,6 +9,7 @@ using CollectorPackage.Aoicollector.Zenith;
 
 using System.Threading.Tasks;
 using CollectorPackage.Aoicollector.Inspection.Model;
+using AOICollector.Forms;
 
 namespace CollectorPackage
 {
@@ -212,19 +213,29 @@ namespace CollectorPackage
 
         private void ModeAutoScroll_ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (ModeAutoScroll_ToolStripMenuItem.Checked)
-            {
-                ModeAutoScroll_ToolStripMenuItem.Text = "Desactivado";
-            }
-            else
-            {
-                ModeAutoScroll_ToolStripMenuItem.Text = "Activado";
-            }
+            //if (ModeAutoScroll_ToolStripMenuItem.Checked)
+            //{
+            //    ModeAutoScroll_ToolStripMenuItem.Text = "Desactivado";
+            //}
+            //else
+            //{
+            //    ModeAutoScroll_ToolStripMenuItem.Text = "Autoscroll";
+            //}
 
             ModeAutoScroll_ToolStripMenuItem.Checked = !ModeAutoScroll_ToolStripMenuItem.Checked;
             Log.autoscroll = ModeAutoScroll_ToolStripMenuItem.Checked;
         }
 
+        private void debugModeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            debugModeToolStripMenuItem.Checked = !debugModeToolStripMenuItem.Checked;
+            Config.debugMode = debugModeToolStripMenuItem.Checked;
+        }
 
+        private void configurarRedisToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Redis_FormConfiguration form = new Redis_FormConfiguration();
+            form.Show();
+        }
     }
 }

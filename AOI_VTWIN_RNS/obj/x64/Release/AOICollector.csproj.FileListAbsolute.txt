@@ -24,3 +24,6 @@ C:\Users\Core\Desktop\VISUALSTUDIO\AOI\AOI_VTWIN_RNS\obj\x64\Release\CollectorPa
 C:\Users\Core\Desktop\VISUALSTUDIO\AOI\AOI_VTWIN_RNS\obj\x64\Release\CollectorPackage.Oracle_QueryClient.resources
 C:\Users\Core\Desktop\VISUALSTUDIO\AOI\AOI_VTWIN_RNS\obj\x64\Release\CollectorPackage.Vtwin_FormConfiguration.resources
 C:\Users\Core\Desktop\VISUALSTUDIO\AOI\AOI_VTWIN_RNS\obj\x64\Release\CollectorPackage.LineFilter.resources
+C:\Users\Core\Desktop\VISUALSTUDIO\AOI\AOI_VTWIN_RNS\bin\x64\Release\StackExchange.Redis.dll
+C:\Users\Core\Desktop\VISUALSTUDIO\AOI\AOI_VTWIN_RNS\bin\x64\Release\StackExchange.Redis.xml
+C:\Users\Core\Desktop\VISUALSTUDIO\AOI\AOI_VTWIN_RNS\obj\x64\Release\AOICollector.Forms.Redis_FormConfiguration.resources

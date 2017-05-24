@@ -90,5 +90,10 @@ namespace CollectorPackage
             }
             return valid;
         }
+
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
+
+        }
     }
 }

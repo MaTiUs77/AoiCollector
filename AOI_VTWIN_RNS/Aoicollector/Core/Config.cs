@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using CollectorPackage.Aoicollector.Inspection.Model;
 using CollectorPackage.Src.Config;
-using System.Threading;
 
 namespace CollectorPackage.Aoicollector.Core
 {

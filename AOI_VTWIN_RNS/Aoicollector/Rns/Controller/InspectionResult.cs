@@ -41,12 +41,12 @@ namespace CollectorPackage.Aoicollector.Rns.Controller
                 }
                 else
                 {
-                    panel.machine.LogBroadcast("debug", string.Format("+ Ruta de InspectionResult no encontrada"));
+                    panel.machine.LogBroadcast("warning", string.Format("+ Ruta de InspectionResult no encontrada"));
                 }
             }
             else
             {
-                panel.machine.LogBroadcast("debug", string.Format("+ Ruta a InspectionResult no encontrada"));
+                panel.machine.LogBroadcast("warning", string.Format("+ Ruta a InspectionResult no encontrada"));
             }
         }
 
@@ -57,6 +57,12 @@ namespace CollectorPackage.Aoicollector.Rns.Controller
         {
             // Formateo la carpeta al tipo: "RVS-1234" y agrego al programa un comodin " * " 
             string RVS_filter = panel.maquina.Replace("VT-RNS", "RVS");
+            
+            // Se forza a obtener la inspeccion de inspectionResult en otra RVS
+            if(RVS_filter.Equals("RVS-6112"))
+            {
+                RVS_filter = "RVS-6144";
+            }
 
             string InspectionPath = Directory.GetParent(rnsi.aoiConfig.inspectionCsvPath).Parent.FullName;
 
@@ -126,24 +132,52 @@ namespace CollectorPackage.Aoicollector.Rns.Controller
                         }
                     }
                 }
-            }  
+            }
 
             if (bloques.Count == 0)
             {
-                string barcode = panel.barcode;
-                List<int> posibleBlockId = panel.detailList.Select(o => o.bloqueId).Distinct().ToList();
-                string blockId = "1";
-                if (posibleBlockId.Count > 0)
+                if ((panel.pcbInfo.bloques > panel.pcbInfo.etiquetas))
                 {
-                    blockId = posibleBlockId.First().ToString();
+                    bloques = CreateVirtualBlocks();
                 }
+                else
+                {
+                    bloques.Add(CreateSingleBlock());
+                }
+            }
+
+            return bloques;
+        }
+
+        public List<Bloque> CreateVirtualBlocks()
+        {
+            List<Bloque> bloques = new List<Bloque>();
+            for(int blockId = 1; blockId <= panel.pcbInfo.bloques; blockId++)
+            {
+                string barcode = string.Concat(panel.barcode,"-",blockId);
 
                 Bloque bk = new Bloque(barcode);
-                bk.bloqueId = int.Parse(blockId);
+                bk.bloqueId =  blockId;
                 bloques.Add(bk);
             }
 
             return bloques;
+        }
+
+        public Bloque CreateSingleBlock()
+        {
+            string barcode = panel.barcode;
+            List<int> posibleBlockId = panel.detailList.Select(o => o.bloqueId).Distinct().ToList();
+            string blockId = "1";
+            if (posibleBlockId.Count > 0)
+            {
+                blockId = posibleBlockId.First().ToString();
+            }
+
+            Bloque bloque = new Bloque(barcode);
+            bloque.bloqueId = int.Parse(blockId);
+
+            return bloque;
         }
     }
 }

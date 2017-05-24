@@ -127,11 +127,11 @@ namespace CollectorPackage.Aoicollector.Zenith.Controller
               ,pos.[ArrayIndex] as bloque
  			   ,CAST(	
 				CASE 
-					WHEN pos.ResultRepair = 11000000 THEN 'FALSO'
-					WHEN pos.ResultRepair = 12000000 THEN 'FALSO'
-					WHEN pos.ResultRepair = 13000000 THEN 'REAL'
-					WHEN pos.ResultRepair = 14000000 THEN 'REAL'
-					WHEN pos.ResultRepair = 15000000 THEN 'REAL'
+					WHEN pos.ResultAfter = 11000000 THEN 'FALSO'
+					WHEN pos.ResultAfter = 12000000 THEN 'FALSO'
+					WHEN pos.ResultAfter = 13000000 THEN 'REAL'
+					WHEN pos.ResultAfter = 14000000 THEN 'REAL'
+					WHEN pos.ResultAfter = 15000000 THEN 'REAL'
 					WHEN pos.ResultRepair = 0 THEN 'REAL'
 				End
  			   as VARCHAR) as estado

@@ -11,6 +11,7 @@ namespace CollectorPackage.Aoicollector.Core
         public string id { get; set; }
         public string smd { get; set; }
         public bool autoscroll = true;
+        public int loglevel = 1;
 
         public int linelimit = 200;
         public int linecount = 0;
@@ -21,7 +22,7 @@ namespace CollectorPackage.Aoicollector.Core
         protected Color colorDebug = Color.Gray;
         protected Color colorVerbose = Color.Green;
         protected Color colorStack = Color.Orange;
-        protected Color colorSuccess = Color.Green;
+        protected Color colorSuccess = Color.LawnGreen;
         protected Color colorNotify= Color.DeepPink;
 
         public RichTextBox richTextBox { get; set; }
@@ -64,7 +65,7 @@ namespace CollectorPackage.Aoicollector.Core
             return color;
         }
 
-        public string putLog(string mensaje, string mode, bool withDateTime = true)
+        public string putLog(string mensaje, string mode, bool withDateTime = true, bool inline = false)
         {
             DateTime time = DateTime.Now;
             string format = "dd/MM HH:mm";
@@ -80,7 +81,12 @@ namespace CollectorPackage.Aoicollector.Core
                 finalMsg = string.Format("{0}", mensaje);
             }
 
-            msg.AppendLine(finalMsg);
+            if(inline) {
+                msg.Append(finalMsg);
+            } else
+            {
+                msg.AppendLine(finalMsg);
+            }
 
             MethodInvoker updatListBox = new MethodInvoker(() =>
             {
@@ -120,17 +126,19 @@ namespace CollectorPackage.Aoicollector.Core
             return finalMsg;
         }
 
+        public string responseOk()
+        {
+            return putLog(": OK", "success",false);
+        }
         public string error(string msg)
         {
             return putLog(msg, "error");
         }
-
         public string stack(string msg, object objeto, Exception ex)
         {
             putLog(msg, "error");
             return putLog(stackFormatter(objeto,ex), "stack");
-        }
-        
+        }    
         public string warning(string msg)
         {
             return putLog(msg, "warning");
@@ -140,17 +148,20 @@ namespace CollectorPackage.Aoicollector.Core
             return putLog(msg, "info");
         }
         public string debug(string msg)
-        {
-            return putLog(msg, "debug");
-        }    
+        {            
+            if(loglevel<1) { 
+                msg = putLog(msg, "debug");
+            } 
 
+            return msg;
+        }    
         public string put(string msg)
         {
             return putLog(msg, "log");
         }
-        public string verbose(string msg)
+        public string verbose(string msg, bool responseinline = false)
         {
-            return putLog(msg, "verbose");
+            return putLog(msg, "verbose", true, responseinline);
         }
         public string success(string msg)
         {

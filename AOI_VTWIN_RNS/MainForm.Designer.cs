@@ -96,6 +96,8 @@
             this.zenithTabGeneral = new System.Windows.Forms.TabPage();
             this.zenithRichLog = new System.Windows.Forms.RichTextBox();
             this.zenithProgressBar = new System.Windows.Forms.ProgressBar();
+            this.debugModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.configurarRedisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.tabSystem.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
@@ -127,6 +129,7 @@
             this.vts500ToolStripMenuItem,
             this.zenithStripMenuItem4,
             this.configurarMysqlToolStripMenuItem,
+            this.configurarRedisToolStripMenuItem,
             this.byPassToolStripMenuItem,
             this.autoscrollToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
@@ -381,18 +384,19 @@
             // autoscrollToolStripMenuItem
             // 
             this.autoscrollToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ModeAutoScroll_ToolStripMenuItem});
+            this.ModeAutoScroll_ToolStripMenuItem,
+            this.debugModeToolStripMenuItem});
             this.autoscrollToolStripMenuItem.Name = "autoscrollToolStripMenuItem";
-            this.autoscrollToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
-            this.autoscrollToolStripMenuItem.Text = "Autoscroll";
+            this.autoscrollToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
+            this.autoscrollToolStripMenuItem.Text = "Opciones";
             // 
             // ModeAutoScroll_ToolStripMenuItem
             // 
             this.ModeAutoScroll_ToolStripMenuItem.Checked = true;
             this.ModeAutoScroll_ToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ModeAutoScroll_ToolStripMenuItem.Name = "ModeAutoScroll_ToolStripMenuItem";
-            this.ModeAutoScroll_ToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
-            this.ModeAutoScroll_ToolStripMenuItem.Text = "Activado";
+            this.ModeAutoScroll_ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.ModeAutoScroll_ToolStripMenuItem.Text = "Autoscroll";
             this.ModeAutoScroll_ToolStripMenuItem.Click += new System.EventHandler(this.ModeAutoScroll_ToolStripMenuItem_Click);
             // 
             // prgRns
@@ -767,6 +771,20 @@
             this.zenithProgressBar.Size = new System.Drawing.Size(832, 19);
             this.zenithProgressBar.TabIndex = 1;
             // 
+            // debugModeToolStripMenuItem
+            // 
+            this.debugModeToolStripMenuItem.Name = "debugModeToolStripMenuItem";
+            this.debugModeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.debugModeToolStripMenuItem.Text = "Debug mode";
+            this.debugModeToolStripMenuItem.Click += new System.EventHandler(this.debugModeToolStripMenuItem_Click);
+            // 
+            // configurarRedisToolStripMenuItem
+            // 
+            this.configurarRedisToolStripMenuItem.Name = "configurarRedisToolStripMenuItem";
+            this.configurarRedisToolStripMenuItem.Size = new System.Drawing.Size(107, 20);
+            this.configurarRedisToolStripMenuItem.Text = "Configurar Redis";
+            this.configurarRedisToolStripMenuItem.Click += new System.EventHandler(this.configurarRedisToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -778,7 +796,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "AOI COLLECTOR - Creado por Matias Flores  / 2014 - 2016";
+            this.Text = "AOI COLLECTOR - Creado por Matias Flores  / 2014 - 2017";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -875,6 +893,8 @@
         private System.Windows.Forms.TabPage zenithTabGeneral;
         private System.Windows.Forms.RichTextBox zenithRichLog;
         public System.Windows.Forms.ProgressBar zenithProgressBar;
+        private System.Windows.Forms.ToolStripMenuItem debugModeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem configurarRedisToolStripMenuItem;
     }
 }
 

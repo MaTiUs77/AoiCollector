@@ -9,6 +9,7 @@ using CollectorPackage.Aoicollector.Inspection;
 using CollectorPackage.Src.Util.Files;
 using CollectorPackage.Aoicollector.Rns.Controller;
 using System.Text.RegularExpressions;
+using CollectorPackage.Aoicollector.Core;
 
 namespace CollectorPackage.Aoicollector.Rns
 {
@@ -65,7 +66,7 @@ namespace CollectorPackage.Aoicollector.Rns
 
                     barcode = info[36].ToString().Replace("\"", "").Trim();
 
-                    BarcodeValidate();
+                    BarcodeValidate();                    
 
                     string panelNroReemp = info[38].ToString().Replace("\"", "").Trim();
                     if (!panelNroReemp.Equals(""))
@@ -103,26 +104,32 @@ namespace CollectorPackage.Aoicollector.Rns
                                 pcbInfo = pcb_info;
                             }
 
-                            // Adhiere las rutas a las carpetas de inspecciones
-                            InspectionResult inspResult = new InspectionResult(this, rnsi);
-
-                            detailList = GetInspectionDetail(contenidoCsv);
-
-                            if (!maquina.Contains("PT"))
+                            if (!Config.isByPassMode(machine))
                             {
+                                // Adhiere las rutas a las carpetas de inspecciones
+                                InspectionResult inspResult = new InspectionResult(this, rnsi);
 
-                                bloqueList = inspResult.GetBlockBarcodes();
+                                if (inspResult.located)
+                                {
+                                    detailList = GetInspectionDetail(contenidoCsv);
+
+                                    if (!maquina.Contains("PT"))
+                                    {
+
+                                        bloqueList = inspResult.GetBlockBarcodes();
+                                    }
+
+                                    MakeRevisionToAll();
+
+                                    machine.LogBroadcast("info",
+                                       string.Format("Programa: [{0}] | Barcode: {1} | Bloques: {2}",
+                                       programa,
+                                       barcode,
+                                       totalBloques
+                                       )
+                                    );
+                                }
                             }
-
-                            MakeRevisionToAll();
-
-                            machine.LogBroadcast("info",
-                               string.Format("Programa: [{0}] | Barcode: {1} | Bloques: {2}",
-                               programa,
-                               barcode,
-                               totalBloques
-                               )
-                            );
                         }
                     }
                     else
@@ -145,7 +152,7 @@ namespace CollectorPackage.Aoicollector.Rns
         /// <returns></returns>
         private List<Detail> GetInspectionDetail(DataTable contenidoCsv)
         {
-            List<FileInfo> imageFiles = rnsCurrentInspectionResultDirectory.GetFiles("*.jpg").ToList();
+            //List<FileInfo> imageFiles = rnsCurrentInspectionResultDirectory.GetFiles("*.jpg").ToList();
 
             List<Detail> detalles = new List<Detail>();
             // Recorro todos los detalles de la inspeccion
@@ -163,7 +170,7 @@ namespace CollectorPackage.Aoicollector.Rns
                     det.realFaultcode = r[50].ToString().Replace("\"", "").Trim();
                     det.descripcionFaultcode = Faultcode.Description(det.faultcode);
 
-                    det.faultImages = imageFiles.Where(x => x.Name.Contains(det.componentNo+"-")).ToList();
+                    //det.faultImages = imageFiles.Where(x => x.Name.Contains(det.componentNo+"-")).ToList();
 
                     // Si el real_faultcode no se detecto el error es FALSO 
                     if (det.realFaultcode.Equals("0") || det.realFaultcode.Equals(""))

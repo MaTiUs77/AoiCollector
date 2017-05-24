@@ -1,4 +1,5 @@
 ﻿using CollectorPackage.Aoicollector.IAServer.Mapper.Models.WipModel;
+using CollectorPackage.Src.Util.Convertion;
 using Newtonsoft.Json;
 
 namespace CollectorPackage.Aoicollector.IAServer.Mapper.Models
@@ -70,5 +71,8 @@ namespace CollectorPackage.Aoicollector.IAServer.Mapper.Models
 
         [JsonProperty("sfcs")]
         public Sfcs sfcs { get; set; }
+
+        [JsonProperty("route")]
+        public Route route { get; set; }
     }
 }

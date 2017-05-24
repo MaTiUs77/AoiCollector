@@ -11,7 +11,7 @@ namespace CollectorPackage.Aoicollector.Zenith
 {
     public class ZenithPanel : InspectionController
     {
-        public string machineNameKey = "W";
+        public string machineNameKey = "Z";
         private SqlServerConnector _sqlserver;
 
         public ZenithPanel(SqlServerConnector sqlserver, DataRow r, Machine inspMachine)

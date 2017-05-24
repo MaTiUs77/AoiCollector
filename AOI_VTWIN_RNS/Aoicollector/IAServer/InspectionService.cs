@@ -15,10 +15,10 @@ namespace CollectorPackage.Aoicollector.IAServer
 
             try
             {
-                string path = string.Format("{0}/aoicollector/placa/{1}", apiUrl, panelBarcode);
+                string path = string.Format("{0}/api/aoicollector/placa/{1}", apiUrl, panelBarcode);
                 if(verifyDeclared)
                 {
-                    path = string.Format("{0}/declared", path);
+                    path = string.Format("{0}/api/declared", path);
                 }
 
                 string jsonData = Consume(path);
